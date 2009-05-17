@@ -1,6 +1,6 @@
 <?php
 
-class SiteController extends CController
+class SiteController extends NCController
 {
 	/**
 	 * Declares class-based actions.

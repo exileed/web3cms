@@ -1,0 +1,15 @@
+
+         Upgrading Instructions for Web3CMS v1.0.5.r3
+         ============================================
+
+!!!IMPORTANT!!!
+
+The following upgrading instructions are cumulative. That is,
+if you want to upgrade from version A to version C and there is
+version B between A and C, you need to following the instructions
+for both A and B.
+
+Upgrading from v1.0.5.r2
+------------------------
+- Script completely changed since it was a 'clean' skeleton app created by yii cmd.
+  Need to replace all files.

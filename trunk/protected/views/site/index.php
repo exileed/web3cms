@@ -1,4 +1,4 @@
-<?php $this->pageTitle=Yii::app()->name; ?>
+<?php $this->setFrameTitle(''); ?>
 
 <h1>
 	Welcome, <?php echo Yii::app()->user->name; ?>!

@@ -1,4 +1,4 @@
-<?php $this->pageTitle=Yii::app()->name . ' - Contact Us'; ?>
+<?php $this->setFrameTitle('Contact Us'); ?>
 
 <h1>Contact Us</h1>
 

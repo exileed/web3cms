@@ -1,0 +1,27 @@
+
+                   Web3CMS Change Log
+                   ==================
+
+Version 1.0.5.r3 May 17, 2009
+-----------------------------
+- New: Add changelog, license, readme and upgrade docs
+- New: Add folders: files, js, protected/data
+- New: Add logs in protected/runtime: error.log, info.log, notice.log, trace.log, warning.log
+- New: config/params.php
+! New: components/NCController.php - all controllers must extend from this class
+- New: components/_init.php - our custom initializer (being run from nccontroller)
+- Inf: jquery.js core script is called in all scripts now (required by jquery-ui)
+- Mod: config/main.php
+- Mod: views/layouts/main.php
+- Mod: SiteController extends NCController now
+- Mrg: Merge css/main.css with css/form.css into css/yii.css
+- New: css/main.css
+- New: css/jquery-ui-1.7.1.custom.css, css/images (we are using jquery-ui theme called 'Start')
+- New: js/jquery-ui-1.7.1.custom.min.js
+
+
+Version 1.0.5.r2 May 11, 2009
+-----------------------------
+Initial release
+- A skeleton app created by yii command line tool with the following command:
+yiic webapp web3cms

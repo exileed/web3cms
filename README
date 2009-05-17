@@ -1,0 +1,59 @@
+Web 3 Content Management System
+===============================
+
+Thank you for choosing Web3CMS - a next generation content management system
+based on Yii PHP framework.
+
+
+INSTALLATION
+------------
+
+Please make sure the release file is unpacked under a Web-accessible
+directory. You shall see the following files and directories:
+
+      assets/              reserved by yii (generate css&js), must be 777
+      css/                 css files
+	files/		   folder for uploaded images and other files, must be 777
+      images/        	   images
+      protected/       	   php scripts. most important is here
+      themes/       	   themes (or skins)
+	index.php		   this is the file that actual opens any front-end script
+      CHANGELOG            describing changes in every Web3CMS release
+      LICENSE              license of Yii
+      README               this file
+      UPGRADE              upgrading instructions
+
+
+REQUIREMENTS
+------------
+
+PHP 5.1.0 or above
+Yii Framework v1.0.5 or above (http://www.yiiframework.com)
+
+
+QUICK START
+-----------
+
+- In index.php specify path to your yii framework. default:
+  $yii=dirname(__FILE__).'/../yii/framework/yii.php';
+- Create db, use dump from protected/data/schema.mysql.sql
+  specify mysql user and pass in protected/config/main.php
+
+- Linux users: chmod 777 assets (required by yii)
+- Linux users: chmod 777 protected/runtime (required by yii)
+- Linux users: chmod 777 files
+
+- Optionally: in index.php set YII_DEBUG to false
+- Optionally: in protected/config/main.hp comment out log trace
+
+
+WHAT's NEXT
+-----------
+
+Please visit Yii website for tutorials, class reference
+and join discussions with other Yii users.
+
+
+
+The Web3CMS Developer Team
+http://code.google.com/p/web3cms/

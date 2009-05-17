@@ -1,4 +1,4 @@
-<?php $this->pageTitle=Yii::app()->name . ' - Login'; ?>
+<?php $this->setFrameTitle('Login'); ?>
 
 <h1>Login</h1>
 

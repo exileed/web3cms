@@ -1,9 +1,9 @@
 <?php
 
 /**
- * NCController
+ * _CController
  */
-class NCController extends CController
+class _CController extends CController
 {
     public $_frameTitle;
 

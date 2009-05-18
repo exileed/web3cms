@@ -2,6 +2,12 @@
                    Web3CMS Change Log
                    ==================
 
+Version 1.0.5.r4 May 18, 2009
+-----------------------------
+! Mod: NCController.php renamed to _CController.php, all classes that extend from Yii classes
+       should keep the same namespace with a prefix _ added.
+
+
 Version 1.0.5.r3 May 17, 2009
 -----------------------------
 - New: Add changelog, license, readme and upgrade docs

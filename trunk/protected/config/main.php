@@ -63,12 +63,13 @@ return array(
         ),
         'db'=>array(
             //'connectionString'=>'sqlite:'.dirname(__FILE__).'/../data/web3cms.db',
-            'connectionString'=>'mysql:host=localhost;dbname=web3cms', //dbname=web3cms
-            'username'=>'buzz_db', //'xyz'
-            'password'=>'Jy3llow', //'xxx'
+            /*'connectionString'=>'mysql:host=localhost;dbname=web3cms', //dbname=web3cms
+            'username'=>'xyz', //'xyz'
+            'password'=>'xxx', //'xxx'
+            */
         ),
         'urlManager'=>array(
-            'urlFormat'=>'path', //uncomment if htaccess is supported by your server
+            //'urlFormat'=>'path', //uncomment if htaccess is supported by your server
             'rules'=>array(
             ),
         ),

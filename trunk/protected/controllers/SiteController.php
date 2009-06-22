@@ -41,7 +41,7 @@ class SiteController extends _CController
 			{
 				$headers="From: {$contact->email}\r\nReply-To: {$contact->email}";
 				mail(Yii::app()->params['adminEmail'],$contact->subject,$contact->body,$headers);
-				Yii::app()->user->setFlash('contact','Thank you for contacting us. We will respond to you as soon as possible.');
+				MUserFlash::setTopInfo(Yii::t('w3','<strong>Thank you</strong> for contacting us. We will respond to you as soon as possible.'));
 				$this->refresh();
 			}
 		}

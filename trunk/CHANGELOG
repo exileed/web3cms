@@ -2,10 +2,36 @@
                    Web3CMS Change Log
                    ==================
 
+Version 1.0.6.r5 June 22, 2009
+------------------------------
+- Upg: from Yii 1.0.5 to Yii 1.0.6
+- Mod: index.php : path to yii changed from /yii/ to /yii-1.0.6.r1102/
+! Inf: Widgets suppose to begin with 'W'
+- Rnm: components/MainMenu.php renamed to WMainMenu.php (same in views)
+- New: components/WUserFlash.php : widget for user flash (reporting system)
+- New: components/views/wUserFlash/ : views for user flash widget
+- New: components/WContentHeader.php : widget for content breadcrumbs and page label
+- New: components/views/wContentHeader.php : view for WContentHeader
+! Inf: Managers in components/ suppose to begin with 'M'
+- New: components/MUserFlash.php : user flash manager (reporting system)
+- New: components/MLayout : layout manager
+! Inf: CSS switched to jquery-ui css framework
+- Mod: css/main.css (body{font-size:62.5%;} - for compatibility with jquery-ui), css/yii.css
+- New: css/960.css : http://960.gs/ with main column and up to 2 sidebars (see params and MLayout)
+- Upg: (js&css) from jquery-ui-1.7.1.custom.min to jquery-ui-1.7.2.custom.min
+- New: jquery css themes are in css/themes
+- Mod: config/main.php, params.php : add layout and other params
+- Mod: components/_init.php improve params(), add fromController()
+- Rnm: views/layouts/ to views/_layouts/
+- Mod: views/_layouts/main.php : strong upgrade in structure
+- Mod: views/site/*
+- New: Add protected/runtime/w3.log for/from cms message
+- Mod: components/_CController.php : getMetaDescription() and similar html params
+
 Version 1.0.5.r4 May 18, 2009
 -----------------------------
-! Mod: NCController.php renamed to _CController.php, all classes that extend from Yii classes
-       should keep the same namespace with a prefix _ added.
+! Rnm: NCController.php renamed to _CController.php, all classes that extend from Yii classes
+       suppose to inherit the same name with a prefix _ added.
 
 
 Version 1.0.5.r3 May 17, 2009

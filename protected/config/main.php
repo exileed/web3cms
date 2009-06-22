@@ -19,6 +19,9 @@ return array(
         'application.extensions.*',
 	),
 
+    // alternate layoutPath
+    'layoutPath'=>dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'_layouts'.DIRECTORY_SEPARATOR,
+
     // application-level parameters that can be accessed
     // using Yii::app()->params['paramName']
     'params'=>require(dirname(__FILE__).'/params.php'),
@@ -52,6 +55,13 @@ return array(
                     'class'=>'CFileLogRoute',
                     'levels'=>'trace',
                     'logFile'=>'trace.log',
+                    'maxFileSize'=>2048,
+                ),
+                array(
+                    'class'=>'CFileLogRoute',
+                    'levels'=>'w3',
+                    'categories'=>'w3',
+                    'logFile'=>'w3.log',
                 ),
 			),
 		),
@@ -63,13 +73,13 @@ return array(
         ),
         'db'=>array(
             //'connectionString'=>'sqlite:'.dirname(__FILE__).'/../data/web3cms.db',
-            /*'connectionString'=>'mysql:host=localhost;dbname=web3cms', //dbname=web3cms
-            'username'=>'xyz', //'xyz'
-            'password'=>'xxx', //'xxx'
-            */
+            'connectionString'=>'mysql:host=localhost;dbname=web3cms', //dbname=web3cms
+            'username'=>'buzz_db', //'xyz'
+            'password'=>'Jy3llow', //'xxx'
+            'charset'=>'utf8', //comment this if you are using a different db charset
         ),
         'urlManager'=>array(
-            //'urlFormat'=>'path', //uncomment if htaccess is supported by your server
+            'urlFormat'=>'path', //uncomment if htaccess is supported by your server
             'rules'=>array(
             ),
         ),

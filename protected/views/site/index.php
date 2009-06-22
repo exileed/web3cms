@@ -1,8 +1,12 @@
-<?php $this->setFrameTitle(''); ?>
+<?php $this->setPageLabel(''); ?>
+<?php MLayout::hideSidebars(); ?>
+<?php $this->widget('application.components.WContentHeader',array(
+    'label'=>'Welcome, '.Yii::app()->user->name.'!',
+    'afterLabel'=>false,
+    'displayBreadcrumbs'=>false,
+)); ?>
+<div class="w3-widget">
 
-<h1>
-	Welcome, <?php echo Yii::app()->user->name; ?>!
-</h1>
 <p>
 This is the homepage of <em><?php echo Yii::app()->name; ?></em>. You may modify the following files to customize the content of this page:
 </p>
@@ -41,3 +45,5 @@ If you have problems in accomplishing any of the above tasks,
 please read <a href="http://www.yiiframework.com/doc/">Yii documentation</a>
 or visit <a href="http://www.yiiframework.com/forum/">Yii forum</a> for help.
 </p>
+
+</div>

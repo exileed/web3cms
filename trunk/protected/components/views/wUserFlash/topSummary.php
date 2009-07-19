@@ -1,29 +1,29 @@
 <div class="w3-user-flash-top-summary-wrapper">
 <?php foreach($success as $userFlash): ?>
-  <div class="w3-top-item<?php echo MLayout::countTopItem()?'':' first'; ?>">
-    <div class="ui-widget ui-state-highlight ui-corner-all w3-user-flash-top-summary">
-        <span class="ui-icon ui-icon-check" style="float: left; margin-right: .3em;"></span>
+  <div class="w3-top-item<?php echo MLayout::getNumberOfItemsTop()?'':' first'; ?>">
+    <div class="w3-user-flash-top-summary ui-widget ui-state-highlight ui-corner-all">
+        <span class="w3-icon-left ui-icon ui-icon-check"></span>
         <?php echo $userFlash; ?> 
     </div>
   </div><!-- w3-top-item -->
-<?php MLayout::incrementTopItem(); ?>
+<?php MLayout::incrementNumberOfItemsTop(); ?>
 <?php endforeach; ?>
 <?php foreach($info as $userFlash): ?>
-  <div class="w3-top-item<?php echo MLayout::countTopItem()?'':' first'; ?>">
-    <div class="ui-widget ui-state-highlight ui-corner-all w3-user-flash-top-summary">
-        <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+  <div class="w3-top-item<?php echo MLayout::getNumberOfItemsTop()?'':' first'; ?>">
+    <div class="w3-user-flash-top-summary ui-widget ui-state-highlight ui-corner-all">
+        <span class="w3-icon-left ui-icon ui-icon-info"></span>
         <?php echo $userFlash; ?> 
     </div>
   </div><!-- w3-top-item -->
-<?php MLayout::incrementTopItem(); ?>
+<?php MLayout::incrementNumberOfItemsTop(); ?>
 <?php endforeach; ?>
 <?php foreach($error as $userFlash): ?>
-  <div class="w3-top-item<?php echo MLayout::countTopItem()?'':' first'; ?>">
-    <div class="ui-widget ui-state-error ui-corner-all w3-user-flash-top-summary">
-        <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+  <div class="w3-top-item<?php echo MLayout::getNumberOfItemsTop()?'':' first'; ?>">
+    <div class="w3-user-flash-top-summary ui-widget ui-state-error ui-corner-all">
+        <span class="w3-icon-left ui-icon ui-icon-alert"></span>
         <?php echo $userFlash; ?> 
     </div>
   </div><!-- w3-top-item -->
-<?php MLayout::incrementTopItem(); ?>
+<?php MLayout::incrementNumberOfItemsTop(); ?>
 <?php endforeach; ?>
 </div><!-- w3-user-flash-top-summary-wrapper -->

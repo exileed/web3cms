@@ -1,14 +1,13 @@
-<?php $this->setPageLabel(''); ?>
 <?php MLayout::hideSidebars(); ?>
 <?php $this->widget('application.components.WContentHeader',array(
-    'label'=>'Welcome, '.Yii::app()->user->name.'!',
+    'label'=>'Welcome, '.(Yii::app()->user->isGuest ? Yii::app()->user->name : Yii::app()->user->displayName).'!',
     'afterLabel'=>false,
     'displayBreadcrumbs'=>false,
 )); ?>
 <div class="w3-widget">
 
 <p>
-This is the homepage of <em><?php echo Yii::app()->name; ?></em>. You may modify the following files to customize the content of this page:
+This is the homepage of <em><?php echo MParams::getHeaderTitle(); ?></em>. You may modify the following files to customize the content of this page:
 </p>
 <dl>
 	<dt><?php echo Yii::app()->controllerPath . DIRECTORY_SEPARATOR . 'SiteController.php'; ?></dt>

@@ -89,6 +89,15 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 }
 
 
+.w3-user-flash-top-summary ul,
+.w3-user-flash-sidebar1-summary ul,
+.w3-user-flash-sidebar2-summary ul,
+.w3-user-flash-content-summary ul {
+    margin-top: .2em;
+    margin-bottom: .2em;
+}
+
+
 .w3-main-wrapper {
     margin-top: 1.6em;
 }
@@ -197,8 +206,18 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 /* right cell */
 .w3-form-row .w3-form-row-input {
     float: left;
-    font-size: 1.2em;
     margin-left: 1em;
+}
+.w3-form-row .w3-form-row-input .w3-form-row-text {
+    font-size: 1.2em;
+}
+.w3-form-row .w3-form-row-input input.w3-input-text,
+.w3-form-row .w3-form-row-input textarea.w3-input-text {
+    font-size: 1.3em;
+}
+.w3-form-row .w3-form-row-input .w3-form-row-text input.w3-input-text,
+.w3-form-row .w3-form-row-input .w3-form-row-text textarea.w3-input-text {
+    font-size: 1.08333em;
 }
 
 .w3-form-row-input input.w3-input-text,
@@ -223,7 +242,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 
 .w3-form-row-input .w3-input-button {
     cursor: pointer;
-    padding: .2em .9em;
+    padding: .3em 1em;
 }
 
 
@@ -237,10 +256,15 @@ body.w3-layout-sidebar1-content-sidebar2 {}
     border-top: 1px solid #ddd;
     font-size: 1.1em;
     text-align: center;
-    padding-top: .9em;
+    padding-top: .7em;
 }
 
 
 .w3-widget {
     font-size: 1.3em;
+}
+
+.w3-icon-left {
+    float: left;
+    margin-right: .3em;
 }

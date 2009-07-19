@@ -15,7 +15,7 @@
 
 <?php endif; ?>
 <?php if($displayLabel): ?>
-<h1 class="w3-page-label"><?php echo $label===''?'&nbsp;':$label; ?></h1>
+<h1 class="w3-page-label"><?php echo $label; ?></h1>
 
 <?php endif; ?>
 <?php if($afterLabel): ?>

@@ -47,31 +47,4 @@ class SiteController extends _CController
 		}
 		$this->render('contact',array('contact'=>$contact));
 	}
-
-	/**
-	 * Displays the login page
-	 */
-	public function actionLogin()
-	{
-		$form=new LoginForm;
-		// collect user input data
-		if(isset($_POST['LoginForm']))
-		{
-			$form->attributes=$_POST['LoginForm'];
-			// validate user input and redirect to previous page if valid
-			if($form->validate())
-				$this->redirect(Yii::app()->user->returnUrl);
-		}
-		// display the login form
-		$this->render('login',array('form'=>$form));
-	}
-
-	/**
-	 * Logout the current user and redirect to homepage.
-	 */
-	public function actionLogout()
-	{
-		Yii::app()->user->logout();
-		$this->redirect(Yii::app()->homeUrl);
-	}
 }

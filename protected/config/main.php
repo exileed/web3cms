@@ -7,10 +7,9 @@
 // CWebApplication properties can be configured here.
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-	'name'=>'Web3CMS', //'Web3CMS'
 
-	// preloading 'log' component
-	'preload'=>array('log'),
+	// preloading 'log' component, session - to track down problems with specific users
+	'preload'=>array('log', 'session'),
 
 	// autoloading model and component classes
 	'import'=>array(
@@ -35,6 +34,7 @@ return array(
                     'class'=>'CFileLogRoute',
                     'levels'=>'error',
                     'logFile'=>'error.log',
+                    'filter'=>'CLogFilter', // this saves _cookie, _server
                 ),
                 array(
                     'class'=>'CFileLogRoute',
@@ -52,10 +52,18 @@ return array(
                     'logFile'=>'info.log',
                 ),
                 array(
-                    'class'=>'CFileLogRoute',
-                    'levels'=>'trace',
-                    'logFile'=>'trace.log',
-                    'maxFileSize'=>2048,
+                    'class'=>'CFileLogRoute', // 'CFileLogRoute','CWebLogRoute'
+                    'levels'=>'trace', // 'trace,info,error,warning'
+                    'logFile'=>'trace.log', //
+                    'maxFileSize'=>2048, //
+                    // to track down problems with specific users:
+                    /*'filter' => array(
+                        'class' => 'CLogFilter',
+                        'prefixSession' => true,
+                        'prefixUser' => false,
+                        'logUser' => false,
+                        'logVars' => array(),
+                    ),*/
                 ),
                 array(
                     'class'=>'CFileLogRoute',
@@ -74,8 +82,8 @@ return array(
         'db'=>array(
             //'connectionString'=>'sqlite:'.dirname(__FILE__).'/../data/web3cms.db',
             'connectionString'=>'mysql:host=localhost;dbname=web3cms', //dbname=web3cms
-            'username'=>'buzz_db', //'xyz'
-            'password'=>'Jy3llow', //'xxx'
+            'username'=>'web3cms', //'web3cms'
+            'password'=>'web3cms', //'web3cms'
             'charset'=>'utf8', //comment this if you are using a different db charset
         ),
         'urlManager'=>array(

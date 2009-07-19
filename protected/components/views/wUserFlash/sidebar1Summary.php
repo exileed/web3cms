@@ -1,29 +1,29 @@
 <div class="w3-user-flash-sidebar1-summary-wrapper">
 <?php foreach($success as $userFlash): ?>
-  <div class="w3-sidebar1-item<?php echo MLayout::countSidebar1Item()?'':' first'; ?>">
-    <div class="ui-widget ui-state-highlight ui-corner-all w3-user-flash-sidebar1-summary">
-        <span class="ui-icon ui-icon-check" style="float: left; margin-right: .3em;"></span>
+  <div class="w3-sidebar1-item<?php echo MLayout::getNumberOfItemsSidebar1()?'':' first'; ?>">
+    <div class="w3-user-flash-sidebar1-summary ui-widget ui-state-highlight ui-corner-all">
+        <span class="w3-icon-left ui-icon ui-icon-check"></span>
         <?php echo $userFlash; ?> 
     </div>
   </div><!-- w3-sidebar1-item -->
-<?php MLayout::incrementSidebar1Item(); ?>
+<?php MLayout::incrementNumberOfItemsSidebar1(); ?>
 <?php endforeach; ?>
 <?php foreach($info as $userFlash): ?>
-  <div class="w3-sidebar1-item<?php echo MLayout::countSidebar1Item()?'':' first'; ?>">
-    <div class="ui-widget ui-state-highlight ui-corner-all w3-user-flash-sidebar1-summary">
-        <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+  <div class="w3-sidebar1-item<?php echo MLayout::getNumberOfItemsSidebar1()?'':' first'; ?>">
+    <div class="w3-user-flash-sidebar1-summary ui-widget ui-state-highlight ui-corner-all">
+        <span class="w3-icon-left ui-icon ui-icon-info"></span>
         <?php echo $userFlash; ?> 
     </div>
   </div><!-- w3-sidebar1-item -->
-<?php MLayout::incrementSidebar1Item(); ?>
+<?php MLayout::incrementNumberOfItemsSidebar1(); ?>
 <?php endforeach; ?>
 <?php foreach($error as $userFlash): ?>
-  <div class="w3-sidebar1-item<?php echo MLayout::countSidebar1Item()?'':' first'; ?>">
-    <div class="ui-widget ui-state-error ui-corner-all w3-user-flash-sidebar1-summary">
-        <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+  <div class="w3-sidebar1-item<?php echo MLayout::getNumberOfItemsSidebar1()?'':' first'; ?>">
+    <div class="w3-user-flash-sidebar1-summary ui-widget ui-state-error ui-corner-all">
+        <span class="w3-icon-left ui-icon ui-icon-alert"></span>
         <?php echo $userFlash; ?> 
     </div>
   </div><!-- w3-sidebar1-item -->
-<?php MLayout::incrementSidebar1Item(); ?>
+<?php MLayout::incrementNumberOfItemsSidebar1(); ?>
 <?php endforeach; ?>
 </div><!-- w3-user-flash-sidebar1-summary-wrapper -->

@@ -55,6 +55,23 @@ class _CHtml extends CHtml
             self::addErrorCss($htmlOptions);
         return self::tag('textarea',$htmlOptions,self::encode($model->$attribute));
     }
+    
+    /* 100% parent */
+    public static function activeDropDownList($model,$attribute,$data,$htmlOptions=array())
+    {
+        self::resolveNameID($model,$attribute,$htmlOptions);
+        $selection=$model->$attribute;
+        $options="\n".self::listOptions($selection,$data,$htmlOptions);
+        self::clientChange('change',$htmlOptions);
+        if($model->hasErrors($attribute))
+            self::addErrorCss($htmlOptions);
+        if(isset($htmlOptions['multiple']))
+        {
+            if(substr($htmlOptions['name'],-2)!=='[]')
+                $htmlOptions['name'].='[]';
+        }
+        return self::tag('select',$htmlOptions,$options);
+    }
 
     /* currently no need to wrap label in <p> and the whole thing in <div> */
     public static function errorSummary($model,$header=null,$footer=null,$htmlOptions=array())
@@ -76,7 +93,7 @@ class _CHtml extends CHtml
         if($content!=='')
         {
             if($header===null)
-                $header=/*'<p>'.*/Yii::t(/*'yii'*/'w3','Please fix the following input errors:')/*.'</p>'*/;
+                $header=/*'<p>'.*/Yii::t('user','Please fix the following input errors:')/*.'</p>'*/;
             if(!isset($htmlOptions['class']))
                 $htmlOptions['class']=self::$errorSummaryCss;
             return /*self::tag('div',$htmlOptions,*/$header."\n<ul>\n$content</ul>".$footer/*)*/;

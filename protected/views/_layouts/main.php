@@ -1,6 +1,6 @@
-<?php if(MParams::getHtmlDoctype()=='transitional'): ?>
+<?php if(MParams::getHtmlDoctype()==='transitional'): ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<?php elseif(MParams::getHtmlDoctype()=='strict'): ?>
+<?php elseif(MParams::getHtmlDoctype()==='strict'): ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php endif; ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -11,7 +11,7 @@
 <meta name="description" content="<?php echo MParams::getMetaDescription(); ?>" />
 <meta name="keywords" content="<?php echo MParams::getMetaKeywordsAsString(); ?>" />
 <link rel="shortcut icon" href="<?php echo Yii::app()->request->baseUrl; ?>/images/favicon.ico" type="image/x-icon" />
-<?php __init::jsCss(); ?>
+<?php W3Init::jsCss(); ?>
 <?php /*MLayout::setWrapInGridCssClass(false);
       if(!MLayout::getWrapInGridCssClass()):
       Yii::app()->getClientScript()->registerCss('enlargeSidebar',".container_16 .grid_4 {width: 240px;}");
@@ -31,10 +31,12 @@
 <div class="clear">&nbsp;</div>
 <?php $this->widget('application.components.WMainMenu',array(
     'items'=>array(
-        array('label'=>'Home', 'url'=>array('/site/index')),
-        array('label'=>'Contact', 'url'=>array('/site/contact')),
-        array('label'=>'Login', 'url'=>array('/user/login'), 'visible'=>Yii::app()->user->isGuest),
-        array('label'=>'Logout', 'url'=>array('/user/logout'), 'visible'=>!Yii::app()->user->isGuest),
+        array('label'=>Yii::t('t','Home',array(1)), 'url'=>array('site/index')),
+        array('label'=>Yii::t('t','Contact',array(0)), 'url'=>array('site/contact')),
+        array('label'=>Yii::t('t','Login',array(0)), 'url'=>array('user/login'), 'visible'=>Yii::app()->user->isGuest),
+        array('label'=>Yii::t('t','Register',array(1)), 'url'=>array('user/register'), 'visible'=>Yii::app()->user->isGuest),
+        array('label'=>Yii::t('t','My profile'), 'url'=>array('user/show'), 'visible'=>!Yii::app()->user->isGuest),
+        array('label'=>Yii::t('t','Logout'), 'url'=>array('user/logout'), 'visible'=>!Yii::app()->user->isGuest),
     ),
 )); ?>
 </div><!-- w3-header -->
@@ -74,7 +76,7 @@
 <div class="w3-content">
 
 <?php $this->widget('application.components.WUserFlash',array('type'=>'contentSummary')); ?>
-<div class="w3-content-item<?php echo MLayout::getNumberOfItemsContent()?'':' first'; ?>">
+<div class="w3-content-item<?php echo MLayout::getNumberOfItemsContent()?'':' w3-first'; ?>">
 
 <?php echo $content; ?>
 
@@ -120,8 +122,10 @@
 <div class="<?php echo MLayout::getGridCssClass(); ?>">
 <div class="w3-footer-wrapper">
 <div class="w3-footer">
-Copyright &copy; 2009 by <?php echo MParams::getCopyrightBy(); ?>. All Rights Reserved.<br/>
-<?php echo Yii::powered(); ?>
+<?php echo Yii::t('t','{copyrightBy}. All Rights Reserved.',array('{copyrightBy}'=>MParams::getCopyrightBy()))."\n"; ?>
+<?php echo Yii::t('t','Developed by {developedBy} based on {basedOn}.',array(
+    '{developedBy}'=>_CHtml::link('Web3CMS','http://www.web3cms.com/',array('rel'=>'external')),
+    '{basedOn}'=>_CHtml::link('Yii Framework','http://www.yiiframework.com/',array('rel'=>'external'))))."\n"; ?>
 </div><!-- w3-footer -->
 </div><!-- w3-footer-wrapper -->
 </div>

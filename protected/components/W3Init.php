@@ -3,11 +3,11 @@
 /**
  * Initialize
  */
-class __init
+class W3Init
 {
     /**
-    * Alias. Initialize all.
-    */
+     * Alias. Initialize all.
+     */
     public static function all()
     {
         self::css();
@@ -15,15 +15,15 @@ class __init
         self::script();
     }
     /**
-    * Alias. Initialize site parameters from controller.
-    */
-    public static function fromController()
+     * Alias. Initialize site parameters. Is called from controller.
+     */
+    public static function controller()
     {
         self::params();
     }
     /**
-    * Alias. Initialize javascripts and css.
-    */
+     * Alias. Initialize javascripts and css.
+     */
     public static function jsCss()
     {
         self::css();
@@ -31,8 +31,8 @@ class __init
     }
 
     /**
-    * Initialize css.
-    */
+     * Initialize css.
+     */
     public function css()
     {
         $cs=Yii::app()->getClientScript();
@@ -52,9 +52,9 @@ class __init
     }
 
     /**
-    * Load config/params.php params into MParams and MLayout.
-    * Use MParams wrappers to avoid problems with wrong type or value out of range.
-    */
+     * Load config/params.php params into MParams and MLayout.
+     * Use MParams wrappers to avoid problems with wrong type or value out of range.
+     */
     public static function params()
     {
         MParams::load();
@@ -62,8 +62,8 @@ class __init
     }
 
     /**
-    * Initialize javascripts.
-    */
+     * Initialize javascripts.
+     */
     public function script()
     {
         $cs=Yii::app()->getClientScript();
@@ -73,8 +73,10 @@ class __init
         //$cs->registerScriptFile(Yii::app()->request->baseUrl.'/js/jquery-1.3.x.plugins.js',CClientScript::POS_HEAD);
         // jquery-ui
         $cs->registerScriptFile(Yii::app()->request->baseUrl.'/js/jquery-ui-'.MParams::jqueryUIVersion.'.custom.min.js',CClientScript::POS_HEAD);
+        // attribute target is not allowed in xhtml strict
+        $cs->registerScript('targetBlank',"jQuery(\"a[rel^='external']\").attr({'target': '_blank'});",CClientScript::POS_READY);
         // call noConflict() function if prototype.js was included before jquery
         // details at http://docs.jquery.com/Using_jQuery_with_Other_Libraries
-        /*$cs->registerScript('jQuery.noConflict();',CClientScript::POS_HEAD);*/
+        /*$cs->registerScript('noConflict','jQuery.noConflict();',CClientScript::POS_HEAD);*/
     }
 }

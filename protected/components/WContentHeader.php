@@ -25,7 +25,7 @@ class WContentHeader extends CWidget
         // add home link to the beginning of breadcrumbs
         if($this->prependHome)
             array_unshift($this->breadcrumbs,array(
-                'label'=>'Home',
+                'label'=>Yii::t('t','Home',array(1)),
                 'url'=>Yii::app()->homeUrl,
                 'active'=>false
             ));

@@ -3,11 +3,11 @@
 <div class="<?php echo MLayout::getContainerCssClass(); ?>">
 <div class="<?php echo MLayout::getGridCssClass(); ?>">
 <div class="w3-main-menu">
-<ul>
+  <ul>
 <?php foreach($items as $n=>$item): ?>
-    <li class="ui-state-default ui-corner-all<?php echo ($item['active']?' ui-state-active':'') . ($n?'':' first'); ?>"><?php echo CHtml::link($item['label'],$item['url']); ?></li>
+    <li class="ui-state-default ui-corner-all<?php echo ($item['active']?' ui-state-active':'') . ($n?'':' w3-first') . ($n===count($items)-1?' w3-last':''); ?>"><?php echo CHtml::link($item['label'],$item['url']); ?></li>
 <?php endforeach; ?>
-</ul>
+  </ul>
 </div><!-- w3-main-menu -->
 </div>
 <div class="clear">&nbsp;</div>

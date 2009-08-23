@@ -21,8 +21,8 @@ Fields with <span class="required">*</span> are required.
 <?php echo CHtml::activeTextField($model,'email',array('size'=>60,'maxlength'=>255)); ?>
 </div>
 <div class="simple">
-<?php echo CHtml::activeLabelEx($model,'displayName'); ?>
-<?php echo CHtml::activeTextField($model,'displayName',array('size'=>60,'maxlength'=>128)); ?>
+<?php echo CHtml::activeLabelEx($model,'screenName'); ?>
+<?php echo CHtml::activeTextField($model,'screenName',array('size'=>60,'maxlength'=>128)); ?>
 </div>
 <div class="simple">
 <?php echo CHtml::activeLabelEx($model,'language'); ?>

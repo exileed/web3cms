@@ -8,20 +8,38 @@ return array(
     // From: "adminEmailName" <adminEmail>
     // reset this on any page with MParams::setAdminEmailName($name);
     'adminEmailName'=>'Web3CMS Staff', //'Webmaster'
+    // array of available css themes
+    // reset this on any page with MParams::setAvailableCssThemes($array);
+    // or MParams::addAvailableCssThemes($cssThemes,$prepend);
+    'availableCssThemes'=>array(
+        'ui-lightness'=>'UI Lightness',
+        'ui-darkness'=>'UI Darkness',
+        'start'=>'Start',
+    ),
+    // array of available languages
+    // reset this on any page with MParams::setAvailableLanguages($array);
+    // or MParams::addAvailableLanguages($languages,$prepend);
+    'availableLanguages'=>array(
+        'en'=>'English',
+        'ru'=>'Russian',
+    ),
     // displayed in the footer of every page
     // reset this on any page with MParams::setCopyrightBy('My Company');
     'copyrightBy'=>'My Company', //'My Company'
-	// jQuery UI CSS Framework theme to use by default
+    // jQuery UI CSS Framework theme to use by default
     // possible values: ui-lightness/ui-darkness/start
     // copy any from http://jqueryui.com/themeroller to {root}/css/themes/{theme}
     // reset this on any page with MParams::setCssTheme('start');
-	'cssTheme'=>'start', //'start'
+    'cssTheme'=>'start', //'start'
     // title of your cms, displayed in the header section (above menu)
     // reset this on any page with MParams::setHeaderTitle($title);
     'headerTitle'=>'My Web3CMS', //My Web3CMS
     // html doctype. possible values: strict/transitional
     // reset this on any page with MParams::setHtmlDoctype('transitional');
     'htmlDoctype'=>'transitional', //transitional
+    // site language. should be one of 'availableLanguages'
+    // reset this on any page with MParams::setLanguage('en');
+    'language'=>'en', //en
     // number of columns for content. possible values: 1-16
     // reset this on any page with MLayout::setNOCContent(12); or MLayout::hideSidebars();
     'layoutNumberOfColumnsContent'=>12, //12of16=700px
@@ -44,9 +62,18 @@ return array(
     // or MParams::addMetaDescription($description,$delimiter=' ');
     'metaDescription'=>'Web 2.0 Content Management System based on Yii Framework. Web3CMS - Bringing Color to Powerful Yii Application!',
     // html > head > meta[keywords]
-    // reset this on any page with MParams::setMetaKeywords($description);
-    // or MParams::addMetaKeywords($keywords,$append=true);
+    // reset this on any page with MParams::setMetaKeywords($keywords);
+    // or MParams::addMetaKeywords($keywords,$prepend);
     'metaKeywords'=>array('web3cms','cms','content management system','php','yii','jquery','ajax','web 2.0','jquery-ui','free','open source','mvc','framework'),
+    // array of model attributes that system should (not) use
+    // reset this on any page with MParams::setModelAttributes($attributes,$model);
+    // or MParams::restoreModelAttributes($model,$attributes);
+    'modelAttributes'=>array(
+        'User'=>array(
+            // email2 is 'Repeat email' field on the register user page
+            'email2'=>false,
+        ),
+    ),
     // page title formula to be used by MParams::setPageTitle();
     // to set html > head > title
     // reset this on any page with MParams::setPageTitleFormula('{pageLabel} - {siteTitle}');

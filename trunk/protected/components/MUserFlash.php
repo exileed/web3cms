@@ -21,13 +21,13 @@ class MUserFlash
     const topError='topError';
 
     /**
-    * Get array of messages from user flash reporting system.
-    * If user flash has no messages, then return an empty array.
-    * 
-    * @param string $id
-    * @param bool $delete
-    * @return array of messages
-    */
+     * Get array of messages from user flash reporting system.
+     * If user flash has no messages, then return an empty array.
+     * 
+     * @param string $id
+     * @param bool $delete
+     * @return array of messages
+     */
     public static function get($id,$delete=true)
     {
         if(self::has($id))
@@ -42,14 +42,14 @@ class MUserFlash
     }
 
     /**
-    * Set/append a new string into user flash (reporting system) array.
-    * In case of append, new value is checked for repeat (to prevent double-messaging).
-    * 
-    * @param string $id
-    * @param string message $str
-    * @param bool $append
-    * @return bool (success)
-    */
+     * Set/append a new string into user flash (reporting system) array.
+     * In case of append, new value is checked for repeat (to prevent double-messaging).
+     * 
+     * @param string $id
+     * @param string message $str
+     * @param bool $append
+     * @return bool (success)
+     */
     public static function set($id,$str,$append=true)
     {
         if(empty($str))
@@ -67,22 +67,22 @@ class MUserFlash
     }
 
     /**
-    * Check whether user flash reporting system has any message for the given id.
-    * 
-    * @param string $id
-    * @return bool
-    */
+     * Check whether user flash reporting system has any message for the given id.
+     * 
+     * @param string $id
+     * @return bool
+     */
     public static function has($id)
     {
         return Yii::app()->user->hasFlash(self::checkId($id));
     }
 
     /**
-    * Check user flash id
-    * 
-    * @param string $id
-    * @return string
-    */
+     * Check user flash id
+     * 
+     * @param string $id
+     * @return string
+     */
     public static function checkId($id)
     {
         $vals=array(
@@ -93,8 +93,8 @@ class MUserFlash
             self::topInfo,self::topError,self::topSuccess
         );
         if($id===true || !in_array($id,$vals))
-            Yii::log(Yii::t('w3',
-                'Uncommon parameter in method call {method}',
+            Yii::log(Yii::t('system',
+                'Uncommon parameter in method call: {method}.',
                 array('{method}'=>__METHOD__.'('.var_export($id,true).')')
             ),'w3','info');
         return $id;

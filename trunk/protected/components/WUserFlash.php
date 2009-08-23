@@ -62,7 +62,7 @@ class WUserFlash extends CWidget
     }
 
     public function sidebar2Summary()
-	{
+    {
         if(MUserFlash::hasSidebar2Success() || MUserFlash::hasSidebar2Info() || MUserFlash::hasSidebar2Error())
         {
             $data=array(
@@ -72,7 +72,7 @@ class WUserFlash extends CWidget
             );
             $this->render('wUserFlash/sidebar2Summary',$data);
         }
-	}
+    }
 
     public function topSummary()
     {

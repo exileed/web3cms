@@ -21,56 +21,56 @@
  */
 class WMainMenu extends CWidget
 {
-	public $items=array();
+    public $items=array();
 
-	public function run()
-	{
-		$items=array();
-		$controller=$this->controller;
-		$action=$controller->action;
-		foreach($this->items as $item)
-		{
-			if(isset($item['visible']) && !$item['visible'])
-				continue;
-			$item2=array();
-			$item2['label']=$item['label'];
-			if(is_array($item['url']))
-				$item2['url']=$controller->createUrl($item['url'][0]);
-			else
-				$item2['url']=$item['url'];
-			$pattern=isset($item['pattern'])?$item['pattern']:$item['url'];
-			$item2['active']=$this->isActive($pattern,$controller->uniqueID,$action->id);
-			$items[]=$item2;
-		}
+    public function run()
+    {
+        $items=array();
+        $controller=$this->controller;
+        $action=$controller->action;
+        foreach($this->items as $item)
+        {
+            if(isset($item['visible']) && !$item['visible'])
+                continue;
+            $item2=array();
+            $item2['label']=$item['label'];
+            if(is_array($item['url']))
+                $item2['url']=$controller->createUrl($item['url'][0]);
+            else
+                $item2['url']=$item['url'];
+            $pattern=isset($item['pattern'])?$item['pattern']:$item['url'];
+            $item2['active']=$this->isActive($pattern,$controller->uniqueID,$action->id);
+            $items[]=$item2;
+        }
         Yii::app()->getClientScript()->registerScript('mainmenu',
 "jQuery('.w3-header .w3-main-menu ul li a').hover( 
     function(){ jQuery(this).parent().removeClass('ui-state-default').addClass('ui-state-hover'); }, 
     function(){ jQuery(this).parent().removeClass('ui-state-hover').addClass('ui-state-default'); } 
 );"     );
-		$this->render('wMainMenu',array('items'=>$items));
-	}
+        $this->render('wMainMenu',array('items'=>$items));
+    }
 
-	protected function isActive($pattern,$controllerID,$actionID)
-	{
-		if(!is_array($pattern) || !isset($pattern[0]))
-			return false;
+    protected function isActive($pattern,$controllerID,$actionID)
+    {
+        if(!is_array($pattern) || !isset($pattern[0]))
+            return false;
 
-		$pattern[0]=trim($pattern[0],'/');
-		if(strpos($pattern[0],'/')!==false)
-			$matched=$pattern[0]===$controllerID.'/'.$actionID;
-		else
-			$matched=$pattern[0]===$controllerID;
+        $pattern[0]=trim($pattern[0],'/');
+        if(strpos($pattern[0],'/')!==false)
+            $matched=$pattern[0]===$controllerID.'/'.$actionID;
+        else
+            $matched=$pattern[0]===$controllerID;
 
-		if($matched && count($pattern)>1)
-		{
-			foreach(array_splice($pattern,1) as $name=>$value)
-			{
-				if(!isset($_GET[$name]) || $_GET[$name]!=$value)
-					return false;
-			}
-			return true;
-		}
-		else
-			return $matched;
-	}
+        if($matched && count($pattern)>1)
+        {
+            foreach(array_splice($pattern,1) as $name=>$value)
+            {
+                if(!isset($_GET[$name]) || $_GET[$name]!=$value)
+                    return false;
+            }
+            return true;
+        }
+        else
+            return $matched;
+    }
 }

@@ -17,7 +17,7 @@ class MLayout
     protected static $allowedNumberOfColumnsSidebar1;
     protected static $allowedNumberOfColumnsSidebar2;
     protected static $allowedNumberOfColumnsTotal;
-    const __default='__default';
+    const _default='_default';
     const defaultNumberOfColumnsContent=12;
     const defaultNumberOfColumnsSidebar1=0;
     const defaultNumberOfColumnsSidebar2=4;
@@ -25,8 +25,8 @@ class MLayout
     const defaultWrapInGridCssClass=true;
 
     /**
-    * Load params from Yii::app()->params into class properties.
-    */
+     * Load params from Yii::app()->params into class properties.
+     */
     public static function load()
     {
         self::validateDefaultNumberOfColumns();
@@ -35,27 +35,65 @@ class MLayout
         self::$allowedNumberOfColumnsSidebar2=range(0,self::defaultNumberOfColumnsTotal);
         self::$allowedNumberOfColumnsTotal=array(12,16);
         $data=Yii::app()->params;
-        self::setNumberOfColumnsContent(isset($data['layoutNumberOfColumnsContent']) ? $data['layoutNumberOfColumnsContent'] : self::__default);
-        self::setNumberOfColumnsSidebar1(isset($data['layoutNumberOfColumnsSidebar1']) ? $data['layoutNumberOfColumnsSidebar1'] : self::__default);
-        self::setNumberOfColumnsSidebar2(isset($data['layoutNumberOfColumnsSidebar2']) ? $data['layoutNumberOfColumnsSidebar2'] : self::__default);
-        self::setNumberOfColumnsTotal(isset($data['layoutNumberOfColumnsTotal']) ? $data['layoutNumberOfColumnsTotal'] : self::__default);
+        self::setNumberOfColumnsContent(isset($data['layoutNumberOfColumnsContent']) ? $data['layoutNumberOfColumnsContent'] : self::_default);
+        self::setNumberOfColumnsSidebar1(isset($data['layoutNumberOfColumnsSidebar1']) ? $data['layoutNumberOfColumnsSidebar1'] : self::_default);
+        self::setNumberOfColumnsSidebar2(isset($data['layoutNumberOfColumnsSidebar2']) ? $data['layoutNumberOfColumnsSidebar2'] : self::_default);
+        self::setNumberOfColumnsTotal(isset($data['layoutNumberOfColumnsTotal']) ? $data['layoutNumberOfColumnsTotal'] : self::_default);
         self::validateNumberOfColumns();
-        self::setWrapInGridCssClass(isset($data['layoutWrapInGridCssClass']) ? $data['layoutWrapInGridCssClass'] : self::__default);
+        self::setWrapInGridCssClass(isset($data['layoutWrapInGridCssClass']) ? $data['layoutWrapInGridCssClass'] : self::_default);
     }
 
     /**
-    * Decrement number of content area items.
-    */
+     * Save system logs
+     * 
+     * @param array $params
+     */
+    protected static function log($params=array())
+    {
+        if(!is_array($params))
+            return;
+        $append=isset($params['append']) ? ' '.$params['append'] : '';
+        if(isset($params['method'],$params['parameter'],$params['value']))
+        {
+            Yii::log(Yii::t('system',
+                'Unacceptable value of {parameter} system parameter: {value}. Method called: {method}.',
+                array(
+                    '{parameter}'=>"'{$params['parameter']}'",
+                    '{value}'=>var_export($params['value'],true),
+                    '{method}'=>$params['method'].'()'
+                )
+            ).$append,'warning','w3');
+        }
+        else if(isset($params['method']) && (isset($params['value']) || isset($params['values'])))
+        {
+            if(isset($params['values']) && is_array($params['values']))
+            {
+                $value='';
+                foreach($params['values'] as $item)
+                    $value.=($value?',':'').var_export($item,true);
+            }
+            else
+                $value=var_export((isset($params['value']) ? $params['value'] : $params['values']), true);
+            Yii::log(Yii::t('system',
+                'Incorrect parameter in method call: {method}.',
+                array('{method}'=>$params['method'].'('.$value.')')
+            ).$append,'warning','w3');
+        }
+    }
+
+    /**
+     * Decrement number of content area items.
+     */
     public static function decrementNumberOfItemsContent()
     {
         is_null(self::$numberOfItemsContent)? self::$numberOfItemsContent=0 : --self::$numberOfItemsContent;
     }
 
     /**
-    * decrement number of either sidebar1 or sidebar2 area items.
-    * 
-    * @param mixed $in
-    */
+     * decrement number of either sidebar1 or sidebar2 area items.
+     * 
+     * @param mixed $in
+     */
     public static function decrementNumberOfItemsSidebar($in)
     {
         if($in==='sidebar1' || $in==='1' || $in===1)
@@ -63,42 +101,39 @@ class MLayout
         else if($in==='sidebar2' || $in==='2' || $in===2)
             self::incrementNumberOfItemsSidebar2();
         else
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($in,true).')')
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$in));
     }
 
     /**
-    * Decrement number of sidebar1 area items.
-    */
+     * Decrement number of sidebar1 area items.
+     */
     public static function decrementNumberOfItemsSidebar1()
     {
         is_null(self::$numberOfItemsSidebar1)? self::$numberOfItemsSidebar1=0 : --self::$numberOfItemsSidebar1;
     }
 
     /**
-    * Decrement number of sidebar2 area items.
-    */
+     * Decrement number of sidebar2 area items.
+     */
     public static function decrementNumberOfItemsSidebar2()
     {
         is_null(self::$numberOfItemsSidebar2)? self::$numberOfItemsSidebar2=0 : --self::$numberOfItemsSidebar2;
     }
 
     /**
-    * Decrement number of top area items.
-    */
+     * Decrement number of top area items.
+     */
     public static function decrementNumberOfItemsTop()
     {
         is_null(self::$numberOfItemsTop)? self::$numberOfItemsTop=0 : --self::$numberOfItemsTop;
     }
 
     /**
-    * Generate css classes for html's tag "body".
-    * <body class="_return_">
-    * 
-    * @return string
-    */
+     * Generate css classes for html's tag "body".
+     * <body class="_return_">
+     * 
+     * @return string
+     */
     public static function getBodytagCssClass()
     {
         $column=$details='';
@@ -125,22 +160,22 @@ class MLayout
     }
 
     /**
-    * Get container css class.
-    * <div class="container_16"><div class="grid_16">...</div></div>
-    * 
-    * @return string
-    */
+     * Get container css class.
+     * <div class="container_16"><div class="grid_16">...</div></div>
+     * 
+     * @return string
+     */
     public static function getContainerCssClass()
     {
         return 'container_'.self::getNumberOfColumnsTotal();
     }
 
     /**
-    * Get grid css class.
-    * <div class="container_16"><div class="grid_16">...</div></div>
-    * 
-    * @return string
-    */
+     * Get grid css class.
+     * <div class="container_16"><div class="grid_16">...</div></div>
+     * 
+     * @return string
+     */
     public static function getGridCssClass()
     {
         if(self::getWrapInGridCssClass())
@@ -148,11 +183,11 @@ class MLayout
     }
 
     /**
-    * Get grid css class for content area.
-    * <div class="grid_12 alpha"><div class="w3-content">...</div></div>
-    * 
-    * @return string
-    */
+     * Get grid css class for content area.
+     * <div class="grid_12 alpha"><div class="w3-content">...</div></div>
+     * 
+     * @return string
+     */
     public static function getGridCssClassContent()
     {
         // no sidebars = no need to wrap in "grid_16" class
@@ -170,11 +205,11 @@ class MLayout
     }
 
     /**
-    * Get grid css class for sidebar2 area.
-    * <div class="grid_4 alpha"><div class="w3-sidebar1">...</div></div>
-    * 
-    * @return string
-    */
+     * Get grid css class for sidebar2 area.
+     * <div class="grid_4 alpha"><div class="w3-sidebar1">...</div></div>
+     * 
+     * @return string
+     */
     public static function getGridCssClassSidebar1()
     {
         if(self::hasContent() || self::hasSidebar2())
@@ -185,11 +220,11 @@ class MLayout
     }
 
     /**
-    * Get grid css class for sidebar2 area.
-    * <div class="grid_4 omega"><div class="w3-sidebar2">...</div></div>
-    * 
-    * @return string
-    */
+     * Get grid css class for sidebar2 area.
+     * <div class="grid_4 omega"><div class="w3-sidebar2">...</div></div>
+     * 
+     * @return string
+     */
     public static function getGridCssClassSidebar2()
     {
         if(self::hasContent() || self::hasSidebar1())
@@ -200,134 +235,99 @@ class MLayout
     }
 
     /**
-    * GS number of columns for content.
-    * Common values are 8 and 12. Default is 12.
-    * Visit {@link http://960.gs/demo.html} grid system for more details.
-    * 
-    * @return int
-    */
+     * GS number of columns for content.
+     * Common values are 8 and 12. Default is 12.
+     * Visit {@link http://960.gs/demo.html} grid system for more details.
+     * 
+     * @return int
+     */
     public static function getNumberOfColumnsContent()
     {
         $value=self::$numberOfColumnsContent;
         if($value===true || !in_array($value,self::$allowedNumberOfColumnsContent))
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of {parameter} layout parameter: {value}. Method called: {method}.',
-                array(
-                    '{parameter}'=>"'numberOfColumnsContent'",
-                    '{value}'=>var_export($value,true),
-                    '{method}'=>__METHOD__.'()'
-                )
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'parameter'=>'numberOfColumnsContent','value'=>$value));
             $value=self::defaultNumberOfColumnsContent; // set the wrong value to default
         }
         return $value;
     }
 
     /**
-    * GS number of columns for sidebar1.
-    * Common values are 0 and 4. Default is 0.
-    * Visit {@link http://960.gs/demo.html} grid system for more details.
-    * 
-    * @return int
-    */
+     * GS number of columns for sidebar1.
+     * Common values are 0 and 4. Default is 0.
+     * Visit {@link http://960.gs/demo.html} grid system for more details.
+     * 
+     * @return int
+     */
     public static function getNumberOfColumnsSidebar1()
     {
         $value=self::$numberOfColumnsSidebar1;
         if($value===true || !in_array($value,self::$allowedNumberOfColumnsSidebar1))
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of {parameter} layout parameter: {value}. Method called: {method}.',
-                array(
-                    '{parameter}'=>"'numberOfColumnsSidebar1'",
-                    '{value}'=>var_export($value,true),
-                    '{method}'=>__METHOD__.'()'
-                )
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'parameter'=>'numberOfColumnsSidebar1','value'=>$value));
             $value=self::defaultNumberOfColumnsSidebar1; // set the wrong value to default
         }
         return $value;
     }
 
     /**
-    * GS number of columns for sidebar2.
-    * Common values are 0 and 4. Default is 4.
-    * Visit {@link http://960.gs/demo.html} grid system for more details.
-    * 
-    * @return int
-    */
+     * GS number of columns for sidebar2.
+     * Common values are 0 and 4. Default is 4.
+     * Visit {@link http://960.gs/demo.html} grid system for more details.
+     * 
+     * @return int
+     */
     public static function getNumberOfColumnsSidebar2()
     {
         $value=self::$numberOfColumnsSidebar2;
         if($value===true || !in_array($value,self::$allowedNumberOfColumnsSidebar2))
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of {parameter} layout parameter: {value}. Method called: {method}.',
-                array(
-                    '{parameter}'=>"'numberOfColumnsSidebar2'",
-                    '{value}'=>var_export($value,true),
-                    '{method}'=>__METHOD__.'()'
-                )
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'parameter'=>'numberOfColumnsSidebar2','value'=>$value));
             $value=self::defaultNumberOfColumnsSidebar2; // set the wrong value to default
         }
         return $value;
     }
 
     /**
-    * GS number of columns total.
-    * Common values are 12 and 16. Default is 16.
-    * Visit {@link http://960.gs/demo.html} grid system for more details.
-    * 
-    * @return int
-    */
+     * GS number of columns total.
+     * Common values are 12 and 16. Default is 16.
+     * Visit {@link http://960.gs/demo.html} grid system for more details.
+     * 
+     * @return int
+     */
     public static function getNumberOfColumnsTotal()
     {
         $value=self::$numberOfColumnsTotal;
         if($value===true || !in_array($value,self::$allowedNumberOfColumnsTotal))
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of {parameter} layout parameter: {value}. Method called: {method}.',
-                array(
-                    '{parameter}'=>"'numberOfColumnsTotal'",
-                    '{value}'=>var_export($value,true),
-                    '{method}'=>__METHOD__.'()'
-                )
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'parameter'=>'numberOfColumnsTotal','value'=>$value));
             $value=self::defaultNumberOfColumnsTotal; // set the wrong value to default
         }
         return $value;
     }
 
     /**
-    * Get number of items displayed in content area.
-    * 
-    * @return int
-    */
+     * Get number of items displayed in content area.
+     * 
+     * @return int
+     */
     public static function getNumberOfItemsContent()
     {
         $value=self::$numberOfItemsContent;
         if(!is_null($value) && !is_int($value))
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of {parameter} layout parameter: {value}. Method called: {method}.',
-                array(
-                    '{parameter}'=>"'numberOfItemsContent'",
-                    '{value}'=>var_export($value,true),
-                    '{method}'=>__METHOD__.'()'
-                )
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'parameter'=>'numberOfItemsContent','value'=>$value));
         }
         // (int)null == 0
         return (int)$value;
     }
 
     /**
-    * Get number of items displayed in either sidebar1 or sidebar2 area.
-    * 
-    * @param mixed $in
-    * @return int
-    */
+     * Get number of items displayed in either sidebar1 or sidebar2 area.
+     * 
+     * @param mixed $in
+     * @return int
+     */
     public static function getNumberOfItemsSidebar($in)
     {
         if($in==='sidebar1' || $in==='1' || $in===1)
@@ -335,150 +335,119 @@ class MLayout
         else if($in==='sidebar2' || $in==='2' || $in===2)
             return self::getNumberOfItemsSidebar2();
         else
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($in,true).')')
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$in));
         return false;
     }
 
     /**
-    * Get number of items displayed in sidebar1 area.
-    * 
-    * @return int
-    */
+     * Get number of items displayed in sidebar1 area.
+     * 
+     * @return int
+     */
     public static function getNumberOfItemsSidebar1()
     {
         $value=self::$numberOfItemsSidebar1;
         if(!is_null($value) && !is_int($value))
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of {parameter} layout parameter: {value}. Method called: {method}.',
-                array(
-                    '{parameter}'=>"'numberOfItemsSidebar1'",
-                    '{value}'=>var_export($value,true),
-                    '{method}'=>__METHOD__.'()'
-                )
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'parameter'=>'numberOfItemsSidebar1','value'=>$value));
         }
         // (int)null == 0
         return (int)$value;
     }
 
     /**
-    * Get number of items displayed in sidebar2 area.
-    * 
-    * @return int
-    */
+     * Get number of items displayed in sidebar2 area.
+     * 
+     * @return int
+     */
     public static function getNumberOfItemsSidebar2()
     {
         $value=self::$numberOfItemsSidebar2;
         if(!is_null($value) && !is_int($value))
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of {parameter} layout parameter: {value}. Method called: {method}.',
-                array(
-                    '{parameter}'=>"'numberOfItemsSidebar2'",
-                    '{value}'=>var_export($value,true),
-                    '{method}'=>__METHOD__.'()'
-                )
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'parameter'=>'numberOfItemsSidebar2','value'=>$value));
         }
         // (int)null == 0
         return (int)$value;
     }
 
     /**
-    * Get number of items displayed in top area.
-    * 
-    * @return int
-    */
+     * Get number of items displayed in top area.
+     * 
+     * @return int
+     */
     public static function getNumberOfItemsTop()
     {
         $value=self::$numberOfItemsTop;
         if(!is_null($value) && !is_int($value))
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of {parameter} layout parameter: {value}. Method called: {method}.',
-                array(
-                    '{parameter}'=>"'numberOfItemsTop'",
-                    '{value}'=>var_export($value,true),
-                    '{method}'=>__METHOD__.'()'
-                )
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'parameter'=>'numberOfItemsTop','value'=>$value));
         }
         // (int)null == 0
         return (int)$value;
     }
 
     /**
-    * GS wrap in css "grid_16" (sub)class.
-    * If true, layout will look like <div class="container_16"><div class="grid_16">..header..</div></div>
-    * If false, layout will look like <div class="container_16"><div class="">..header..</div></div>
-    * 
-    * @return bool
-    */
+     * GS wrap in css "grid_16" (sub)class.
+     * If true, layout will look like <div class="container_16"><div class="grid_16">..header..</div></div>
+     * If false, layout will look like <div class="container_16"><div class="">..header..</div></div>
+     * 
+     * @return bool
+     */
     public static function getWrapInGridCssClass()
     {
         $value=self::$wrapInGridCssClass;
         if(!is_bool($value))
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of {parameter} layout parameter: {value}. Method called: {method}.',
-                array(
-                    '{parameter}'=>"'wrapInGridCssClass'",
-                    '{value}'=>var_export($value,true),
-                    '{method}'=>__METHOD__.'()'
-                )
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'parameter'=>'wrapInGridCssClass','value'=>$value));
             $value=self::defaultWrapInGridCssClass; // set the wrong value to default
         }
         return $value;
     }
 
     /**
-    * Whether current page has content area.
-    * 
-    * @return bool
-    */
+     * Whether current page has content area.
+     * 
+     * @return bool
+     */
     public static function hasContent()
     {
         return (bool)self::getNumberOfColumnsContent();
     }
 
     /**
-    * Whether current page has sidebar1 or sidebar2 area.
-    * 
-    * @return bool
-    */
+     * Whether current page has sidebar1 or sidebar2 area.
+     * 
+     * @return bool
+     */
     public static function hasSidebar()
     {
         return (bool)(self::hasSidebar1() || self::hasSidebar2());
     }
 
     /**
-    * Whether current page has sidebar1 area.
-    * 
-    * @return bool
-    */
+     * Whether current page has sidebar1 area.
+     * 
+     * @return bool
+     */
     public static function hasSidebar1()
     {
         return (bool)self::getNumberOfColumnsSidebar1();
     }
 
     /**
-    * Whether current page has sidebar2 area.
-    * 
-    * @return bool
-    */
+     * Whether current page has sidebar2 area.
+     * 
+     * @return bool
+     */
     public static function hasSidebar2()
     {
         return (bool)self::getNumberOfColumnsSidebar2();
     }
 
     /**
-    * Hide sidebar1, sidebar2 and make content area width = page width.
-    */
+     * Hide sidebar1, sidebar2 and make content area width = page width.
+     */
     public static function hideSidebars()
     {
         self::setNumberOfColumnsSidebar1(0);
@@ -487,10 +456,10 @@ class MLayout
     }
 
     /**
-    * Hide sidebar1 and enlarge sidebar2 or content.
-    * 
-    * @param string $inFavourOf
-    */
+     * Hide sidebar1 and enlarge sidebar2 or content.
+     * 
+     * @param string $inFavourOf
+     */
     public static function hideSidebar1($inFavourOf='content')
     {
         $num=self::getNumberOfColumnsSidebar1();
@@ -505,10 +474,10 @@ class MLayout
     }
 
     /**
-    * Hide sidebar2 and enlarge sidebar1 or content.
-    * 
-    * @param string $inFavourOf
-    */
+     * Hide sidebar2 and enlarge sidebar1 or content.
+     * 
+     * @param string $inFavourOf
+     */
     public static function hideSidebar2($inFavourOf='content')
     {
         $num=self::getNumberOfColumnsSidebar2();
@@ -523,18 +492,18 @@ class MLayout
     }
 
     /**
-    * Increment number of content area items.
-    */
+     * Increment number of content area items.
+     */
     public static function incrementNumberOfItemsContent()
     {
         is_null(self::$numberOfItemsContent)? self::$numberOfItemsContent=1 : ++self::$numberOfItemsContent;
     }
 
     /**
-    * Increment number of either sidebar1 or sidebar2 area items.
-    * 
-    * @param mixed $in
-    */
+     * Increment number of either sidebar1 or sidebar2 area items.
+     * 
+     * @param mixed $in
+     */
     public static function incrementNumberOfItemsSidebar($in)
     {
         if($in==='sidebar1' || $in==='1' || $in===1)
@@ -542,130 +511,115 @@ class MLayout
         else if($in==='sidebar2' || $in==='2' || $in===2)
             self::incrementNumberOfItemsSidebar2();
         else
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($in,true).')')
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$in));
     }
 
     /**
-    * Increment number of sidebar1 area items.
-    */
+     * Increment number of sidebar1 area items.
+     */
     public static function incrementNumberOfItemsSidebar1()
     {
         is_null(self::$numberOfItemsSidebar1)? self::$numberOfItemsSidebar1=1 : ++self::$numberOfItemsSidebar1;
     }
 
     /**
-    * Increment number of sidebar2 area items.
-    */
+     * Increment number of sidebar2 area items.
+     */
     public static function incrementNumberOfItemsSidebar2()
     {
         is_null(self::$numberOfItemsSidebar2)? self::$numberOfItemsSidebar2=1 : ++self::$numberOfItemsSidebar2;
     }
 
     /**
-    * Increment number of top area items.
-    */
+     * Increment number of top area items.
+     */
     public static function incrementNumberOfItemsTop()
     {
         is_null(self::$numberOfItemsTop)? self::$numberOfItemsTop=1 : ++self::$numberOfItemsTop;
     }
 
     /**
-    * GS number of columns for content.
-    * Common values are 8 and 12. Default is 12.
-    * Visit {@link http://960.gs/demo.html} grid system for more details.
-    * 
-    * @param int $value
-    */
+     * GS number of columns for content.
+     * Common values are 8 and 12. Default is 12.
+     * Visit {@link http://960.gs/demo.html} grid system for more details.
+     * 
+     * @param int $value
+     */
     public static function setNumberOfColumnsContent($value)
     {
-        if($value===self::__default)
+        if($value===self::_default)
             $value=self::defaultNumberOfColumnsContent;
         if($value===true || !in_array($value,self::$allowedNumberOfColumnsContent))
         {
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($value,true).')')
-            ),'notice','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$value));
             $value=self::defaultNumberOfColumnsContent; // set the wrong value to default
         }
         self::$numberOfColumnsContent=$value;
     }
 
     /**
-    * GS number of columns for sidebar1.
-    * Common values are 0 and 4. Default is 0.
-    * Visit {@link http://960.gs/demo.html} grid system for more details.
-    * 
-    * @param int $value
-    */
+     * GS number of columns for sidebar1.
+     * Common values are 0 and 4. Default is 0.
+     * Visit {@link http://960.gs/demo.html} grid system for more details.
+     * 
+     * @param int $value
+     */
     public static function setNumberOfColumnsSidebar1($value)
     {
-        if($value===self::__default)
+        if($value===self::_default)
             $value=self::defaultNumberOfColumnsSidebar1;
         if($value===true || !in_array($value,self::$allowedNumberOfColumnsSidebar1))
         {
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($value,true).')')
-            ),'notice','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$value));
             $value=self::defaultNumberOfColumnsSidebar1; // set the wrong value to default
         }
         self::$numberOfColumnsSidebar1=$value;
     }
 
     /**
-    * GS number of columns for sidebar2.
-    * Common values are 0 and 4. Default is 4.
-    * Visit {@link http://960.gs/demo.html} grid system for more details.
-    * 
-    * @param int $value
-    */
+     * GS number of columns for sidebar2.
+     * Common values are 0 and 4. Default is 4.
+     * Visit {@link http://960.gs/demo.html} grid system for more details.
+     * 
+     * @param int $value
+     */
     public static function setNumberOfColumnsSidebar2($value)
     {
-        if($value===self::__default)
+        if($value===self::_default)
             $value=self::defaultNumberOfColumnsSidebar2;
         if($value===true || !in_array($value,self::$allowedNumberOfColumnsSidebar2))
         {
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($value,true).')')
-            ),'notice','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$value));
             $value=self::defaultNumberOfColumnsSidebar2; // set the wrong value to default
         }
         self::$numberOfColumnsSidebar2=$value;
     }
 
     /**
-    * GS number of columns total.
-    * Common values are 12 and 16. Default is 16.
-    * Visit {@link http://960.gs/demo.html} grid system for more details.
-    * 
-    * @param int $value
-    */
+     * GS number of columns total.
+     * Common values are 12 and 16. Default is 16.
+     * Visit {@link http://960.gs/demo.html} grid system for more details.
+     * 
+     * @param int $value
+     */
     public static function setNumberOfColumnsTotal($value)
     {
-        if($value===self::__default)
+        if($value===self::_default)
             $value=self::defaultNumberOfColumnsTotal;
         if($value===true || !in_array($value,self::$allowedNumberOfColumnsTotal))
         {
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($value,true).')')
-            ),'notice','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$value));
             $value=self::defaultNumberOfColumnsTotal; // set the wrong value to default
         }
         self::$numberOfColumnsTotal=$value;
     }
 
     /**
-    * Alias of setNumberOfColumns...()
-    * Set all GS number of columns from array.
-    * 
-    * @param array $array
-    */
+     * Alias of setNumberOfColumns...()
+     * Set all GS number of columns from array.
+     * 
+     * @param array $array
+     */
     public static function setNumberOfColumnsArray($array)
     {
         isset($array['total']) && self::setNumberOfColumnsTotal($array['total']);
@@ -675,129 +629,111 @@ class MLayout
     }
 
     /**
-    * Set number of items displayed in content area.
-    * 
-    * @param int $value
-    */
+     * Set number of items displayed in content area.
+     * 
+     * @param int $value
+     */
     public static function setNumberOfItemsContent($value)
     {
         if(is_numeric($value))
             self::$numberOfItemsContent=(int)$value;
         else
         {
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($value,true).')')
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$value));
         }
     }
 
     /**
-    * Set number of items displayed in either sidebar1 or sidebar2 area.
-    * 
-    * @param mixed $in
-    * @param int $value
-    */
+     * Set number of items displayed in either sidebar1 or sidebar2 area.
+     * 
+     * @param mixed $in
+     * @param int $value
+     */
     public static function setNumberOfItemsSidebar($in,$value)
     {
         if($in==='sidebar1' || $in==='1' || $in===1)
-            self::setNumberOfItemsSidebar1();
+            self::setNumberOfItemsSidebar1($value);
         else if($in==='sidebar2' || $in==='2' || $in===2)
-            self::setNumberOfItemsSidebar2();
+            self::setNumberOfItemsSidebar2($value);
         else
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($in,true).','.var_export($value,true).')')
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'values'=>array($in,$value)));
     }
 
     /**
-    * Set number of items displayed in sidebar1 area.
-    * 
-    * @param int $value
-    */
+     * Set number of items displayed in sidebar1 area.
+     * 
+     * @param int $value
+     */
     public static function setNumberOfItemsSidebar1($value)
     {
         if(is_numeric($value))
             self::$numberOfItemsSidebar1=(int)$value;
         else
         {
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($value,true).')')
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$value));
         }
     }
 
     /**
-    * Set number of items displayed in sidebar2 area.
-    * 
-    * @param int $value
-    */
+     * Set number of items displayed in sidebar2 area.
+     * 
+     * @param int $value
+     */
     public static function setNumberOfItemsSidebar2($value)
     {
         if(is_numeric($value))
             self::$numberOfItemsSidebar2=(int)$value;
         else
         {
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($value,true).')')
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$value));
         }
     }
 
     /**
-    * Set number of items displayed in top area.
-    * 
-    * @param int $value
-    */
+     * Set number of items displayed in top area.
+     * 
+     * @param int $value
+     */
     public static function setNumberOfItemsTop($value)
     {
         if(is_numeric($value))
             self::$numberOfItemsTop=(int)$value;
         else
         {
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($value,true).')')
-            ),'warning','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$value));
         }
     }
 
     /**
-    * GS wrap in css "grid_16" (sub)class.
-    * If true, layout will look like <div class="container_16"><div class="grid_16">..header..</div></div>
-    * If false, layout will look like <div class="container_16"><div class="">..header..</div></div>
-    * 
-    * @param bool $value
-    */
+     * GS wrap in css "grid_16" (sub)class.
+     * If true, layout will look like <div class="container_16"><div class="grid_16">..header..</div></div>
+     * If false, layout will look like <div class="container_16"><div class="">..header..</div></div>
+     * 
+     * @param bool $value
+     */
     public static function setWrapInGridCssClass($value)
     {
-        if($value===self::__default)
+        if($value===self::_default)
             $value=self::defaultWrapInGridCssClass;
         if(!is_bool($value))
         {
-            Yii::log(Yii::t('w3',
-                'Incorrect parameter in method call {method}',
-                array('{method}'=>__METHOD__.'('.var_export($value,true).')')
-            ),'notice','w3');
+            self::log(array('method'=>__METHOD__,'value'=>$value));
             $value=self::defaultWrapInGridCssClass; // set the wrong value to default
         }
         self::$wrapInGridCssClass=$value;
     }
 
     /**
-    * Validate GS number of columns.
-    * Sum of GS content, sidebar1 & sidebar2 must be = GS total;
-    * if not, set all to default.
-    */
+     * Validate GS number of columns.
+     * Sum of GS content, sidebar1 & sidebar2 must be = GS total;
+     * if not, set all to default.
+     */
     public static function validateNumberOfColumns()
     {
         if(self::getNumberOfColumnsContent()+self::getNumberOfColumnsSidebar1()+self::getNumberOfColumnsSidebar2() != self::getNumberOfColumnsTotal())
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of layout parameters... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.',
+            Yii::log(Yii::t('system',
+                'Unacceptable values of layout parameters... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.',
                 array(
                     '{content}'=>var_export(self::getNumberOfColumnsContent(),true),
                     '{sidebar1}'=>var_export(self::getNumberOfColumnsSidebar1(),true),
@@ -806,23 +742,23 @@ class MLayout
                     '{method}'=>__METHOD__.'()'
                 )
             ),'warning','w3');
-            self::setNumberOfColumnsContent(self::__default);
-            self::setNumberOfColumnsSidebar1(self::__default);
-            self::setNumberOfColumnsSidebar2(self::__default);
-            self::setNumberOfColumnsTotal(self::__default);
+            self::setNumberOfColumnsContent(self::_default);
+            self::setNumberOfColumnsSidebar1(self::_default);
+            self::setNumberOfColumnsSidebar2(self::_default);
+            self::setNumberOfColumnsTotal(self::_default);
         }
     }
 
     /**
-    * Validate GS default number of columns.
-    * Sum of GS default content, sidebar1 & sidebar2 must be = GS default total.
-    */
+     * Validate GS default number of columns.
+     * Sum of GS default content, sidebar1 & sidebar2 must be = GS default total.
+     */
     public static function validateDefaultNumberOfColumns()
     {
         if(self::defaultNumberOfColumnsContent+self::defaultNumberOfColumnsSidebar1+self::defaultNumberOfColumnsSidebar2 != self::defaultNumberOfColumnsTotal)
         {
-            Yii::log(Yii::t('w3',
-                'Wrong value of layout constants... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.',
+            Yii::log(Yii::t('system',
+                'Unacceptable values of layout constants... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.',
                 array(
                     '{content}'=>var_export(self::defaultNumberOfColumnsContent,true),
                     '{sidebar1}'=>var_export(self::defaultNumberOfColumnsSidebar1,true),

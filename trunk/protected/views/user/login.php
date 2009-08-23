@@ -1,7 +1,6 @@
-<?php MParams::setPageLabel(Yii::t('w3','Login')); ?>
-<?php MParams::setCssTheme('ui-lightness'); ?>
+<?php MParams::setPageLabel(Yii::t('t','Login',array(1))); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($form)); ?>
-<?php MUserFlash::setSidebarInfo(Yii::t('w3','Hint: You may login with <tt>demo/demo</tt> or <tt>admin/admin</tt>.')); ?>
+<?php MUserFlash::setSidebarInfo(Yii::t('t','Hint: You may login with <tt>demo/demo</tt> or <tt>admin/admin</tt>.')); ?>
 <?php $this->widget('application.components.WContentHeader',array(
     'breadcrumbs'=>array(
         array(
@@ -15,7 +14,7 @@
 <?php echo _CHtml::beginForm('','post',array('class'=>'w3-main-form'))."\n"; ?>
 <?php echo _CHtml::activeHiddenField($form,'loginWithField')."\n"; ?>
 
-<div class="w3-form-row first">
+<div class="w3-form-row w3-first">
   <div class="w3-form-row-label"><?php echo _CHtml::activeLabel($form,$form->getLoginWithField()); ?></div>
   <div class="w3-form-row-input">
     <?php echo _CHtml::activeTextField($form,$form->getLoginWithField(),array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
@@ -25,7 +24,7 @@
 <div class="w3-form-row">
   <div class="w3-form-row-label"><?php echo _CHtml::activeLabel($form,'password'); ?></div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::activePasswordField($form,'password',array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::activePasswordField($form,'password',array('class'=>'w3-input-text ui-widget-content ui-corner-all','maxlength'=>64))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>
@@ -44,7 +43,7 @@
 <div class="w3-form-row">
   <div class="w3-form-row-label">&nbsp;</div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::submitButton('Login',array('class'=>'w3-input-button ui-button ui-state-default ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::submitButton(Yii::t('t','Enter'),array('class'=>'w3-input-button ui-button ui-state-default ui-corner-all'))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>
@@ -53,7 +52,11 @@
 
 </div><!-- w3-main-form-wrapper -->
 
-<?php Yii::app()->getClientScript()->registerScript('w3-form-button',
+<?php Yii::app()->getClientScript()->registerScript('focusOnFirstInput',
+"jQuery('.w3-content form.w3-main-form .w3-input-text:first').focus();"); ?>
+<?php Yii::app()->getClientScript()->registerScript('focusOnFirstErrorInput',
+"jQuery('.w3-content form.w3-main-form .ui-state-error:first').focus();"); ?>
+<?php Yii::app()->getClientScript()->registerScript('w3FormButton',
 "jQuery('.w3-form-row .w3-input-button').hover(
     function(){ jQuery(this).addClass('ui-state-hover'); },
     function(){ jQuery(this).removeClass('ui-state-hover'); }

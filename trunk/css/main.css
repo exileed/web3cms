@@ -62,7 +62,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
     margin: 0 0 0 .3em;
     padding: 0;
 }
-.w3-header .w3-main-menu ul li.first {
+.w3-header .w3-main-menu ul li.w3-first {
     margin-left: 0;
 }
 .w3-header .w3-main-menu ul li a {
@@ -79,7 +79,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 .w3-top .w3-top-item {
     margin-top: 1.6em;
 }
-.w3-top .w3-top-item.first {
+.w3-top .w3-top-item.w3-first {
     margin-top: 1.5em;
 }
 .w3-user-flash-top-summary-wrapper {}
@@ -112,7 +112,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 .w3-sidebar2 .w3-sidebar2-item {
     margin-top: 1.6em;
 }
-.w3-sidebar2 .w3-sidebar2-item.first {
+.w3-sidebar2 .w3-sidebar2-item.w3-first {
     margin-top: 0;
 }
 .w3-user-flash-sidebar2-summary-wrapper {}
@@ -125,7 +125,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 .w3-content .w3-content-item {
     margin-top: 1.6em;
 }
-.w3-content .w3-content-item.first {
+.w3-content .w3-content-item.w3-first {
     margin-top: 0;
 }
 .w3-user-flash-content-summary-wrapper {}
@@ -146,7 +146,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
     margin: 0;
     padding-left: .2em;
 }
-.w3-content ul.w3-breadcrumbs li.first {
+.w3-content ul.w3-breadcrumbs li.w3-first {
     padding-left: 0;
 }
 .w3-content ul.w3-breadcrumbs li a {
@@ -172,8 +172,70 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 }
 /*space between page-label and the rest of the content*/
 .w3-content .w3-after-page-label {
-    height: 1.2em;
+    height: 1.4em;
 }
+
+
+.w3-content .w3-pre-grid-action-bar {
+	float: right;
+	margin-bottom: .6em;
+	/*margin-bottom: 2.9em;*/ /*without float right: height of links = ~1.5+.4+.4=2.3; 0.6 is space between pre-grid & grid*/
+}
+.w3-content .w3-pre-grid-action-bar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.w3-content .w3-pre-grid-action-bar ul li {
+    float: left;
+    margin: 0 0 0 .3em;
+    padding: 0;
+}
+.w3-content .w3-pre-grid-action-bar ul li.w3-first {
+    margin-left: 0;
+}
+/*inspired from http://jqueryui.com/themeroller/ 'Open Dialog' link*/
+.w3-content .w3-pre-grid-action-bar ul li a {
+    display: block;
+    padding: .4em 1em;
+}
+.w3-content .w3-pre-grid-action-bar ul li a.w3-with-icon {
+    padding-left: 20px; /*icon's size is 16px*/
+}
+.w3-content .w3-pre-grid-action-bar ul li a:hover {
+    text-decoration: none;
+}
+
+
+.w3-content .w3-data-grid {
+    padding: 1em 1.4em; /*just like ui-tabs-panel*/
+}
+
+.w3-data-grid .w3-grid-row {
+    margin-top: .8em;
+}
+.w3-data-grid .w3-grid-row.w3-first {
+    margin-top: 0;
+}
+
+/* left cell */
+.w3-grid-row .w3-grid-row-label {
+    /*color: #222222 is from ui-widget-content*/
+    float: left;
+    font-family: sans-serif; /*is default in most browsers*/
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    width: 12em;
+}
+
+/* right cell */
+.w3-grid-row .w3-grid-row-value {
+    float: left;
+    margin-left: 1em;
+    font-size: 1.2em;
+}
+
 
 /* form and main-form are looking the same... differentiate it for novices*/
 .w3-content .w3-main-form-wrapper {
@@ -189,7 +251,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 .w3-main-form .w3-form-row, .w3-form .w3-form-row {
     margin-top: .8em;
 }
-.w3-main-form .w3-form-row.first, .w3-form .w3-form-row.first {
+.w3-main-form .w3-form-row.w3-first, .w3-form .w3-form-row.w3-first {
     margin-top: 0;
 }
 
@@ -212,30 +274,45 @@ body.w3-layout-sidebar1-content-sidebar2 {}
     font-size: 1.2em;
 }
 .w3-form-row .w3-form-row-input input.w3-input-text,
+.w3-form-row .w3-form-row-input select.w3-input-text,
 .w3-form-row .w3-form-row-input textarea.w3-input-text {
     font-size: 1.3em;
 }
 .w3-form-row .w3-form-row-input .w3-form-row-text input.w3-input-text,
+.w3-form-row .w3-form-row-input .w3-form-row-text select.w3-input-text,
 .w3-form-row .w3-form-row-input .w3-form-row-text textarea.w3-input-text {
     font-size: 1.08333em;
 }
 
 .w3-form-row-input input.w3-input-text,
+.w3-form-row-input select.w3-input-text,
 .w3-form-row-input textarea.w3-input-text {
     font-family: cursive;
     padding: .3em;
     width: 16em;
 }
+.w3-form-row-input select.w3-input-text {
+    width: 16.7em; /*.7 in ff, .75 in ie, .65 in chrome*/
+}
 .w3-form-row-input input.w3-input-text.w3-input-w50percents,
+.w3-form-row-input select.w3-input-text.w3-input-w50percents,
 .w3-form-row-input textarea.w3-input-text.w3-input-w50percents {
     width: 8em;
 }
+.w3-form-row-input select.w3-input-text.w3-input-w50percents {
+    width: 8.7em;
+}
 .w3-form-row-input input.w3-input-text.w3-input-w200percents,
+.w3-form-row-input select.w3-input-text.w3-input-w200percents,
 .w3-form-row-input textarea.w3-input-text.w3-input-w200percents {
     width: 32em;
 }
+.w3-form-row-input select.w3-input-text.w3-input-w200percents {
+    width: 32.7em;
+}
 /* manage-content-form have default font-family to look similar to the end look (on the post page) */
 .w3-mc-form .w3-form-row-input input.w3-input-text
+.w3-mc-form .w3-form-row-input select.w3-input-text
 .w3-mc-form .w3-form-row-input textarea.w3-input-text {
     font-family: sans-serif;
 }
@@ -267,4 +344,8 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 .w3-icon-left {
     float: left;
     margin-right: .3em;
+}
+.w3-inner-icon-left {
+    margin-left: -18px; /*in the middle between link text and the left border*/
+	position: absolute;
 }

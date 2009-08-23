@@ -21,8 +21,8 @@
 <?php echo CHtml::encode($model->getAttributeLabel('email')); ?>:
 <?php echo CHtml::encode($model->email); ?>
 <br/>
-<?php echo CHtml::encode($model->getAttributeLabel('displayName')); ?>:
-<?php echo CHtml::encode($model->displayName); ?>
+<?php echo CHtml::encode($model->getAttributeLabel('screenName')); ?>:
+<?php echo CHtml::encode($model->screenName); ?>
 <br/>
 <?php echo CHtml::encode($model->getAttributeLabel('language')); ?>:
 <?php echo CHtml::encode($model->language); ?>

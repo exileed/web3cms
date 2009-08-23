@@ -11,14 +11,14 @@
     <th><?php echo $sort->link('username'); ?></th>
     <th><?php echo $sort->link('password'); ?></th>
     <th><?php echo $sort->link('email'); ?></th>
-    <th><?php echo $sort->link('displayName'); ?></th>
+    <th><?php echo $sort->link('screenName'); ?></th>
     <th><?php echo $sort->link('language'); ?></th>
     <th><?php echo $sort->link('theme'); ?></th>
     <th><?php echo $sort->link('accessType'); ?></th>
     <th><?php echo $sort->link('accessLevel'); ?></th>
     <th><?php echo $sort->link('isActive'); ?></th>
     <th><?php echo $sort->link('createdOn'); ?></th>
-	<th>Actions</th>
+    <th>Actions</th>
   </tr>
 <?php foreach($models as $n=>$model): ?>
   <tr class="<?php echo $n%2?'even':'odd';?>">
@@ -26,7 +26,7 @@
     <td><?php echo CHtml::encode($model->username); ?></td>
     <td><?php echo CHtml::encode($model->password); ?></td>
     <td><?php echo CHtml::encode($model->email); ?></td>
-    <td><?php echo CHtml::encode($model->displayName); ?></td>
+    <td><?php echo CHtml::encode($model->screenName); ?></td>
     <td><?php echo CHtml::encode($model->language); ?></td>
     <td><?php echo CHtml::encode($model->theme); ?></td>
     <td><?php echo CHtml::encode($model->accessType); ?></td>
@@ -36,10 +36,10 @@
     <td>
       <?php echo CHtml::link('Update',array('update','id'=>$model->id)); ?>
       <?php echo CHtml::linkButton('Delete',array(
-      	  'submit'=>'',
-      	  'params'=>array('command'=>'delete','id'=>$model->id),
-      	  'confirm'=>"Are you sure to delete #{$model->id}?")); ?>
-	</td>
+          'submit'=>'',
+          'params'=>array('command'=>'delete','id'=>$model->id),
+          'confirm'=>"Are you sure to delete #{$model->id}?")); ?>
+    </td>
   </tr>
 <?php endforeach; ?>
 </table>

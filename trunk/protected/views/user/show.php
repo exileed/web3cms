@@ -1,73 +1,79 @@
-<h2>View user <?php echo $model->id; ?></h2>
+<?php MParams::setPageLabel(Yii::t('t','Profile of member "{screenName}"',array('{screenName}'=>$model->screenName))); ?>
+<?php MUserFlash::setSidebarInfo(Yii::t('t','Some useful links will be added here soon.')); ?>
+<?php $this->widget('application.components.WContentHeader',array(
+    'breadcrumbs'=>array(
+        array(
+            'url'=>CHtml::normalizeUrl(array($this->getId().'/'.$this->getAction()->getId())),
+            'active'=>true
+        ),
+    ),
+)); ?>
+<?php if($me || $admin): ?>
+<div class="w3-pre-grid-action-bar ui-widget">
+  <ul>
+    <li class="ui-state-default ui-corner-all w3-first w3-last"><?php echo CHtml::link('<span class="w3-inner-icon-left ui-icon ui-icon-pencil"></span>'.Yii::t('t',$me ? 'Edit my profile' : 'Edit profile'),$me ? array('user/update') : array('user/update','id'=>$model->id),array('class'=>'w3-with-icon')); ?></li>
+  </ul>
+</div>
+<div class="clear">&nbsp;</div>
+<?php Yii::app()->getClientScript()->registerScript('w3FormButton',
+"jQuery('.w3-pre-grid-action-bar ul li a').hover(
+    function(){ jQuery(this).parent().removeClass('ui-state-default').addClass('ui-state-hover'); }, 
+    function(){ jQuery(this).parent().removeClass('ui-state-hover').addClass('ui-state-default'); } 
+)
+.mousedown(function(){ jQuery(this).parent().addClass('ui-state-active'); })
+.mouseup(function(){ jQuery(this).parent().removeClass('ui-state-active'); });"); ?>
 
-<div class="actionBar">
-[<?php echo CHtml::link('user List',array('list')); ?>]
-[<?php echo CHtml::link('New user',array('create')); ?>]
-[<?php echo CHtml::link('Update user',array('update','id'=>$model->id)); ?>]
-[<?php echo CHtml::linkButton('Delete user',array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure?')); ?>
-]
-[<?php echo CHtml::link('Manage user',array('admin')); ?>]
+<?php endif; ?>
+<div class="w3-data-grid ui-widget-content ui-corner-all">
+
+<?php if($me || $admin): ?>
+<div class="w3-grid-row w3-first">
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('username')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode($model->username); ?></div>
+  <div class="clear">&nbsp;</div>
+</div>
+<div class="w3-grid-row">
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('email')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode($model->email); ?></div>
+  <div class="clear">&nbsp;</div>
+</div>
+<?php endif; ?>
+<div class="w3-grid-row<?php echo ($me || $admin) ? '' : ' w3-first'; ?>">
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('screenName')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode($model->screenName); ?></div>
+  <div class="clear">&nbsp;</div>
+</div>
+<div class="w3-grid-row">
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('language')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode($model->getAttributeView('language')); ?></div>
+  <div class="clear">&nbsp;</div>
+</div>
+<div class="w3-grid-row">
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('cssTheme')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode($model->getAttributeView('cssTheme')); ?></div>
+  <div class="clear">&nbsp;</div>
+</div>
+<?php if($me || $admin): ?>
+<div class="w3-grid-row">
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('accessType')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode($model->getAttributeView('accessType')); ?></div>
+  <div class="clear">&nbsp;</div>
+</div>
+<div class="w3-grid-row">
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('accessLevel')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode($model->accessLevel); ?></div>
+  <div class="clear">&nbsp;</div>
+</div>
+<div class="w3-grid-row">
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('isActive')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode($model->getAttributeView('isActive')); ?></div>
+  <div class="clear">&nbsp;</div>
+</div>
+<?php endif; ?>
+<div class="w3-grid-row">
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('createdOn')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode($model->createdOn); ?></div>
+  <div class="clear">&nbsp;</div>
 </div>
 
-<table class="dataGrid">
-<tr>
-	<th class="label"><?php echo CHtml::encode($model->getAttributeLabel('username')); ?>
-</th>
-    <td><?php echo CHtml::encode($model->username); ?>
-</td>
-</tr>
-<tr>
-	<th class="label"><?php echo CHtml::encode($model->getAttributeLabel('password')); ?>
-</th>
-    <td><?php echo CHtml::encode($model->password); ?>
-</td>
-</tr>
-<tr>
-	<th class="label"><?php echo CHtml::encode($model->getAttributeLabel('email')); ?>
-</th>
-    <td><?php echo CHtml::encode($model->email); ?>
-</td>
-</tr>
-<tr>
-	<th class="label"><?php echo CHtml::encode($model->getAttributeLabel('displayName')); ?>
-</th>
-    <td><?php echo CHtml::encode($model->displayName); ?>
-</td>
-</tr>
-<tr>
-	<th class="label"><?php echo CHtml::encode($model->getAttributeLabel('language')); ?>
-</th>
-    <td><?php echo CHtml::encode($model->language); ?>
-</td>
-</tr>
-<tr>
-	<th class="label"><?php echo CHtml::encode($model->getAttributeLabel('theme')); ?>
-</th>
-    <td><?php echo CHtml::encode($model->theme); ?>
-</td>
-</tr>
-<tr>
-	<th class="label"><?php echo CHtml::encode($model->getAttributeLabel('accessType')); ?>
-</th>
-    <td><?php echo CHtml::encode($model->accessType); ?>
-</td>
-</tr>
-<tr>
-	<th class="label"><?php echo CHtml::encode($model->getAttributeLabel('accessLevel')); ?>
-</th>
-    <td><?php echo CHtml::encode($model->accessLevel); ?>
-</td>
-</tr>
-<tr>
-	<th class="label"><?php echo CHtml::encode($model->getAttributeLabel('isActive')); ?>
-</th>
-    <td><?php echo CHtml::encode($model->isActive); ?>
-</td>
-</tr>
-<tr>
-	<th class="label"><?php echo CHtml::encode($model->getAttributeLabel('createdOn')); ?>
-</th>
-    <td><?php echo CHtml::encode($model->createdOn); ?>
-</td>
-</tr>
-</table>
+</div>

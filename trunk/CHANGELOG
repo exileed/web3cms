@@ -2,8 +2,56 @@
                    Web3CMS Change Log
                    ==================
 
-Version 1.0.6.r5 June 22, 2009
-------------------------------
+Version 1.0.8.r7 (i18n) August 23, 2009
+---------------------------------------
+- Upg: from Yii 1.0.7 to Yii 1.0.8
+- Mod: small to big updates in all files
+- New: internationalization
+	 language packs are in protected/messages/en, protected/messages/ru
+	 set language is in _CController::init()
+	 translate with file_put_contents('t.txt',iconv('windows-1251','UTF-8','A String'));
+- New: MParams::i18n() : translates necessary string params
+- Mod: protected/data/schema.mysql.sql table User
+- Mod: protected/data/schema.mysql.sql table UserDetails
+- Mod: models/User.php
+- Mod: models/UserDetails.php
+- Mod: controllers/UserController.php
+- New: User actions : register, confirmEmail, show, update
+- Mod: _CController::init() : set user defined cssTheme & language
+- Mod: css/main.css : few minor updates
+- Rnm: __init to W3Init (finally;)
+
+Version 1.0.7.r6 (User) July 19, 2009
+-------------------------------------
+- Upg: from Yii 1.0.6 to Yii 1.0.7
+- Mod: small to big updates in all files
+- Mod: config/main.php and config/params.php
+- New: _CHtml extends CHtml : used in view files to set ui error css class
+- New: protected/data/schema.mysql.sql table User
+- New: protected/data/schema.mysql.sql table UserDetails
+- New: models/User.php
+- New: models/UserDetails.php
+- New: controllers/UserController.php
+- Rnm: models/LoginForm.php renamed to UserLoginForm.php
+- Rnm: components/UserIdentity.php renamed to _CUserIdentity.php
+- Mod: strong updates in UserLoginForm and _CUserIdentity
+	 login moved from SiteController to UserController
+	 login with username or email (see params)
+- New: components/MParams.php : manage parameters
+- New: components/MPath.php : manage path
+- Mod: MLayout.php
+	 some methods moved to MParams
+	 cssThemeExists() moved to MPath
+	 expand on existing methods (e.g. add decrementNumberOfItems...())
+- Mod: _CController.php : most methods moved to MParams
+- Rnm: _init to __init
+- Mod: __init::params(); init moved to MParams::load(), MLayout::load()
+- Mod: css/main.css : few minor updates
+- New: css/ui.css : use this to redefine css from jQuery css framework
+- Nxt: next is to expand user controller methods and create backend (admin).
+
+Version 1.0.6.r5 (Layout) June 22, 2009
+---------------------------------------
 - Upg: from Yii 1.0.5 to Yii 1.0.6
 - Mod: index.php : path to yii changed from /yii/ to /yii-1.0.6.r1102/
 ! Inf: Widgets suppose to begin with 'W'

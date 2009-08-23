@@ -7,12 +7,12 @@
  */
 class UserLoginForm extends CFormModel
 {
-    public $username;
-	public $email;
-    public $usernameOrEmail;
-	public $password;
+    public $email;
+    public $password;
     public $rememberMe;
-	public static $loginWithField;
+    public $username;
+    public $usernameOrEmail;
+    public static $loginWithField;
 
     public function __construct($attributes=array(),$scenario='')
     {
@@ -20,49 +20,51 @@ class UserLoginForm extends CFormModel
         self::$loginWithField=$this->getLoginWithField();
     }
 
-	/**
-	 * Declares the validation rules.
-	 * The rules state that username and password are required,
-	 * and password needs to be authenticated.
-	 */
-	public function rules()
-	{
-		return array(
-			// username or email or usernameOrEmail is required
+    /**
+     * Declares the validation rules.
+     * The rules state that username and password are required,
+     * and password needs to be authenticated.
+     */
+    public function rules()
+    {
+        return array(
+            // username or email or usernameOrEmail is required
             array(self::getLoggingWithField(), 'required'),
             // password is required
-			array('password', 'required'),
-			// password needs to be authenticated
-			array('password', 'authenticate'),
-		);
-	}
+            array('password', 'required'),
+            // password needs to be authenticated
+            array('password', 'authenticate'),
+        );
+    }
 
-	/**
-	 * Declares the attribute labels.
+    /**
+     * Declares the attribute labels.
      * If an attribute is not delcared here, it will use the default label
      * generation algorithm to get its label.
-	 */
-	public function attributeLabels()
-	{
-		return array(
-            'usernameOrEmail'=>'Username or Email',
-			'rememberMe'=>'Remember me next time',
-		);
-	}
+     */
+    public function attributeLabels()
+    {
+        return array(
+            'rememberMe'=>Yii::t('t','Remember me on this computer'),
+            'password'=>Yii::t('t','Password'),
+            'username'=>Yii::t('t','Username'),
+            'usernameOrEmail'=>Yii::t('t','Username or email'),
+        );
+    }
 
-	/**
-	 * Authenticates the password.
-	 * This is the 'authenticate' validator as declared in rules().
-	 */
-	public function authenticate($attribute,$params)
-	{
-		if(!$this->hasErrors())  // we only want to authenticate when no input errors
-		{
-			$identity=new _CUserIdentity($this->{self::getLoggingWithField()},$this->password);
-			$identity->authenticate();
-			switch($identity->errorCode)
-			{
-				case _CUserIdentity::ERROR_NONE:
+    /**
+     * Authenticates the password.
+     * This is the 'authenticate' validator as declared in rules().
+     */
+    public function authenticate($attribute,$params)
+    {
+        if(!$this->hasErrors())  // we only want to authenticate when no input errors
+        {
+            $identity=new _CUserIdentity($this->{self::getLoggingWithField()},$this->password);
+            $identity->authenticate();
+            switch($identity->errorCode)
+            {
+                case _CUserIdentity::ERROR_NONE:
                     // if user is already logged in
                     if(!Yii::app()->user->isGuest)
                     {
@@ -73,24 +75,37 @@ class UserLoginForm extends CFormModel
                             Yii::app()->getSession()->open();
                     }
                     // remember for 30 days. makes sence only if auto-login is allowed
-                    $duration=($this->rememberMe && Yii::app()->user->allowAutoLogin) ? 3600*24*30 : 0;
+                    $duration=(Yii::app()->user->allowAutoLogin && $this->rememberMe) ? 3600*24*30 : 0;
                     // log user in and save in session all appended data
-					Yii::app()->user->login($identity,$duration);
-					break;
-				case _CUserIdentity::ERROR_USERNAME_INVALID:
-                    if(self::getLoggingWithField()=='username')
-                        $this->addError('username','Username is incorrect.');
-                    else if(self::getLoggingWithField()=='email')
-                        $this->addError('email','Email is incorrect.');
-                    else if(self::getLoggingWithField()=='usernameOrEmail')
-					    $this->addError('usernameOrEmail','Username or email is incorrect.');
-					break;
-				default: // _CUserIdentity::ERROR_PASSWORD_INVALID
-					$this->addError('password','Password is incorrect.');
-					break;
-			}
-		}
-	}
+                    Yii::app()->user->login($identity,$duration);
+                    break;
+                case _CUserIdentity::ERROR_USERNAME_INVALID:
+                    if(self::getLoggingWithField()==='username')
+                        $this->addError('username',Yii::t('t','Username is incorrect.'));
+                    else if(self::getLoggingWithField()==='email')
+                        $this->addError('email',Yii::t('t','Email is incorrect.'));
+                    else if(self::getLoggingWithField()==='usernameOrEmail')
+                        $this->addError('usernameOrEmail',Yii::t('t','Username or email is incorrect.'));
+                    break;
+                case _CUserIdentity::ERROR_ACCOUNT_INACTIVE:
+                    // set the error message
+                    MUserFlash::setTopError(Yii::t('user',
+                        'We are sorry, but your member account is marked as "inactive". Inactive member accounts are temporarely inaccessible. {contactLink}.',
+                        array('{contactLink}'=>_CHtml::link(Yii::t('t','Contact',array(0)),array('/site/contact')))
+                    ));
+                    // add to username (first field in the login form) error css class
+                    // and make the validate() to fail
+                    $attribute=self::getLoggingWithField();
+                    $attribute!=='username' && $attribute!=='email' && $attribute!=='usernameOrEmail' && ($attribute='username');
+                    $this->addError($attribute,'');
+                    break;
+                case _CUserIdentity::ERROR_PASSWORD_INVALID:
+                default:
+                    $this->addError('password',Yii::t('t','Password is incorrect.'));
+                    break;
+            }
+        }
+    }
 
     /**
     * Which field to log user in with

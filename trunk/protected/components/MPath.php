@@ -5,11 +5,11 @@
 class MPath
 {
     /**
-    * Check whether a css theme exists.
-    * 
-    * @param string $theme
-    * @return bool
-    */
+     * Check whether a css theme exists.
+     * 
+     * @param string $theme
+     * @return bool
+     */
     public static function cssThemeExists($theme=null)
     {
         if(empty($theme))

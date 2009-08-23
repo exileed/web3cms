@@ -2,9 +2,9 @@
 <ul class="w3-breadcrumbs">
 <?php foreach($breadcrumbs as $n=>$item): ?>
 <?php if(!$n && $item['active']): ?>
-    <li class="first active"><?php echo CHtml::link($item['label'],$item['url']); ?></li>
+    <li class="w3-first active"><?php echo CHtml::link($item['label'],$item['url']); ?></li>
 <?php elseif(!$n): ?>
-    <li class="first"><?php echo CHtml::link($item['label'].'<span>&rsaquo;&rsaquo;</span>',$item['url']); ?></li>
+    <li class="w3-first"><?php echo CHtml::link($item['label'].'<span>&rsaquo;&rsaquo;</span>',$item['url']); ?></li>
 <?php elseif($item['active']): ?>
     <li class="active"><?php echo CHtml::link($item['label'],$item['url']); ?></li>
 <?php else: ?>

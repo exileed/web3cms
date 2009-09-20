@@ -2,14 +2,40 @@
                    Web3CMS Change Log
                    ==================
 
+Version 1.0.9.r8 (backend) September 20, 2009
+---------------------------------------------
+- Upg: from Yii 1.0.8 to Yii 1.0.9
+- Mod: small to big updates in most files
+- New: _CActiveRecord :  - all models must extend from this class instead of CActiveRecord
+       add 'W3' prefix to all database tables
+- Mod: protected/data/schema.mysql.sql
+- Mod: rename models' tableName() function into _tableName()
+- Mod: User actions : show, update
+- New: User actions : updateInterface
+- New: protected/backend/* : admin side
+- New: .htaccess : redirect /admin to /backend.php
+! Inf: don't forget that backend logs are in protected/backend/runtime
+- New: components/MVariable.php
+       overloading class to share variables between classes and for using in the views
+       initialize in _CController::init() with $this->var=new MVariable;
+       access it with Yii::app()->controller->var (or $this->var in the views)
+- Mod: _CUserIdentity : add new type of error: ERROR_IS_NOT_ADMINISTRATOR
+- Mod: UserLoginForm : add processing of new type of error
+- Fix: MParams::i18n() did not translate default values (fixed)
+- Mod: models/User.php : lots of new features, including isAdministrator()
+- New: components/W3.php : core class, currently is very simple
+- New: components/_CWebUser
+       override restoreFromCookie() to block users that got deactivated (by admin)
+- Mod: protected/messages : translation is getting updated on every revision
+
 Version 1.0.8.r7 (i18n) August 23, 2009
 ---------------------------------------
 - Upg: from Yii 1.0.7 to Yii 1.0.8
 - Mod: small to big updates in all files
 - New: internationalization
-	 language packs are in protected/messages/en, protected/messages/ru
-	 set language is in _CController::init()
-	 translate with file_put_contents('t.txt',iconv('windows-1251','UTF-8','A String'));
+       language packs are in protected/messages/en, protected/messages/ru
+       set language is in _CController::init()
+       translate with file_put_contents('t.txt',iconv('windows-1251','UTF-8','A String'));
 - New: MParams::i18n() : translates necessary string params
 - Mod: protected/data/schema.mysql.sql table User
 - Mod: protected/data/schema.mysql.sql table UserDetails
@@ -35,14 +61,14 @@ Version 1.0.7.r6 (User) July 19, 2009
 - Rnm: models/LoginForm.php renamed to UserLoginForm.php
 - Rnm: components/UserIdentity.php renamed to _CUserIdentity.php
 - Mod: strong updates in UserLoginForm and _CUserIdentity
-	 login moved from SiteController to UserController
-	 login with username or email (see params)
+       login moved from SiteController to UserController
+       login with username or email (see params)
 - New: components/MParams.php : manage parameters
 - New: components/MPath.php : manage path
 - Mod: MLayout.php
-	 some methods moved to MParams
-	 cssThemeExists() moved to MPath
-	 expand on existing methods (e.g. add decrementNumberOfItems...())
+       some methods moved to MParams
+       cssThemeExists() moved to MPath
+       expand on existing methods (e.g. add decrementNumberOfItems...())
 - Mod: _CController.php : most methods moved to MParams
 - Rnm: _init to __init
 - Mod: __init::params(); init moved to MParams::load(), MLayout::load()

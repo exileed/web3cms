@@ -39,8 +39,8 @@
 <?php echo CHtml::encode($model->getAttributeLabel('isActive')); ?>:
 <?php echo CHtml::encode($model->isActive); ?>
 <br/>
-<?php echo CHtml::encode($model->getAttributeLabel('createdOn')); ?>:
-<?php echo CHtml::encode($model->createdOn); ?>
+<?php echo CHtml::encode($model->getAttributeLabel('createDate')); ?>:
+<?php echo CHtml::encode($model->createDate); ?>
 <br/>
 
 </div>

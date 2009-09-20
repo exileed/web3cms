@@ -6,14 +6,13 @@ class MPath
 {
     /**
      * Check whether a css theme exists.
-     * 
      * @param string $theme
      * @return bool
      */
-    public static function cssThemeExists($theme=null)
+    public static function interfaceExists($interface=null)
     {
-        if(empty($theme))
+        if(empty($interface))
             return false;
-        return file_exists(dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.'jquery-ui-'.MParams::jqueryUIVersion.'.custom.css');
+        return file_exists(dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'ui'.DIRECTORY_SEPARATOR.$interface.DIRECTORY_SEPARATOR.'jquery-ui-'.MParams::jqueryUIVersion.'.custom.css');
     }
 }

@@ -78,6 +78,13 @@ class UserLoginForm extends CFormModel
                     $duration=(Yii::app()->user->allowAutoLogin && $this->rememberMe) ? 3600*24*30 : 0;
                     // log user in and save in session all appended data
                     Yii::app()->user->login($identity,$duration);
+                    // set user preferences (for welcome message, and so on)
+                    if(isset(Yii::app()->user->interface))
+                        // set user preferred interface
+                        W3::setInterface(Yii::app()->user->interface);
+                    if(isset(Yii::app()->user->language))
+                        // set user preferred language
+                        W3::setLanguage(Yii::app()->user->language);
                     break;
                 case _CUserIdentity::ERROR_USERNAME_INVALID:
                     if(self::getLoggingWithField()==='username')
@@ -87,12 +94,28 @@ class UserLoginForm extends CFormModel
                     else if(self::getLoggingWithField()==='usernameOrEmail')
                         $this->addError('usernameOrEmail',Yii::t('t','Username or email is incorrect.'));
                     break;
-                case _CUserIdentity::ERROR_ACCOUNT_INACTIVE:
+                case _CUserIdentity::ERROR_ACCOUNT_IS_INACTIVE:
                     // set the error message
                     MUserFlash::setTopError(Yii::t('user',
                         'We are sorry, but your member account is marked as "inactive". Inactive member accounts are temporarely inaccessible. {contactLink}.',
-                        array('{contactLink}'=>_CHtml::link(Yii::t('t','Contact',array(0)),array('/site/contact')))
+                        array('{contactLink}'=>_CHtml::link(Yii::t('t','Contact',array(0)),array('site/contact')))
                     ));
+                    // add to username (first field in the login form) error css class
+                    // and make the validate() to fail
+                    $attribute=self::getLoggingWithField();
+                    $attribute!=='username' && $attribute!=='email' && $attribute!=='usernameOrEmail' && ($attribute='username');
+                    $this->addError($attribute,'');
+                    break;
+                case _CUserIdentity::ERROR_IS_NOT_ADMINISTRATOR:
+                    // set the error message
+                    MUserFlash::setTopError(Yii::t('user',
+                        'We are sorry, but your access type is {accessType}. Required access type: {requiredAccessType}.',
+                        array(
+                            '{accessType}'=>Yii::app()->controller->var->userAccessType,
+                            '{requiredAccessType}'=>Yii::t('t',User::ADMINISTRATOR_T)
+                        )
+                    ));
+                    unset(Yii::app()->controller->var->userAccessType); // we do not need this any more
                     // add to username (first field in the login form) error css class
                     // and make the validate() to fail
                     $attribute=self::getLoggingWithField();

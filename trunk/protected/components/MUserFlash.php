@@ -93,7 +93,7 @@ class MUserFlash
             self::topInfo,self::topError,self::topSuccess
         );
         if($id===true || !in_array($id,$vals))
-            Yii::log(Yii::t('system',
+            Yii::log(W3::t('system',
                 'Uncommon parameter in method call: {method}.',
                 array('{method}'=>__METHOD__.'('.var_export($id,true).')')
             ),'w3','info');

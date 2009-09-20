@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Initialize
+ * Initialize Site
  */
 class W3Init
 {
@@ -33,7 +32,7 @@ class W3Init
     /**
      * Initialize css.
      */
-    public function css()
+    public static function css()
     {
         $cs=Yii::app()->getClientScript();
         // main css
@@ -45,9 +44,11 @@ class W3Init
         // all jquery plugins css
         //$cs->registerCssFile(Yii::app()->request->baseUrl.'/css/jquery-1.3.x.plugins.css');
         // jquery-ui
-        $cs->registerCssFile(Yii::app()->request->baseUrl.'/css/themes/'.MParams::getCssTheme().'/jquery-ui-'.MParams::jqueryUIVersion.'.custom.css');
+        if(MParams::getRegisterJqueryUI() && MPath::interfaceExists(MParams::getInterface()))
+            $cs->registerCssFile(Yii::app()->request->baseUrl.'/css/ui/'.MParams::getInterface().'/jquery-ui-'.MParams::jqueryUIVersion.'.custom.css');
         // use this css if you want to globally redefine jquery-ui css framework classes
-        if(filesize(dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'ui.css'))
+        $redefineJqueryUI=dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'ui.css';
+        if(file_exists($redefineJqueryUI) && filesize($redefineJqueryUI))
             $cs->registerCssFile(Yii::app()->request->baseUrl.'/css/ui.css');
     }
 
@@ -64,7 +65,7 @@ class W3Init
     /**
      * Initialize javascripts.
      */
-    public function script()
+    public static function script()
     {
         $cs=Yii::app()->getClientScript();
         // jquery must be always loaded

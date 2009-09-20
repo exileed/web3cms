@@ -1,13 +1,37 @@
 <?php
-
 /**
- * _CHtml
- * Add and redefine html methods to Yii core class CHtml
+ * _CHtml class file
+ * 
+ * Override some functions of Yii core class CHtml.
  */
 class _CHtml extends CHtml
 {
     public static $errorCss='ui-state-error';
 
+    /* parent with a replacement for {jqueryUIScreenshot}*/
+    public static function radioButtonList($name,$select,$data,$htmlOptions=array())
+    {
+        $template=isset($htmlOptions['template'])?$htmlOptions['template']:'{input} {label}';
+        $separator=isset($htmlOptions['separator'])?$htmlOptions['separator']:"<br/>\n";
+        unset($htmlOptions['template'],$htmlOptions['separator']);
+
+        $items=array();
+        $baseID=self::getIdByName($name);
+        $id=0;
+        $hasJqueryUIScreenshot=strpos($template,'{jqueryUIScreenshot}')!==false;///
+        foreach($data as $value=>$label)
+        {
+            $jqueryUIScreenshot=$hasJqueryUIScreenshot?self::image(Yii::app()->request->baseUrl.'/css/ui/'.$value.'/screenshot.png',$label,array('height'=>105,'title'=>$label)):'';///
+            $checked=!strcmp($value,$select);
+            $htmlOptions['value']=$value;
+            $htmlOptions['id']=$baseID.'_'.$id++;
+            $option=self::radioButton($name,$checked,$htmlOptions);
+            $label=self::label($label,$htmlOptions['id']);
+            $items[]=strtr($template,array('{input}'=>$option,'{label}'=>$label,'{jqueryUIScreenshot}'=>$jqueryUIScreenshot));//
+        }
+        return implode($separator,$items);
+    }
+    
     /* parent without error css class */
     public static function activeLabel($model,$attribute,$htmlOptions=array())
     {
@@ -71,6 +95,20 @@ class _CHtml extends CHtml
                 $htmlOptions['name'].='[]';
         }
         return self::tag('select',$htmlOptions,$options);
+    }
+    
+    /* 100% parent */
+    public static function activeRadioButtonList($model,$attribute,$data,$htmlOptions=array())
+    {
+        self::resolveNameID($model,$attribute,$htmlOptions);
+        $selection=$model->$attribute;
+        if($model->hasErrors($attribute))
+            self::addErrorCss($htmlOptions);
+        $name=$htmlOptions['name'];
+        unset($htmlOptions['name']);
+
+        return self::hiddenField($name,'',array('id'=>self::ID_PREFIX.$htmlOptions['id']))
+            . self::radioButtonList($name,$selection,$data,$htmlOptions);
     }
 
     /* currently no need to wrap label in <p> and the whole thing in <div> */

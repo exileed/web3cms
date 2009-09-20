@@ -17,7 +17,7 @@
     <th><?php echo $sort->link('accessType'); ?></th>
     <th><?php echo $sort->link('accessLevel'); ?></th>
     <th><?php echo $sort->link('isActive'); ?></th>
-    <th><?php echo $sort->link('createdOn'); ?></th>
+    <th><?php echo $sort->link('createDate'); ?></th>
     <th>Actions</th>
   </tr>
 <?php foreach($models as $n=>$model): ?>
@@ -32,7 +32,7 @@
     <td><?php echo CHtml::encode($model->accessType); ?></td>
     <td><?php echo CHtml::encode($model->accessLevel); ?></td>
     <td><?php echo CHtml::encode($model->isActive); ?></td>
-    <td><?php echo CHtml::encode($model->createdOn); ?></td>
+    <td><?php echo CHtml::encode($model->createDate); ?></td>
     <td>
       <?php echo CHtml::link('Update',array('update','id'=>$model->id)); ?>
       <?php echo CHtml::linkButton('Delete',array(

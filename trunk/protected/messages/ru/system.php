@@ -2,7 +2,9 @@
 
 // i18n - Russian Language Pack (System Messages)
 return array(
+    'Available interfaces: {availableInterfaces}.' => 'Доступные внешние виды: {availableInterfaces}.', /*'Р”РѕСЃС‚СѓРїРЅС‹Рµ РІРЅРµС€РЅРёРµ РІРёРґС‹: {availableInterfaces}.'*/
     'Available languages: {availableLanguages}.' => 'Доступные языки: {availableLanguages}.', /*'Р”РѕСЃС‚СѓРїРЅС‹Рµ СЏР·С‹РєРё: {availableLanguages}.'*/
+    'Could not load {model} model. Model ID: {modelId}. Method called: {method}.' => 'Не удалось загрузить модель {model}. Модель ID: {modelId}. Вызывался метод: {method}.', /*'РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ РјРѕРґРµР»СЊ {model}. РњРѕРґРµР»СЊ ID: {modelId}. Р’С‹Р·С‹РІР°Р»СЃСЏ РјРµС‚РѕРґ: {method}.'*/
     'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.' => 'Не смог сохранить атрибуты модели {model}. Модель ID: {modelId}. Вызывался метод: {method}.', /*'РќРµ СЃРјРѕРі СЃРѕС…СЂР°РЅРёС‚СЊ Р°С‚СЂРёР±СѓС‚С‹ РјРѕРґРµР»Рё {model}. РњРѕРґРµР»СЊ ID: {modelId}. Р’С‹Р·С‹РІР°Р»СЃСЏ РјРµС‚РѕРґ: {method}.'*/
     'Failed creating UserDetails record. Member ID: {userId}. Method called: {method}.' => 'Не удалось создать запись UserDetails. ID участника: {userId}. Вызывался метод: {method}.', /*'РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ Р·Р°РїРёСЃСЊ UserDetails. ID СѓС‡Р°СЃС‚РЅРёРєР°: {userId}. Р’С‹Р·С‹РІР°Р»СЃСЏ РјРµС‚РѕРґ: {method}.'*/
     'Incorrect parameter in method call: {method}.' => 'Неверный параметер в вызове метода: {method}.', /*'РќРµРІРµСЂРЅС‹Р№ РїР°СЂР°РјРµС‚РµСЂ РІ РІС‹Р·РѕРІРµ РјРµС‚РѕРґР°: {method}.'*/

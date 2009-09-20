@@ -1,5 +1,6 @@
 <?php MParams::setPageLabel(Yii::t('t',$me ? 'Edit my profile' : 'Edit profile')); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($model)); ?>
+<?php MUserFlash::setTopError(_CHtml::errorSummary($model->details)); ?>
 <?php MUserFlash::setSidebarInfo(Yii::t('user','Some useful links will be added here soon.')); ?>
 <?php $this->widget('application.components.WContentHeader',array(
     'breadcrumbs'=>array(
@@ -20,6 +21,13 @@
         ),
     ),
 )); ?>
+<div class="w3-pre-grid-action-bar ui-widget">
+  <ul>
+    <li class="ui-state-default ui-corner-all w3-first w3-last"><?php echo CHtml::link('<span class="w3-inner-icon-left ui-icon ui-icon-person"></span>'.Yii::t('t',$me ? 'My profile' : 'View profile'),$me ? array('user/show') : array('user/show','id'=>$model->id),array('class'=>'w3-with-icon')); ?></li>
+  </ul>
+</div>
+<div class="clear">&nbsp;</div>
+
 <div class="w3-main-form-wrapper ui-widget-content ui-corner-all">
 
 <?php echo _CHtml::beginForm('','post',array('class'=>'w3-main-form'))."\n"; ?>
@@ -34,14 +42,14 @@
 <div class="w3-form-row">
   <div class="w3-form-row-label"><?php echo _CHtml::activeLabel($model,'language'); ?></div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::activeDropDownList($model,'language',MParams::getAvailableLanguages(),array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::activeDropDownList($model,'language',$model->getAttributeData('language'),array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>
 <div class="w3-form-row">
-  <div class="w3-form-row-label"><?php echo _CHtml::activeLabel($model,'cssTheme'); ?></div>
+  <div class="w3-form-row-label"><?php echo _CHtml::activeLabel($model->details,'isEmailVisible'); ?></div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::activeDropDownList($model,'cssTheme',MParams::getAvailableCssThemes(),array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::activeDropDownList($model->details,'isEmailVisible',$model->details->getAttributeData('isEmailVisible'),array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>
@@ -57,6 +65,13 @@
 
 </div><!-- w3-main-form-wrapper -->
 
+<?php Yii::app()->getClientScript()->registerScript('w3ActionButton',
+"jQuery('.w3-pre-grid-action-bar ul li a').hover(
+    function(){ jQuery(this).parent().removeClass('ui-state-default').addClass('ui-state-hover'); }, 
+    function(){ jQuery(this).parent().removeClass('ui-state-hover').addClass('ui-state-default'); } 
+)
+.mousedown(function(){ jQuery(this).parent().addClass('ui-state-active'); })
+.mouseup(function(){ jQuery(this).parent().removeClass('ui-state-active'); });"); ?>
 <?php Yii::app()->getClientScript()->registerScript('focusOnFirstInput',
 "jQuery('.w3-content form.w3-main-form .w3-input-text:first').focus();"); ?>
 <?php Yii::app()->getClientScript()->registerScript('focusOnFirstErrorInput',

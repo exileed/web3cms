@@ -1,6 +1,6 @@
 <?php
 
-class User extends CActiveRecord
+class User extends _CActiveRecord
 {
     /**
      * The followings are the available columns in table 'User':
@@ -8,26 +8,25 @@ class User extends CActiveRecord
      * @var string $username
      * @var string $password
      * @var string $email
-     * @var string $email2
      * @var string $screenName
      * @var string $language
-     * @var string $cssTheme
+     * @var string $interface
      * @var string $accessType
      * @var integer $accessLevel
      * @var string $isActive
-     * @var string $createdOn
-     * @var string $createdGmtOn
+     * @var string $createDate
+     * @var string $createGmtDate
      */
     // id is not in safeAttributes
     //public $id;
     //public $accessLevel;
     //public $accessType;
-    //public $createdOn;
-    //public $createdGmtOn;
-    public $cssTheme;
+    //public $createDate;
+    //public $createGmtDate;
     public $email;
     public $email2;
     public $emailConfirmationKey;
+    public $interface;
     //public $isActive;
     public $language;
     public $password;
@@ -37,6 +36,21 @@ class User extends CActiveRecord
     public $username;
     public $verifyCode;
     //protected static $_isAction;
+
+    private static $_privateData;
+
+    const IS_ACTIVE='1';
+    const IS_NOT_ACTIVE='0';
+    const MEMBER='member';
+    const MEMBER_T='Member';
+    const CLIENT='client';
+    const CLIENT_T='Client';
+    const CONSULTANT='consultant';
+    const CONSULTANT_T='Consultant';
+    const MODERATOR='moderator';
+    const MODERATOR_T='Moderator';
+    const ADMINISTRATOR='administrator';
+    const ADMINISTRATOR_T='Administrator';
 
     /**
      * Returns the static model of the specified AR class.
@@ -50,7 +64,7 @@ class User extends CActiveRecord
     /**
      * @return string the associated database table name
      */
-    public function tableName()
+    protected function _tableName()
     {
         return 'User';
     }
@@ -65,8 +79,8 @@ class User extends CActiveRecord
             array('accessLevel', 'numerical', 'integerOnly'=>true),
             // set max length
             array('accessType', 'length', 'max'=>32),
-            array('cssTheme', 'length', 'max'=>64),
             array('email', 'length', 'max'=>255),
+            array('interface', 'length', 'max'=>64),
             array('language', 'length', 'max'=>24),
             // on confirmEmail
             // email and emailConfirmationKey are required
@@ -111,10 +125,10 @@ class User extends CActiveRecord
     public function safeAttributes()
     {
         return array(
-            'cssTheme',
             'email',
             'email2',
             'emailConfirmationKey',
+            'interface',
             'language',
             'password',
             'password2',
@@ -142,11 +156,16 @@ class User extends CActiveRecord
     public function attributeLabels()
     {
         return array(
-            'id'=>'Id',
-            'cssTheme'=>Yii::t('t','CSS Theme'),
+            'accessLevel'=>Yii::t('t','Access level'),
+            'accessType'=>Yii::t('t','Access type'),
+            'createDate'=>Yii::t('t','Registration date'),
+            'createGmtDate'=>Yii::t('t','Registration date (GMT)'),
             'email'=>Yii::t('t','Email'),
             'email2'=>Yii::t('t','Repeat email'),
             'emailConfirmationKey'=>Yii::t('t','Confirmation key'),
+            'id'=>Yii::t('t','ID'),
+            'interface'=>Yii::t('t','Interface'),
+            'isActive'=>Yii::t('t','Is active'),
             'language'=>Yii::t('t','Language'),
             'password'=>Yii::t('t','Password'),
             'password2'=>Yii::t('t','Repeat password'),
@@ -154,11 +173,6 @@ class User extends CActiveRecord
             'screenNameSame'=>Yii::t('t','Same as username'),
             'username'=>Yii::t('t','Username'),
             'verifyCode'=>Yii::t('t','Verification code'),
-            'accessType'=>Yii::t('t','Access type'),
-            'accessLevel'=>Yii::t('t','Access level'),
-            'isActive'=>Yii::t('t','Is active'),
-            'createdOn'=>Yii::t('t','Joined'),
-            'createdGmtOn'=>'Created gmt on',
         );
     }
 
@@ -184,13 +198,14 @@ class User extends CActiveRecord
         if($this->isNewRecord)
         {
             $this->password=md5($this->password);
-            $this->createdOn=date('Y-m-d H:i:s');
-            $this->createdGmtOn=gmdate('Y-m-d H:i:s');
+            $this->createDate=date('Y-m-d H:i:s');
+            $this->createGmtDate=gmdate('Y-m-d H:i:s');
         }
         return true;
     }
 
     /**
+     * Whether requested attribute is allowed by /config/params.php 'modelAttributes'
      * @param string attribute name
      * @return boolean whether this AR has the named attribute (table column)
      * and it is allowed in config params/MParams.
@@ -212,41 +227,41 @@ class User extends CActiveRecord
             case 'accessType':
                 switch($this->accessType)
                 {
-                    case 'member':
-                        return Yii::t('t','Member');
+                    case self::MEMBER:
+                        return Yii::t('t',self::MEMBER_T);
                         break;
-                    case 'customer':
-                        return Yii::t('t','Customer');
+                    case self::CLIENT:
+                        return Yii::t('t',self::CLIENT_T);
                         break;
-                    case 'facilitator':
-                        return Yii::t('t','Facilitator');
+                    case self::CONSULTANT:
+                        return Yii::t('t',self::CONSULTANT_T);
                         break;
-                    case 'moderator':
-                        return Yii::t('t','Moderator');
+                    case self::MODERATOR:
+                        return Yii::t('t',self::MODERATOR_T);
                         break;
-                    case 'admin':
-                        return Yii::t('t','Admin');
+                    case self::ADMINISTRATOR:
+                        return Yii::t('t',self::ADMINISTRATOR_T);
                         break;
                     default:
                         return $this->accessType;
                         break;
                 }
-            case 'cssTheme':
-                $availableCssThemes=MParams::getAvailableCssThemes();
-                if((is_string($this->cssTheme) || is_int($this->cssTheme)) && array_key_exists($this->cssTheme,$availableCssThemes))
-                    return Yii::t('cssTheme',$availableCssThemes[$this->cssTheme]);
-                return $this->cssTheme;
+            case 'interface':
+                $availableInterfaces=MParams::getAvailableInterfaces();
+                if((is_string($this->interface) || is_int($this->interface)) && array_key_exists($this->interface,$availableInterfaces))
+                    return Yii::t('ui',$availableInterfaces[$this->interface]);
+                return $this->interface;
             case 'isActive':
                 switch($this->isActive)
                 {
-                    case '1':
-                        return Yii::t('t','Yes (Member account is On)');
+                    case self::IS_ACTIVE:
+                        return Yii::t('attr','Yes (Member account is On)');
                         break;
-                    case '0':
-                        return Yii::t('t','No (Member account is Off)');
+                    case self::IS_NOT_ACTIVE:
+                        return Yii::t('attr','No (Member account is Off)');
                         break;
                     case null:
-                        return Yii::t('t','By default (Member account is On)');
+                        return Yii::t('attr','By default (Member account is On)');
                         break;
                     default:
                         return $this->isActive;
@@ -263,8 +278,187 @@ class User extends CActiveRecord
     }
 
     /**
+     * Returns data array of the attribute for create/update.
+     * @param string the attribute name
+     * @return array the attribute's data
+     */
+    public function getAttributeData($attribute)
+    {
+        switch($attribute)
+        {
+            case 'accessType':
+                return array(
+                    self::MEMBER=>Yii::t('t',self::MEMBER_T),
+                    self::CLIENT=>Yii::t('t',self::CLIENT_T),
+                    self::CONSULTANT=>Yii::t('t',self::CONSULTANT_T),
+                    self::MODERATOR=>Yii::t('t',self::MODERATOR_T),
+                    self::ADMINISTRATOR=>Yii::t('t',self::ADMINISTRATOR_T),
+                );
+            case 'interface':
+                return MParams::getAvailableInterfaces();
+            case 'isActive':
+                return array(
+                    null=>Yii::t('attr','By default (Member account is On)'),
+                    self::IS_NOT_ACTIVE=>Yii::t('attr','No (Member account is Off)'),
+                    self::IS_ACTIVE=>Yii::t('attr','Yes (Member account is On)'),
+                );
+            case 'language':
+                return MParams::getAvailableLanguages();
+            default:
+                return $this->$attribute;
+        }
+    }
+
+    /**
+     * Set user private data, such as 'accessType'.
+     * Save it in a static array on every page load,
+     * because this data can be changed by administrator at any time.
+     * Saving this data for optimization in a session array
+     * doesn't make much security sence, because session data
+     * can be accessed and changed from any point of the system,
+     * which doesn't make this data private any more.
+     */
+    private static function setPrivateData()
+    {
+        // user is guest if he is not logged in
+        if(!Yii::app()->user->isGuest)
+        {
+            if(($user=self::model()->findByPk(Yii::app()->user->id))!==false)
+            {
+                // simple save it in a private array for later accessing by {@link self::getPrivateData()}
+                self::$_privateData['accessLevel']=$user->accessLevel;
+                self::$_privateData['accessType']=$user->accessType;
+            }
+            else
+            {
+                // hmmm, user was not loaded? how's that possible...
+                Yii::log(W3::t('system',
+                    'Could not load {model} model. Model ID: {modelId}. Method called: {method}.',
+                    array(
+                        '{model}'=>__CLASS__,
+                        '{modelId}'=>Yii::app()->user->id,
+                        '{method}'=>__METHOD__.'()'
+                    )
+                ),'error','w3');
+                // still hoping that the model load above will get fixed,
+                // so we won't need to self::$_privateData=array();
+            }
+        }
+    }
+
+    /**
+     * Get user private data, such as 'accessType'.
+     * This data is valid for this page only.
+     * It can be changed on next page load.
+     * @param string $name of the data
+     */
+    public static function getPrivateData($name)
+    {
+        if(Yii::app()->user->isGuest)
+            // guest doesn't have any private data
+            return null;
+        if(is_null(self::$_privateData))
+            // private data is usually being set from this point
+            self::setPrivateData();
+        // if we called setPrivateData() it doesn't necessary mean that
+        // $_privateData[$name] is set, so we have to check to avoid php notice
+        return isset(self::$_privateData[$name]) ? self::$_privateData[$name] : null;
+    }
+
+    /**
+     * Whether user is member.
+     * @param string accessType
+     * @return bool
+     */
+    public static function isMember($accessType=null)
+    {
+        if(!is_null($accessType))
+            return $accessType===self::MEMBER;
+        return self::getPrivateData('accessType')===self::MEMBER;
+    }
+
+    /**
+     * Whether user is client.
+     * @param string accessType
+     * @return bool
+     */
+    public static function isClient($accessType=null)
+    {
+        if(!is_null($accessType))
+            return $accessType===self::CLIENT;
+        return self::getPrivateData('accessType')===self::CLIENT;
+    }
+
+    /**
+     * Whether user is consultant.
+     * @param string accessType
+     * @return bool
+     */
+    public static function isConsultant($accessType=null)
+    {
+        if(!is_null($accessType))
+            return $accessType===self::CONSULTANT;
+        return self::getPrivateData('accessType')===self::CONSULTANT;
+    }
+
+    /**
+     * Whether user is moderator.
+     * @param string accessType
+     * @return bool
+     */
+    public static function isModerator($accessType=null)
+    {
+        if(!is_null($accessType))
+            return $accessType===self::MODERATOR;
+        return self::getPrivateData('accessType')===self::MODERATOR;
+    }
+
+    /**
+     * Whether user is administrator.
+     * @param string accessType
+     * @return bool
+     */
+    public static function isAdministrator($accessType=null)
+    {
+        if(!is_null($accessType))
+            return $accessType===self::ADMINISTRATOR;
+        return self::getPrivateData('accessType')===self::ADMINISTRATOR;
+    }
+
+    /**
+     * Whether user is accessType.
+     * Use this function if you have a custom accessType in db,
+     * custom = not one of (member, client, consultant, moderator, administrator).
+     * @param string accessType
+     * @return bool
+     */
+    public static function isAccessType($accessType)
+    {
+        switch($accessType)
+        {
+            case self::MEMBER:
+                return self::isMember();
+                break;
+            case self::CLIENT:
+                return self::isClient();
+                break;
+            case self::CONSULTANT:
+                return self::isConsultant();
+                break;
+            case self::MODERATOR:
+                return self::isModerator();
+                break;
+            case self::ADMINISTRATOR:
+                return self::isAdministrator();
+                break;
+            default:
+                return self::getPrivateData('accessType')===$accessType;
+                break;
+        }
+    }
+
+    /**
      * Set whether is action $action.
-     * 
      * @param string $action
      * @param bool $value
      */
@@ -275,7 +469,6 @@ class User extends CActiveRecord
 
     /**
      * Get whether is action $action.
-     * 
      * @param string $action
      * @return bool
      */

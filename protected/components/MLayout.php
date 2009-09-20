@@ -45,7 +45,6 @@ class MLayout
 
     /**
      * Save system logs
-     * 
      * @param array $params
      */
     protected static function log($params=array())
@@ -55,7 +54,7 @@ class MLayout
         $append=isset($params['append']) ? ' '.$params['append'] : '';
         if(isset($params['method'],$params['parameter'],$params['value']))
         {
-            Yii::log(Yii::t('system',
+            Yii::log(W3::t('system',
                 'Unacceptable value of {parameter} system parameter: {value}. Method called: {method}.',
                 array(
                     '{parameter}'=>"'{$params['parameter']}'",
@@ -74,7 +73,7 @@ class MLayout
             }
             else
                 $value=var_export((isset($params['value']) ? $params['value'] : $params['values']), true);
-            Yii::log(Yii::t('system',
+            Yii::log(W3::t('system',
                 'Incorrect parameter in method call: {method}.',
                 array('{method}'=>$params['method'].'('.$value.')')
             ).$append,'warning','w3');
@@ -90,8 +89,7 @@ class MLayout
     }
 
     /**
-     * decrement number of either sidebar1 or sidebar2 area items.
-     * 
+     * Decrement number of either sidebar1 or sidebar2 area items.
      * @param mixed $in
      */
     public static function decrementNumberOfItemsSidebar($in)
@@ -131,7 +129,6 @@ class MLayout
     /**
      * Generate css classes for html's tag "body".
      * <body class="_return_">
-     * 
      * @return string
      */
     public static function getBodytagCssClass()
@@ -155,14 +152,13 @@ class MLayout
             ($column='w3-layout-three-column') && ($details='w3-layout-sidebar1-content-sidebar2');
         $controller='w3-controller-'.Yii::app()->controller->getId();
         $controllerAction=$controller.'-'.Yii::app()->controller->getAction()->getId();
-        $cssTheme='css-theme-'.MParams::getCssTheme();
-        return $column.' '.$details.' '.$controller.' '.$controllerAction.' '.$cssTheme;
+        $interface='interface-'.MParams::getInterface();
+        return $column.' '.$details.' '.$controller.' '.$controllerAction.' '.$interface;
     }
 
     /**
      * Get container css class.
      * <div class="container_16"><div class="grid_16">...</div></div>
-     * 
      * @return string
      */
     public static function getContainerCssClass()
@@ -173,7 +169,6 @@ class MLayout
     /**
      * Get grid css class.
      * <div class="container_16"><div class="grid_16">...</div></div>
-     * 
      * @return string
      */
     public static function getGridCssClass()
@@ -185,7 +180,6 @@ class MLayout
     /**
      * Get grid css class for content area.
      * <div class="grid_12 alpha"><div class="w3-content">...</div></div>
-     * 
      * @return string
      */
     public static function getGridCssClassContent()
@@ -207,7 +201,6 @@ class MLayout
     /**
      * Get grid css class for sidebar2 area.
      * <div class="grid_4 alpha"><div class="w3-sidebar1">...</div></div>
-     * 
      * @return string
      */
     public static function getGridCssClassSidebar1()
@@ -222,7 +215,6 @@ class MLayout
     /**
      * Get grid css class for sidebar2 area.
      * <div class="grid_4 omega"><div class="w3-sidebar2">...</div></div>
-     * 
      * @return string
      */
     public static function getGridCssClassSidebar2()
@@ -238,7 +230,6 @@ class MLayout
      * GS number of columns for content.
      * Common values are 8 and 12. Default is 12.
      * Visit {@link http://960.gs/demo.html} grid system for more details.
-     * 
      * @return int
      */
     public static function getNumberOfColumnsContent()
@@ -256,7 +247,6 @@ class MLayout
      * GS number of columns for sidebar1.
      * Common values are 0 and 4. Default is 0.
      * Visit {@link http://960.gs/demo.html} grid system for more details.
-     * 
      * @return int
      */
     public static function getNumberOfColumnsSidebar1()
@@ -274,7 +264,6 @@ class MLayout
      * GS number of columns for sidebar2.
      * Common values are 0 and 4. Default is 4.
      * Visit {@link http://960.gs/demo.html} grid system for more details.
-     * 
      * @return int
      */
     public static function getNumberOfColumnsSidebar2()
@@ -292,7 +281,6 @@ class MLayout
      * GS number of columns total.
      * Common values are 12 and 16. Default is 16.
      * Visit {@link http://960.gs/demo.html} grid system for more details.
-     * 
      * @return int
      */
     public static function getNumberOfColumnsTotal()
@@ -308,7 +296,6 @@ class MLayout
 
     /**
      * Get number of items displayed in content area.
-     * 
      * @return int
      */
     public static function getNumberOfItemsContent()
@@ -324,7 +311,6 @@ class MLayout
 
     /**
      * Get number of items displayed in either sidebar1 or sidebar2 area.
-     * 
      * @param mixed $in
      * @return int
      */
@@ -341,7 +327,6 @@ class MLayout
 
     /**
      * Get number of items displayed in sidebar1 area.
-     * 
      * @return int
      */
     public static function getNumberOfItemsSidebar1()
@@ -357,7 +342,6 @@ class MLayout
 
     /**
      * Get number of items displayed in sidebar2 area.
-     * 
      * @return int
      */
     public static function getNumberOfItemsSidebar2()
@@ -373,7 +357,6 @@ class MLayout
 
     /**
      * Get number of items displayed in top area.
-     * 
      * @return int
      */
     public static function getNumberOfItemsTop()
@@ -391,7 +374,6 @@ class MLayout
      * GS wrap in css "grid_16" (sub)class.
      * If true, layout will look like <div class="container_16"><div class="grid_16">..header..</div></div>
      * If false, layout will look like <div class="container_16"><div class="">..header..</div></div>
-     * 
      * @return bool
      */
     public static function getWrapInGridCssClass()
@@ -407,7 +389,6 @@ class MLayout
 
     /**
      * Whether current page has content area.
-     * 
      * @return bool
      */
     public static function hasContent()
@@ -417,7 +398,6 @@ class MLayout
 
     /**
      * Whether current page has sidebar1 or sidebar2 area.
-     * 
      * @return bool
      */
     public static function hasSidebar()
@@ -427,7 +407,6 @@ class MLayout
 
     /**
      * Whether current page has sidebar1 area.
-     * 
      * @return bool
      */
     public static function hasSidebar1()
@@ -437,7 +416,6 @@ class MLayout
 
     /**
      * Whether current page has sidebar2 area.
-     * 
      * @return bool
      */
     public static function hasSidebar2()
@@ -457,7 +435,6 @@ class MLayout
 
     /**
      * Hide sidebar1 and enlarge sidebar2 or content.
-     * 
      * @param string $inFavourOf
      */
     public static function hideSidebar1($inFavourOf='content')
@@ -475,7 +452,6 @@ class MLayout
 
     /**
      * Hide sidebar2 and enlarge sidebar1 or content.
-     * 
      * @param string $inFavourOf
      */
     public static function hideSidebar2($inFavourOf='content')
@@ -501,7 +477,6 @@ class MLayout
 
     /**
      * Increment number of either sidebar1 or sidebar2 area items.
-     * 
      * @param mixed $in
      */
     public static function incrementNumberOfItemsSidebar($in)
@@ -542,7 +517,6 @@ class MLayout
      * GS number of columns for content.
      * Common values are 8 and 12. Default is 12.
      * Visit {@link http://960.gs/demo.html} grid system for more details.
-     * 
      * @param int $value
      */
     public static function setNumberOfColumnsContent($value)
@@ -561,7 +535,6 @@ class MLayout
      * GS number of columns for sidebar1.
      * Common values are 0 and 4. Default is 0.
      * Visit {@link http://960.gs/demo.html} grid system for more details.
-     * 
      * @param int $value
      */
     public static function setNumberOfColumnsSidebar1($value)
@@ -580,7 +553,6 @@ class MLayout
      * GS number of columns for sidebar2.
      * Common values are 0 and 4. Default is 4.
      * Visit {@link http://960.gs/demo.html} grid system for more details.
-     * 
      * @param int $value
      */
     public static function setNumberOfColumnsSidebar2($value)
@@ -599,7 +571,6 @@ class MLayout
      * GS number of columns total.
      * Common values are 12 and 16. Default is 16.
      * Visit {@link http://960.gs/demo.html} grid system for more details.
-     * 
      * @param int $value
      */
     public static function setNumberOfColumnsTotal($value)
@@ -617,7 +588,6 @@ class MLayout
     /**
      * Alias of setNumberOfColumns...()
      * Set all GS number of columns from array.
-     * 
      * @param array $array
      */
     public static function setNumberOfColumnsArray($array)
@@ -630,7 +600,6 @@ class MLayout
 
     /**
      * Set number of items displayed in content area.
-     * 
      * @param int $value
      */
     public static function setNumberOfItemsContent($value)
@@ -645,7 +614,6 @@ class MLayout
 
     /**
      * Set number of items displayed in either sidebar1 or sidebar2 area.
-     * 
      * @param mixed $in
      * @param int $value
      */
@@ -661,7 +629,6 @@ class MLayout
 
     /**
      * Set number of items displayed in sidebar1 area.
-     * 
      * @param int $value
      */
     public static function setNumberOfItemsSidebar1($value)
@@ -676,7 +643,6 @@ class MLayout
 
     /**
      * Set number of items displayed in sidebar2 area.
-     * 
      * @param int $value
      */
     public static function setNumberOfItemsSidebar2($value)
@@ -691,7 +657,6 @@ class MLayout
 
     /**
      * Set number of items displayed in top area.
-     * 
      * @param int $value
      */
     public static function setNumberOfItemsTop($value)
@@ -708,7 +673,6 @@ class MLayout
      * GS wrap in css "grid_16" (sub)class.
      * If true, layout will look like <div class="container_16"><div class="grid_16">..header..</div></div>
      * If false, layout will look like <div class="container_16"><div class="">..header..</div></div>
-     * 
      * @param bool $value
      */
     public static function setWrapInGridCssClass($value)
@@ -732,7 +696,7 @@ class MLayout
     {
         if(self::getNumberOfColumnsContent()+self::getNumberOfColumnsSidebar1()+self::getNumberOfColumnsSidebar2() != self::getNumberOfColumnsTotal())
         {
-            Yii::log(Yii::t('system',
+            Yii::log(W3::t('system',
                 'Unacceptable values of layout parameters... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.',
                 array(
                     '{content}'=>var_export(self::getNumberOfColumnsContent(),true),
@@ -757,7 +721,7 @@ class MLayout
     {
         if(self::defaultNumberOfColumnsContent+self::defaultNumberOfColumnsSidebar1+self::defaultNumberOfColumnsSidebar2 != self::defaultNumberOfColumnsTotal)
         {
-            Yii::log(Yii::t('system',
+            Yii::log(W3::t('system',
                 'Unacceptable values of layout constants... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.',
                 array(
                     '{content}'=>var_export(self::defaultNumberOfColumnsContent,true),

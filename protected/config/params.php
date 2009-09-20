@@ -8,13 +8,34 @@ return array(
     // From: "adminEmailName" <adminEmail>
     // reset this on any page with MParams::setAdminEmailName($name);
     'adminEmailName'=>'Web3CMS Staff', //'Webmaster'
-    // array of available css themes
-    // reset this on any page with MParams::setAvailableCssThemes($array);
-    // or MParams::addAvailableCssThemes($cssThemes,$prepend);
-    'availableCssThemes'=>array(
+    // array of available interfaces
+    // reset this on any page with MParams::setAvailableInterfaces($array);
+    // or MParams::addAvailableInterfaces($interfaces,$prepend);
+    'availableInterfaces'=>array(
         'ui-lightness'=>'UI Lightness',
         'ui-darkness'=>'UI Darkness',
+        'smoothness'=>'Smoothness',
         'start'=>'Start',
+        'redmond'=>'Redmond',
+        'sunny'=>'Sunny',
+        'overcast'=>'Overcast',
+        'le-frog'=>'Le frog',
+        'flick'=>'Flick',
+        'pepper-grinder'=>'Pepper grinder',
+        'eggplant'=>'Eggplant',
+        'dark-hive'=>'Dark hive',
+        'cupertino'=>'Cupertino',
+        'south-street'=>'South street',
+        'blitzer'=>'Blitzer',
+        'humanity'=>'Humanity',
+        'hot-sneaks'=>'Hot sneaks',
+        'excite-bike'=>'Excite bike',
+        'vader'=>'Vader',
+        'dot-luv'=>'Dot luv',
+        'mint-choc'=>'Mint choc',
+        'black-tie'=>'Black tie',
+        'trontastic'=>'Trontastic',
+        'swanky-purse'=>'Swanky purse',
     ),
     // array of available languages
     // reset this on any page with MParams::setAvailableLanguages($array);
@@ -26,17 +47,17 @@ return array(
     // displayed in the footer of every page
     // reset this on any page with MParams::setCopyrightBy('My Company');
     'copyrightBy'=>'My Company', //'My Company'
-    // jQuery UI CSS Framework theme to use by default
-    // possible values: ui-lightness/ui-darkness/start
-    // copy any from http://jqueryui.com/themeroller to {root}/css/themes/{theme}
-    // reset this on any page with MParams::setCssTheme('start');
-    'cssTheme'=>'start', //'start'
     // title of your cms, displayed in the header section (above menu)
     // reset this on any page with MParams::setHeaderTitle($title);
     'headerTitle'=>'My Web3CMS', //My Web3CMS
     // html doctype. possible values: strict/transitional
     // reset this on any page with MParams::setHtmlDoctype('transitional');
     'htmlDoctype'=>'transitional', //transitional
+    // jQuery UI CSS Framework to use by default
+    // possible values: see 'availableInterfaces' above
+    // copy any from http://jqueryui.com/themeroller to {root}/css/ui/{interface}
+    // reset this on any page with MParams::setInterface('start');
+    'interface'=>'start', //'start'
     // site language. should be one of 'availableLanguages'
     // reset this on any page with MParams::setLanguage('en');
     'language'=>'en', //en
@@ -81,10 +102,18 @@ return array(
     // hdd path to files folder. must be a valid directory accessible within your hosting
     // reset this on any page with MParams::setPathToFiles($path);
     'pathToFiles'=>dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR,
+    // whether or not register jquery-ui css in {@link W3Init::css()}. possible values: true/false
+    // reset this on any page with MParams::setRegisterJqueryUI(true);
+    'registerJqueryUI'=>true, //true
     // title of your site, used in html > head > title
     // see also 'pageTitleFormula' parameter
     // reset this on any page with MParams::setSiteTitle('Web3CMS');
     'siteTitle'=>'Web3CMS', //'Web3CMS'
+    // system language - language for system messages (mostly in logs)
+    // reset this on any page with MParams::setSystemLanguage('en');
+    'systemLanguage'=>'en', //'en'
+    // database tables prefix
+    'tablePrefix' => 'W3',
     // web-accessible url to files directory
     // supposed to begin with either http:// or / (slash). should contain trailing slash
     // reset this on any page with MParams::setUrlToFiles($url);

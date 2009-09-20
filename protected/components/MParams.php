@@ -1,17 +1,21 @@
 <?php
 /**
- * Manage Params
+ * Manage Site Parameters.
+ * If a parameter has a wrong type or it's out of allowed values,
+ * then default value is applied.
+ * In the beginning all parameters are loaded from {@link _CController::init()},
+ * then strings are translated (after _CController has set preferred language).
  */
 class MParams
 {
     protected static $adminEmailAddress;
     protected static $adminEmailName;
-    protected static $availableCssThemes;
+    protected static $availableInterfaces;
     protected static $availableLanguages;
     protected static $copyrightBy;
-    protected static $cssTheme;
     protected static $headerTitle;
     protected static $htmlDoctype;
+    protected static $interface;
     protected static $language;
     protected static $metaDescription;
     protected static $metaKeywords;
@@ -19,14 +23,15 @@ class MParams
     protected static $pageLabel;
     protected static $pageTitleFormula;
     protected static $pathToFiles;
+    protected static $registerJqueryUI;
     protected static $siteTitle;
+    protected static $systemLanguage;
     protected static $urlToFiles;
     protected static $userLoginWithField;
     protected static $_data;
-    protected static $_needI18n;
     protected static $allowedHtmlDoctype;
     protected static $allowedUserLoginWithField;
-    protected static $defaultAvailableCssThemes;
+    protected static $defaultAvailableInterfaces;
     protected static $defaultAvailableLanguages;
     protected static $defaultHeaderTitle;
     protected static $defaultMetaKeywords;
@@ -40,94 +45,113 @@ class MParams
     const defaultAdminEmailAddress='phpdevmd@web3cms.com';
     const defaultAdminEmailName='Web3CMS Staff';
     const defaultCopyrightBy='My Company';
-    const defaultCssTheme='start';
     const defaultHtmlDoctype='transitional';
+    const defaultInterface='start';
     const defaultLanguage='en';
     const defaultMetaDescription='Web3CMS - Web 2.0 Content Management System based on Yii Framework.';
     const defaultPageTitleFormula='{pageLabel} - {siteTitle}';
+    const defaultRegisterJqueryUI=true;
+    const defaultSystemLanguage='en';
     const defaultUserLoginWithField='username';
 
     /**
      * Load params from Yii::app()->params into class properties.
-     * 
      */
     public static function load()
     {
         self::$allowedHtmlDoctype=array('strict','transitional');
         self::$allowedUserLoginWithField=array('_any_','email','username');
-        self::$defaultAvailableCssThemes=array(
-            'ui-lightness'=>Yii::t('cssTheme','UI Lightness'),
-            'ui-darkness'=>Yii::t('cssTheme','UI Darkness'),
-            'start'=>Yii::t('cssTheme','Start'),
+        self::$defaultAvailableInterfaces=array(
+            'ui-lightness'=>'UI Lightness',
+            'ui-darkness'=>'UI Darkness',
+            'smoothness'=>'Smoothness',
+            'start'=>'Start',
+            'redmond'=>'Redmond',
+            'sunny'=>'Sunny',
+            'overcast'=>'Overcast',
+            'le-frog'=>'Le frog',
+            'flick'=>'Flick',
+            'pepper-grinder'=>'Pepper grinder',
+            'eggplant'=>'Eggplant',
+            'dark-hive'=>'Dark hive',
+            'cupertino'=>'Cupertino',
+            'south-street'=>'South street',
+            'blitzer'=>'Blitzer',
+            'humanity'=>'Humanity',
+            'hot-sneaks'=>'Hot sneaks',
+            'excite-bike'=>'Excite bike',
+            'vader'=>'Vader',
+            'dot-luv'=>'Dot luv',
+            'mint-choc'=>'Mint choc',
+            'black-tie'=>'Black tie',
+            'trontastic'=>'Trontastic',
+            'swanky-purse'=>'Swanky purse',
         );
         self::$defaultAvailableLanguages=array(
-            'en'=>Yii::t('t','English',array(0)),
-            'ru'=>Yii::t('t','Russian',array(0)),
+            'en'=>'English',
+            'ru'=>'Russian',
         );
-        self::$defaultHeaderTitle=Yii::t('t','My Web3CMS');
+        self::$defaultHeaderTitle=MArea::isBackend() ? 'Web3CMS Administrator Area' : 'My Web3CMS';
         self::$defaultMetaKeywords=array('web3cms','yii');
         self::$defaultModelAttributes=array(
             'User'=>array(
                 'email2'=>false,
             ),
         );
-        self::$defaultPageLabel=Yii::t('t','Home',array(1));
+        self::$defaultPageLabel='Home';
         self::$defaultPathToFiles=dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR;
-        self::$defaultSiteTitle=Yii::t('t','Web3CMS');
+        self::$defaultSiteTitle=MArea::isBackend() ? 'Web3CMS Administrator' : 'Web3CMS';
         self::$defaultUrlToFiles=Yii::app()->request->baseUrl.'/files/';
         $data=Yii::app()->params;
+        // system language
+        self::setSystemLanguage(isset($data['systemLanguage']) ? $data['systemLanguage'] : self::_default);
         self::setAdminEmailAddress(isset($data['adminEmailAddress']) ? $data['adminEmailAddress'] : self::_default);
         self::setAdminEmailName(isset($data['adminEmailName']) ? $data['adminEmailName'] : self::_default);
-        self::setAvailableCssThemes(isset($data['availableCssThemes']) ? $data['availableCssThemes'] : self::_default);
+        self::setAvailableInterfaces(isset($data['availableInterfaces']) ? $data['availableInterfaces'] : self::_default);
         self::setAvailableLanguages(isset($data['availableLanguages']) ? $data['availableLanguages'] : self::_default);
         self::setLanguage(isset($data['language']) ? $data['language'] : self::_default); // should be after setAvailableLanguages()
         self::setCopyrightBy(isset($data['copyrightBy']) ? $data['copyrightBy'] : self::_default);
-        self::setCssTheme(isset($data['cssTheme']) ? $data['cssTheme'] : self::_default);
         self::setHeaderTitle(isset($data['headerTitle']) ? $data['headerTitle'] : self::_default);
         self::setHtmlDoctype(isset($data['htmlDoctype']) ? $data['htmlDoctype'] : self::_default);
+        self::setInterface(isset($data['interface']) ? $data['interface'] : self::_default);
         self::setMetaDescription(isset($data['metaDescription']) ? $data['metaDescription'] : self::_default);
         self::setMetaKeywords(isset($data['metaKeywords']) ? $data['metaKeywords'] : self::_default);
         self::setModelAttributes(isset($data['modelAttributes']) ? $data['modelAttributes'] : self::_default);
         self::setPageTitleFormula(isset($data['pageTitleFormula']) ? $data['pageTitleFormula'] : self::_default);
         self::setPathToFiles(isset($data['pathToFiles']) ? $data['pathToFiles'] : self::_default);
+        self::setRegisterJqueryUI(isset($data['registerJqueryUI']) ? $data['registerJqueryUI'] : self::_default);
         self::setSiteTitle(isset($data['siteTitle']) ? $data['siteTitle'] : self::_default);
         self::setUrlToFiles(isset($data['urlToFiles']) ? $data['urlToFiles'] : self::_default);
         self::setUserLoginWithField(isset($data['userLoginWithField']) ? $data['userLoginWithField'] : self::_default);
-        self::$_needI18n=array(
-            'availableCssThemes'=>isset($data['availableCssThemes']),
-            'availableLanguages'=>isset($data['availableLanguages']),
-            'headerTitle'=>isset($data['headerTitle']),
-            'siteTitle'=>isset($data['siteTitle']),
-        );
     }
 
     /**
-     * Internationalization - translate params in initialization of _CController.
-     * 
+     * Internationalization - translate parameters at the end of _CController initialization.
+     * 1. Load parameters.
+     * 2. Set language (require parameters to be loaded).
+     * 3. Translate loaded parameters.
      */
     public static function i18n()
     {
-        if(self::$_needI18n['availableCssThemes'])
-        {
-            $array=self::getAvailableCssThemes();
-            foreach($array as $n=>$item)
-                $array[$n]=Yii::t('cssTheme',$item);
-            self::setAvailableCssThemes($array);
-        }
-        if(self::$_needI18n['availableLanguages'])
-        {
-            $array=self::getAvailableLanguages();
-            foreach($array as $n=>$item)
-                $array[$n]=Yii::t('t',$item,array(0));
-            self::setAvailableLanguages($array);
-        }
-        self::$_needI18n['headerTitle'] && self::setHeaderTitle(Yii::t('t',self::getHeaderTitle()));
-        self::$_needI18n['siteTitle'] && self::setSiteTitle(Yii::t('t',self::getSiteTitle()));
+        // translate class default variables
+        self::$defaultPageLabel=Yii::t('t','Home',array(1));
+        // css themes array
+        $array=self::getAvailableInterfaces();
+        foreach($array as $n=>$item)
+            $array[$n]=Yii::t('ui',$item);
+        self::setAvailableInterfaces($array);
+        // languages array
+        $array=self::getAvailableLanguages();
+        foreach($array as $n=>$item)
+            $array[$n]=Yii::t('t',$item,array(0));
+        self::setAvailableLanguages($array);
+        // one line strings
+        self::setHeaderTitle(Yii::t('t',self::getHeaderTitle()));
+        self::setSiteTitle(Yii::t('t',self::getSiteTitle()));
     }
 
     /**
      * Save system logs
-     * 
      * @param array $params
      */
     protected static function log($params=array())
@@ -137,7 +161,7 @@ class MParams
         $append=isset($params['append']) ? ' '.$params['append'] : '';
         if(isset($params['method'],$params['parameter'],$params['value']))
         {
-            Yii::log(Yii::t('system',
+            Yii::log(W3::t('system',
                 'Unacceptable value of {parameter} system parameter: {value}. Method called: {method}.',
                 array(
                     '{parameter}'=>"'{$params['parameter']}'",
@@ -156,7 +180,7 @@ class MParams
             }
             else
                 $value=var_export((isset($params['value']) ? $params['value'] : $params['values']), true);
-            Yii::log(Yii::t('system',
+            Yii::log(W3::t('system',
                 'Incorrect parameter in method call: {method}.',
                 array('{method}'=>$params['method'].'('.$value.')')
             ).$append,'warning','w3');
@@ -166,7 +190,6 @@ class MParams
     /**
      * Get the value of a parameter.
      * Parameter is case sensitive.
-     * 
      * @param string $param
      * @return mixed
      */
@@ -178,7 +201,6 @@ class MParams
     /**
      * Set the value of a parameter.
      * Parameter is case sensitive.
-     * 
      * @param string $param
      * @param mixed $value
      */
@@ -188,16 +210,15 @@ class MParams
     }
 
     /**
-     * Add to array of available css themes (to choose from).
-     * This array is used in e.g. create an user account.
-     * 
+     * Add to array of available interfaces (to choose from).
+     * This array is used in e.g. create a member account.
      * @param array/string $value
      * @param bool $prepend. false = append
      */
-    public static function addAvailableCssThemes($value,$prepend=false)
+    public static function addAvailableInterfaces($value,$prepend=false)
     {
         if($value===self::_default)
-            $value=self::$defaultAvailableCssThemes;
+            $value=self::$defaultAvailableInterfaces;
         if(is_string($value) || is_numeric($value))
             // convert string to array
             $value=array($value=>$value);
@@ -207,16 +228,15 @@ class MParams
             $value=array(); // clear the wrong value
         }
         if($prepend)
-            $value=array_merge($value,self::getAvailableCssThemes());
+            $value=array_merge($value,self::getAvailableInterfaces());
         else
-            $value=array_merge(self::getAvailableCssThemes(),$value);
-        self::setAvailableCssThemes($value);
+            $value=array_merge(self::getAvailableInterfaces(),$value);
+        self::setAvailableInterfaces($value);
     }
 
     /**
      * Add to array of available languages (to choose from).
      * This array is used in e.g. create an user account.
-     * 
      * @param array/string $value
      * @param bool $prepend. false = append
      */
@@ -242,7 +262,6 @@ class MParams
     /**
      * Add meta description.
      * html > head > meta[description]
-     * 
      * @param string $value
      * @param string $delimiter
      */
@@ -261,7 +280,6 @@ class MParams
     /**
      * Add meta keywords.
      * html > head > meta[keywords]
-     * 
      * @param array/string $value
      * @param bool $prepend. false = append
      */
@@ -285,12 +303,11 @@ class MParams
     }
 
     /**
-     * Remove from array of available css themes (to choose from).
-     * This array is used in e.g. create an user account.
-     * 
+     * Remove from array of available interfaces (to choose from).
+     * This array is used in e.g. create a member account.
      * @param array/string $value
      */
-    public static function removeAvailableCssThemes($value)
+    public static function removeAvailableInterfaces($value)
     {
         if(is_string($value) || is_numeric($value))
             // convert string to array
@@ -300,19 +317,18 @@ class MParams
             self::log(array('method'=>__METHOD__,'value'=>$value));
             $value=array(); // clear the wrong value
         }
-        $array=self::getAvailableCssThemes();
+        $array=self::getAvailableInterfaces();
         foreach($array as $n=>$item)
         {
             if(in_array($item,$value))
                 unset($array[$n]);
         }
-        self::setAvailableCssThemes($array);
+        self::setAvailableInterfaces($array);
     }
 
     /**
      * Remove from array of available languages (to choose from).
      * This array is used in e.g. create an user account.
-     * 
      * @param array/string $value
      */
     public static function removeAvailableLanguages($value)
@@ -337,7 +353,6 @@ class MParams
     /**
      * Remove meta description.
      * html > head > meta[description]
-     * 
      * @param string $value
      */
     public static function removeMetaDescription($value)
@@ -355,7 +370,6 @@ class MParams
     /**
      * Remove meta keywords.
      * html > head > meta[keywords]
-     * 
      * @param array/string $value
      */
     public static function removeMetaKeywords($value)
@@ -380,7 +394,6 @@ class MParams
     /**
      * Remove model attributes from system usage.
      * For these attributes $model->hasVirtualAttribute() will return false.
-     * 
      * @param string $model
      * @param array/string $value
      */
@@ -403,7 +416,6 @@ class MParams
     /**
      * Restore model attributes for system usage.
      * For these attributes $model->hasVirtualAttribute() will return true.
-     * 
      * @param string $model
      * @param array/string $value
      */
@@ -425,7 +437,6 @@ class MParams
 
     /**
      * From: "adminEmailName" <adminEmailAddress>
-     * 
      * @return string
      */
     public static function getAdminEmailAddress()
@@ -441,7 +452,6 @@ class MParams
 
     /**
      * From: "adminEmailName" <adminEmailAddress>
-     * 
      * @return string
      */
     public static function getAdminEmailName()
@@ -458,16 +468,15 @@ class MParams
     /**
      * Get array of available css themes (to choose from).
      * This array is used in e.g. create an user account.
-     * 
      * @return array
      */
-    public static function getAvailableCssThemes()
+    public static function getAvailableInterfaces()
     {
-        $value=self::$availableCssThemes;
+        $value=self::$availableInterfaces;
         if(!is_array($value))
         {
-            self::log(array('method'=>__METHOD__,'parameter'=>'availableCssThemes','value'=>$value));
-            $value=self::$defaultAvailableCssThemes; // set the wrong value to default
+            self::log(array('method'=>__METHOD__,'parameter'=>'availableInterfaces','value'=>$value));
+            $value=self::$defaultAvailableInterfaces; // set the wrong value to default
         }
         return $value;
     }
@@ -475,7 +484,6 @@ class MParams
     /**
      * Get array of available languages (to choose from).
      * This array is used in e.g. create an user account.
-     * 
      * @return array
      */
     public static function getAvailableLanguages()
@@ -492,7 +500,6 @@ class MParams
     /**
      * Displayed in the footer of every page.
      * Copyright © 2009 by {copyrightBy}. All Rights Reserved.
-     * 
      * @return string
      */
     public static function getCopyrightBy()
@@ -507,25 +514,7 @@ class MParams
     }
 
     /**
-     * jQuery UI CSS Framework theme.
-     * Path is {root}/css/themes/{theme}
-     * 
-     * @return string
-     */
-    public static function getCssTheme()
-    {
-        $value=self::$cssTheme;
-        if(!MPath::cssThemeExists($value))
-        {
-            self::log(array('method'=>__METHOD__,'parameter'=>'cssTheme','value'=>$value));
-            $value=self::defaultCssTheme; // set the wrong value to default
-        }
-        return $value;
-    }
-
-    /**
      * Title of your cms, displayed in the header section (above menu).
-     * 
      * @return string
      */
     public static function getHeaderTitle()
@@ -542,7 +531,6 @@ class MParams
     /**
      * Html document type.
      * <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     * 
      * @return string
      */
     public static function getHtmlDoctype()
@@ -557,8 +545,27 @@ class MParams
     }
 
     /**
+     * jQuery UI CSS Framework.
+     * Path is {root}/css/ui/{interface}
+     * @return string
+     */
+    public static function getInterface()
+    {
+        $value=self::$interface;
+        $availableInterfaces=self::getAvailableInterfaces();
+        if((!is_string($value) && !is_int($value)) || !array_key_exists($value,$availableInterfaces) || !MPath::interfaceExists($value))
+        {
+            $append=W3::t('system','Available interfaces: {availableInterfaces}.',array(
+                '{availableInterfaces}'=>var_export($availableInterfaces,true)
+            ));
+            self::log(array('method'=>__METHOD__,'parameter'=>'interface','value'=>$value,'append'=>$append));
+            $value=self::defaultInterface; // set the wrong value to default
+        }
+        return $value;
+    }
+
+    /**
      * Site language.
-     * 
      * @return string
      */
     public static function getLanguage()
@@ -567,7 +574,7 @@ class MParams
         $availableLanguages=self::getAvailableLanguages();
         if((!is_string($value) && !is_int($value)) || !array_key_exists($value,$availableLanguages))
         {
-            $append=Yii::t('system','Available languages: {availableLanguages}.',array(
+            $append=W3::t('system','Available languages: {availableLanguages}.',array(
                 '{availableLanguages}'=>var_export($availableLanguages,true)
             ));
             self::log(array('method'=>__METHOD__,'parameter'=>'language','value'=>$value,'append'=>$append));
@@ -578,7 +585,6 @@ class MParams
 
     /**
      * html > head > meta[description]
-     * 
      * @return string
      */
     public static function getMetaDescription()
@@ -594,7 +600,6 @@ class MParams
 
     /**
      * html > head > meta[keywords]
-     * 
      * @return array
      */
     public static function getMetaKeywords()
@@ -611,7 +616,6 @@ class MParams
     /**
      * String representation of {@link MParams::getMetaKeywords()} array.
      * html > head > meta[keywords]
-     * 
      * @param string $glue
      * @return string
      */
@@ -628,7 +632,6 @@ class MParams
 
     /**
      * Array of model attributes that system should (not) use.
-     * 
      * @param string $model
      * @param string $attribute
      * @return mixed
@@ -664,7 +667,6 @@ class MParams
      * Page label, displayed in the top of content area,
      * right after breadcrumbs.
      * <h1 class="w3-page-label">{pageLabel}</h1>
-     * 
      * @return string
      */
     public static function getPageLabel()
@@ -679,8 +681,8 @@ class MParams
     }
 
     /**
-     * Displayed in the footer of every page.
-     * 
+     * Page title formula, used by {@link MParams::setPageTitle()} to set
+     * html > head > title
      * @return string
      */
     public static function getPageTitleFormula()
@@ -697,7 +699,6 @@ class MParams
     /**
      * HDD path to files folder.
      * Must be a valid directory accessible within your hosting.
-     * 
      * @return string
      */
     public static function getPathToFiles()
@@ -712,9 +713,23 @@ class MParams
     }
 
     /**
+     * Whether or not register jquery-ui css in {@link W3Init::css()}.
+     * @return string
+     */
+    public static function getRegisterJqueryUI()
+    {
+        $value=self::$registerJqueryUI;
+        if(!is_bool($value))
+        {
+            self::log(array('method'=>__METHOD__,'parameter'=>'registerJqueryUI','value'=>$value));
+            $value=self::defaultRegisterJqueryUI; // set the wrong value to default
+        }
+        return $value;
+    }
+
+    /**
      * Title of your site.
      * html > head > title
-     * 
      * @return string
      */
     public static function getSiteTitle()
@@ -729,10 +744,24 @@ class MParams
     }
 
     /**
+     * System language - language for system messages (mostly in logs).
+     * @return string
+     */
+    public static function getSystemLanguage()
+    {
+        $value=self::$systemLanguage;
+        if(!is_string($value) && !is_numeric($value))
+        {
+            self::log(array('method'=>__METHOD__,'parameter'=>'systemLanguage','value'=>$value));
+            $value=self::defaultSystemLanguage; // set the wrong value to default
+        }
+        return $value;
+    }
+
+    /**
      * Web-accessible url to files directory.
      * Supposed to begin with either http:// or / (slash). 
      * Should contain trailing slash.
-     * 
      * @return string
      */
     public static function getUrlToFiles()
@@ -749,7 +778,6 @@ class MParams
     /**
      * Which field to log user in with.
      * Is one of username/email/_any_
-     * 
      * @return string
      */
     public static function getUserLoginWithField()
@@ -765,7 +793,6 @@ class MParams
 
     /**
      * From: "adminEmailName" <adminEmailAddress>
-     * 
      * @param string $value
      */
     public static function setAdminEmailAddress($value)
@@ -782,7 +809,6 @@ class MParams
 
     /**
      * From: "adminEmailName" <adminEmailAddress>
-     * 
      * @param string $value
      */
     public static function setAdminEmailName($value)
@@ -798,28 +824,26 @@ class MParams
     }
 
     /**
-     * Set array of available css themes (to choose from).
-     * This array is used in e.g. create an user account.
-     * 
+     * Set array of available interfaces (to choose from).
+     * This array is used in e.g. create a member account.
      * @param array $value
      */
-    public static function setAvailableCssThemes($value)
+    public static function setAvailableInterfaces($value)
     {
         if($value===self::_default)
-            $value=self::$defaultAvailableCssThemes;
+            $value=self::$defaultAvailableInterfaces;
         if(!is_array($value))
         {
             self::log(array('method'=>__METHOD__,'value'=>$value));
-            $value=self::$defaultAvailableCssThemes; // set the wrong value to default
+            $value=self::$defaultAvailableInterfaces; // set the wrong value to default
         }
         $value=array_unique($value); // this array should not contain duplicate entries
-        self::$availableCssThemes=$value;
+        self::$availableInterfaces=$value;
     }
 
     /**
      * Set array of available languages (to choose from).
      * This array is used in e.g. create an user account.
-     * 
      * @param array $value
      */
     public static function setAvailableLanguages($value)
@@ -838,7 +862,6 @@ class MParams
     /**
      * Displayed in the footer of every page.
      * Copyright © 2009 by {copyrightBy}. All Rights Reserved.
-     * 
      * @param string $value
      */
     public static function setCopyrightBy($value)
@@ -854,26 +877,7 @@ class MParams
     }
 
     /**
-     * jQuery UI CSS Framework theme.
-     * Path is {root}/css/themes/{theme}
-     * 
-     * @param string $value
-     */
-    public static function setCssTheme($value)
-    {
-        if($value===self::_default)
-            $value=self::defaultCssTheme;
-        if(!MPath::cssThemeExists($value))
-        {
-            self::log(array('method'=>__METHOD__,'value'=>$value));
-            $value=self::defaultCssTheme; // set the wrong value to default
-        }
-        self::$cssTheme=$value;
-    }
-
-    /**
      * Title of your cms, displayed in the header section (above menu).
-     * 
      * @param string $value
      */
     public static function setHeaderTitle($value)
@@ -891,7 +895,6 @@ class MParams
     /**
      * Html document type.
      * <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     * 
      * @param string $value
      */
     public static function setHtmlDoctype($value)
@@ -907,8 +910,37 @@ class MParams
     }
 
     /**
+     * jQuery UI CSS Framework.
+     * Path is {root}/css/ui/{interface}
+     * @param string $value
+     */
+    public static function setInterface($value)
+    {
+        $availableInterfaces=self::getAvailableInterfaces();
+        if($value===self::_default)
+        {
+            if(MPath::interfaceExists(self::defaultInterface))
+                $value=self::defaultInterface;
+            else
+            {
+                self::log(array('method'=>__METHOD__,'value'=>$value,'append'=>self::defaultInterface));
+                return false;
+            }
+        }
+        // to set an interface that is not in availableInterfaces, use {@link MParams::setRegisterJqueryUI(false)}
+        else if((!is_string($value) && !is_int($value)) || !array_key_exists($value,$availableInterfaces) || !MPath::interfaceExists($value))
+        {
+            $append=W3::t('system','Available interfaces: {availableInterfaces}.',array(
+                '{availableInterfaces}'=>var_export($availableInterfaces,true)
+            ));
+            self::log(array('method'=>__METHOD__,'value'=>$value,'append'=>$append));
+            $value=self::defaultInterface; // set the wrong value to default
+        }
+        self::$interface=$value;
+    }
+
+    /**
      * Site language.
-     * 
      * @param string $value
      */
     public static function setLanguage($value)
@@ -918,7 +950,7 @@ class MParams
             $value=self::defaultLanguage;
         else if((!is_string($value) && !is_int($value)) || !array_key_exists($value,$availableLanguages))
         {
-            $append=Yii::t('system','Available languages: {availableLanguages}.',array(
+            $append=W3::t('system','Available languages: {availableLanguages}.',array(
                 '{availableLanguages}'=>var_export($availableLanguages,true)
             ));
             self::log(array('method'=>__METHOD__,'value'=>$value,'append'=>$append));
@@ -930,7 +962,6 @@ class MParams
 
     /**
      * html > head > meta[description]
-     * 
      * @param string $value
      */
     public static function setMetaDescription($value)
@@ -947,7 +978,6 @@ class MParams
 
     /**
      * html > head > meta[keywords]
-     * 
      * @param array $value
      */
     public static function setMetaKeywords($value)
@@ -965,7 +995,6 @@ class MParams
 
     /**
      * Array of model attributes that system should (not) use.
-     * 
      * @param array $value
      * @param string $model
      */
@@ -996,7 +1025,6 @@ class MParams
      * Page label, displayed in the top of content area,
      * right after breadcrumbs.
      * <h1 class="w3-page-label">{pageLabel}</h1>
-     * 
      * @param string $value
      */
     public static function setPageLabel($value)
@@ -1018,7 +1046,6 @@ class MParams
      * html > head > title
      * {siteTitle} correspond MParams::$siteTitle
      * {pageLabel} correspond MParams::$pageLabel
-     * 
      */
     public static function setPageTitle()
     {
@@ -1033,7 +1060,6 @@ class MParams
     /**
      * Page title formula, used by {@link MParams::setPageTitle()} to set
      * html > head > title
-     * 
      * @param string $value
      */
     public static function setPageTitleFormula($value)
@@ -1051,7 +1077,6 @@ class MParams
     /**
      * HDD path to files folder.
      * Must be a valid directory accessible within your hosting.
-     * 
      * @param string $value
      */
     public static function setPathToFiles($value)
@@ -1067,9 +1092,24 @@ class MParams
     }
 
     /**
+     * Whether or not register jquery-ui css in {@link W3Init::css()}.
+     * @param string $value
+     */
+    public static function setRegisterJqueryUI($value)
+    {
+        if($value===self::_default)
+            $value=self::defaultRegisterJqueryUI;
+        if(!is_bool($value))
+        {
+            self::log(array('method'=>__METHOD__,'value'=>$value));
+            $value=self::defaultRegisterJqueryUI; // set the wrong value to default
+        }
+        self::$registerJqueryUI=$value;
+    }
+
+    /**
      * Title of your site.
      * html > head > title
-     * 
      * @param string $value
      */
     public static function setSiteTitle($value)
@@ -1087,10 +1127,25 @@ class MParams
     }
 
     /**
+     * System language - language for system messages (mostly in logs).
+     * @param string $value
+     */
+    public static function setSystemLanguage($value)
+    {
+        if($value===self::_default)
+            $value=self::defaultSystemLanguage;
+        if(!is_string($value) && !is_numeric($value))
+        {
+            self::log(array('method'=>__METHOD__,'value'=>$value));
+            $value=self::defaultSystemLanguage; // set the wrong value to default
+        }
+        self::$systemLanguage=$value;
+    }
+
+    /**
      * Web-accessible url to files directory.
      * Supposed to begin with either http:// or / (slash). 
      * Should contain trailing slash.
-     * 
      * @param string $value
      */
     public static function setUrlToFiles($value)
@@ -1108,7 +1163,6 @@ class MParams
     /**
      * Which field to log user in with.
      * Should be one of username/email/_any_
-     * 
      * @param string $value
      */
     public static function setUserLoginWithField($value)

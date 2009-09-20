@@ -20,6 +20,11 @@ a:hover {
 }
 
 
+.w3-center {
+    text-align: center;
+}
+
+
 body.w3-layout-zero-column {}
 body.w3-layout-one-column {}
 body.w3-layout-two-column {}
@@ -177,9 +182,9 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 
 
 .w3-content .w3-pre-grid-action-bar {
-	float: right;
-	margin-bottom: .6em;
-	/*margin-bottom: 2.9em;*/ /*without float right: height of links = ~1.5+.4+.4=2.3; 0.6 is space between pre-grid & grid*/
+    float: right;
+    margin-bottom: .6em;
+    /*margin-bottom: 2.9em;*/ /*without float right: height of links = ~1.5+.4+.4=2.3; 0.6 is space between pre-grid & grid*/
 }
 .w3-content .w3-pre-grid-action-bar ul {
     list-style: none;
@@ -270,6 +275,11 @@ body.w3-layout-sidebar1-content-sidebar2 {}
     float: left;
     margin-left: 1em;
 }
+/* 2 cells */
+.w3-form-row .w3-form-row-input.w3-form-row-2columns {
+    float: none;
+    margin-left: 0;
+}
 .w3-form-row .w3-form-row-input .w3-form-row-text {
     font-size: 1.2em;
 }
@@ -321,6 +331,10 @@ body.w3-layout-sidebar1-content-sidebar2 {}
     cursor: pointer;
     padding: .3em 1em;
 }
+.w3-form-row-input .w3-input-button.w3-button-big {
+    font-size: 1.5em;
+    padding: .4em 1.1em;
+}
 
 
 .w3-bottom {}
@@ -347,5 +361,5 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 }
 .w3-inner-icon-left {
     margin-left: -18px; /*in the middle between link text and the left border*/
-	position: absolute;
+    position: absolute;
 }

@@ -13,13 +13,16 @@ directory. You shall see the following files and directories:
 
       assets/              reserved by yii (generate css&js), must be 777
       css/                 css files
-	files/		   folder for uploaded images and other files, must be 777
-      images/        	   images
-      protected/       	   php scripts. most important is here
-      themes/       	   themes (or skins)
-	index.php		   this is the file that actual opens any front-end script
+      files/               folder for uploaded images and other files, must be 777
+      images/              images
+      js/                  javascripts
+      protected/           php scripts. most important is here
+      themes/              themes (or skins)
+      .htaccess            mod_rewrite
+      index.php            this is the file that actual opens any front-end script
+      backend.php          this is the file that actual opens any back-end script
       CHANGELOG            describing changes in every Web3CMS release
-      LICENSE              license of Yii
+      LICENSE              license of Web3CMS
       README               this file
       UPGRADE              upgrading instructions
 
@@ -28,22 +31,23 @@ REQUIREMENTS
 ------------
 
 PHP 5.1.0 or above
-Yii Framework v1.0.5 or above (http://www.yiiframework.com)
+Yii Framework v1.0.9 or above (http://www.yiiframework.com)
 
 
 QUICK START
 -----------
 
-- In index.php specify path to your yii framework. default:
-  $yii=dirname(__FILE__).'/../yii/framework/yii.php';
+- In index.php, backend.php specify path to your yii framework. default:
+  $yii=dirname(__FILE__).'/../yii-1.0.9.r1396/framework/yii.php';
 - Create db, use dump from protected/data/schema.mysql.sql
-  specify mysql user and pass in protected/config/main.php
+  specify mysql user and pass in protected/config/main.php, protected/backend/config/main.php
 
 - Linux users: chmod 777 assets (required by yii)
+- Linux users: chmod 777 protected/backend/runtime (required by yii)
 - Linux users: chmod 777 protected/runtime (required by yii)
 - Linux users: chmod 777 files
 
-- Optionally: in index.php set YII_DEBUG to false
+- Optionally: in index.php, backend.php set YII_DEBUG to false
 - Optionally: in protected/config/main.hp comment out log trace
 
 
@@ -57,3 +61,7 @@ and join discussions with other Yii users.
 
 The Web3CMS Developer Team
 http://code.google.com/p/web3cms/
+
+
+Brought to you by E7Systems
+http://www.e7systems.com/

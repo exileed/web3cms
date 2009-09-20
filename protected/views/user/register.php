@@ -64,14 +64,14 @@
 <div class="w3-form-row">
   <div class="w3-form-row-label"><?php echo _CHtml::activeLabel($model,'language'); ?></div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::activeDropDownList($model,'language',MParams::getAvailableLanguages(),array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::activeDropDownList($model,'language',$model->getAttributeData('language'),array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>
 <div class="w3-form-row">
-  <div class="w3-form-row-label"><?php echo _CHtml::activeLabel($model,'cssTheme'); ?></div>
+  <div class="w3-form-row-label"><?php echo _CHtml::activeLabel($model,'interface'); ?></div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::activeDropDownList($model,'cssTheme',MParams::getAvailableCssThemes(),array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::activeDropDownList($model,'interface',$model->getAttributeData('interface'),array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>

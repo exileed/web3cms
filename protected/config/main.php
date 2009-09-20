@@ -60,7 +60,7 @@ return array(
                     'class'=>'CFileLogRoute', // 'CFileLogRoute','CWebLogRoute'
                     'levels'=>'trace', // 'trace,info,error,warning'
                     'logFile'=>'trace.log', //
-                    'maxFileSize'=>2048, //
+                    'maxFileSize'=>1024, //
                     // to track down problems with specific users:
                     /*'filter' => array(
                         'class' => 'CLogFilter',
@@ -79,6 +79,8 @@ return array(
             ),
         ),
         'user'=>array(
+            // override CWebUser class
+            'class'=>'_CWebUser',
             // enable cookie-based authentication
             'allowAutoLogin'=>true,
             // force 401 HTTP error if authentication needed
@@ -86,8 +88,8 @@ return array(
         ),
         'db'=>array(
             //'connectionString'=>'sqlite:'.dirname(__FILE__).'/../data/web3cms.db',
-            // CREATE DATABASE `web3cms_r7` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-            'connectionString'=>'mysql:host=localhost;dbname=web3cms_r7',
+            // CREATE DATABASE `web3cms_r8` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+            'connectionString'=>'mysql:host=localhost;dbname=web3cms_r8',
             'username'=>'web3cms', //'web3cms'
             'password'=>'web3cms', //'web3cms'
             'charset'=>'utf8', //comment this if you are using a different db charset

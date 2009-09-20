@@ -1,7 +1,7 @@
 <?php if(MParams::getHtmlDoctype()==='transitional'): ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <?php elseif(MParams::getHtmlDoctype()==='strict'): ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<?php echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'."\n"; ?>
 <?php endif; ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -33,7 +33,7 @@
     'items'=>array(
         array('label'=>Yii::t('t','Home',array(1)), 'url'=>array('site/index')),
         array('label'=>Yii::t('t','Contact',array(0)), 'url'=>array('site/contact')),
-        array('label'=>Yii::t('t','Login',array(0)), 'url'=>array('user/login'), 'visible'=>Yii::app()->user->isGuest),
+        array('label'=>Yii::t('t','Login',array(0)), 'url'=>Yii::app()->user->loginUrl, 'visible'=>Yii::app()->user->isGuest),
         array('label'=>Yii::t('t','Register',array(1)), 'url'=>array('user/register'), 'visible'=>Yii::app()->user->isGuest),
         array('label'=>Yii::t('t','My profile'), 'url'=>array('user/show'), 'visible'=>!Yii::app()->user->isGuest),
         array('label'=>Yii::t('t','Logout'), 'url'=>array('user/logout'), 'visible'=>!Yii::app()->user->isGuest),

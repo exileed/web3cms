@@ -1,5 +1,5 @@
 
-         Upgrading Instructions for Web3CMS v1.0.5.r3
+         Upgrading Instructions for Web3CMS v1.0.X.rY
          ============================================
 
 !!!IMPORTANT!!!
@@ -9,7 +9,46 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
-Upgrading from v1.0.5.r2
+Upgrading from v1.0.X.rY
 ------------------------
-- Script completely changed since it was a 'clean' skeleton app created by yii cmd.
+- We are still far from the finished environment.
   Need to replace all files.
+
+
+
+
+Upgrading from one version of Yii Framework to another on your own
+------------------------------------------------------------------
+- Open and compare framework/web/helpers/CHtml.php of both Yii versions,
+  open web3cms/protected/components/_CHtml.php, check all methods defined in it,
+  following instructions in comments and when necessary, copy code
+  from newer CHtml into _CHtml.
+  If no method from _CHtml changed in newer CHtml, then you don't have to modify _CHtml.
+
+- Open web3cms/protected/models/UserLoginForm.php, check __construct() method,
+  compare framework/web/CFormModel.php of both Yii versions,
+  if parameters of __construct() in CFormModel were changed, then
+  change it accordingly in UserLoginForm. Currently it is
+  __construct($attributes=array(),$scenario='')
+  parent::__construct($attributes,$scenario);
+  95% that you won't need to do anything here.
+
+- Open web3cms/protected/components/_CWebUser.php, check restoreFromCookie() method,
+  compare framework/web/auth/CWebUser.php of both Yii versions,
+  if restoreFromCookie() in CFormModel were changed, then
+  change it accordingly in UserLoginForm.
+  97% that you won't need to do anything here.
+
+- Open framework/web/auth/CBaseUserIdentity.php of both Yii versions,
+  open web3cms/protected/components/_CUserIdentity.php, make sure
+  than no constants from _CUserIdentity have the same value as constants
+  in CBaseUserIdentity. If there is a match, simple change value of constant
+  in _CUserIdentity, e.g.
+  const ERROR_IS_NOT_ADMINISTRATOR=12;
+  to
+  const ERROR_IS_NOT_ADMINISTRATOR=23;
+  99% that you won't need to do anything here.
+
+- Do the same with web3cms/protected/components/W3.php t() and
+  framework/YiiBase.php t() - make sure that parameters in both functions
+  are the same, and if necessary - update W3::t().

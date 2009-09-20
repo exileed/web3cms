@@ -1,6 +1,6 @@
 <?php
 
-class UserDetails extends CActiveRecord
+class UserDetails extends _CActiveRecord
 {
     /**
      * The followings are the available columns in table 'UserDetails':
@@ -16,21 +16,26 @@ class UserDetails extends CActiveRecord
      * @var string $gender
      * @var string $birthDate
      * @var string $textStatus
-     * @var string $lastLoginOn
-     * @var string $lastLoginGmtOn
-     * @var string $lastSeenOn
-     * @var string $lastSeenGmtOn
+     * @var string $lastLoginDate
+     * @var string $lastLoginGmtDate
+     * @var string $lastVisitDate
+     * @var string $lastVisitGmtDate
      * @var integer $totalTimeLoggedIn
      * @var string $secretQuestion
      * @var string $secretAnswer
      * @var string $adminComment
-     * @var string $oldPassword
-     * @var string $updatedOn
-     * @var string $updatedGmtOn
+     * @var string $updateDate
+     * @var string $updateGmtDate
      */
     // userId is not in safeAttributes
     //public $userId;
     public $emailConfirmationKey;
+    public $isEmailVisible;
+
+    const EMAIL_IS_CONFIRMED='1';
+    const EMAIL_IS_NOT_CONFIRMED='0';
+    const EMAIL_IS_VISIBLE='1';
+    const EMAIL_IS_NOT_VISIBLE='0';
 
     /**
      * Returns the static model of the specified AR class.
@@ -44,7 +49,7 @@ class UserDetails extends CActiveRecord
     /**
      * @return string the associated database table name
      */
-    public function tableName()
+    protected function _tableName()
     {
         return 'UserDetails';
     }
@@ -60,7 +65,6 @@ class UserDetails extends CActiveRecord
             array('middleName','length','max'=>128),
             array('lastName','length','max'=>128),
             array('secretAnswer','length','max'=>255),
-            array('oldPassword','length','max'=>128),
             array('totalTimeLoggedIn', 'numerical', 'integerOnly'=>true),
         );
     }
@@ -73,6 +77,7 @@ class UserDetails extends CActiveRecord
     {
         return array(
             'emailConfirmationKey',
+            'isEmailVisible',
         );
     }
 
@@ -93,11 +98,11 @@ class UserDetails extends CActiveRecord
     public function attributeLabels()
     {
         return array(
+            'isEmailConfirmed'=>Yii::t('t','Email is confirmed'),
+            'isEmailVisible'=>Yii::t('t','Email is visible'),
             'userId'=>'User',
             'passwordHint'=>'Password Hint',
-            'isEmailConfirmed'=>'Is Email Confirmed',
             'emailConfirmationKey'=>'Email Confirmation Key',
-            'isEmailVisible'=>'Is Email Visible',
             'isScreenNameEditable'=>'Is Screen Name Editable',
             'firstName'=>'First Name',
             'middleName'=>'Middle Name',
@@ -105,17 +110,120 @@ class UserDetails extends CActiveRecord
             'gender'=>'Gender',
             'birthDate'=>'Birth Date',
             'textStatus'=>'Text Status',
-            'lastLoginOn'=>'Last Login On',
-            'lastLoginGmtOn'=>'Last Login Gmt On',
-            'lastSeenOn'=>'Last Seen On',
-            'lastSeenGmtOn'=>'Last Seen Gmt On',
+            'lastLoginDate'=>'Last login date',
+            'lastLoginGmtDate'=>'Last login date (GMT)',
+            'lastVisitDate'=>'Last visit date',
+            'lastVisitGmtDate'=>'Last visit date (GMT)',
             'totalTimeLoggedIn'=>'Total Time Logged In',
             'secretQuestion'=>'Secret Question',
             'secretAnswer'=>'Secret Answer',
             'adminComment'=>'Admin Comment',
-            'oldPassword'=>'Old Password',
-            'updatedOn'=>'Updated On',
-            'updatedGmtOn'=>'Updated Gmt On',
+            'updateDate'=>'Update date',
+            'updateGmtDate'=>'Update date (GMT)',
         );
+    }
+
+    /**
+     * Prepares attributes before performing validation.
+     */
+    protected function beforeValidate($on)
+    {
+        //if($on==='update')
+        //{
+            if(isset($this->isEmailVisible) && $this->isEmailVisible!==self::EMAIL_IS_VISIBLE && $this->isEmailVisible!==self::EMAIL_IS_NOT_VISIBLE)
+                // convert empty value "" to null
+                $this->isEmailVisible=null;
+        //}
+        return true;
+    }
+
+    /**
+     * Last model processing before save in db.
+     */
+    protected function beforeSave()
+    {
+        //if($this->isNewRecord)
+        //{
+            $this->updateDate=date('Y-m-d H:i:s');
+            $this->updateGmtDate=gmdate('Y-m-d H:i:s');
+        //}
+        return true;
+    }
+
+    /**
+     * Returns i18n (translated) representation of the attribute value for view.
+     * @param string the attribute name
+     * @return string the attribute value's translation
+     */
+    public function getAttributeView($attribute)
+    {
+        switch($attribute)
+        {
+            case 'isEmailConfirmed':
+                switch($this->isEmailConfirmed)
+                {
+                    case self::EMAIL_IS_CONFIRMED:
+                        return Yii::t('attr','Yes (Member has confirmed indicated email)');
+                        break;
+                    case self::EMAIL_IS_NOT_CONFIRMED:
+                        return Yii::t('attr','No (Member has not yet confirmed indicated email)');
+                        break;
+                    default:
+                        return $this->isEmailConfirmed;
+                        break;
+                }
+            case 'isEmailVisible':
+                switch($this->isEmailVisible)
+                {
+                    case self::EMAIL_IS_VISIBLE:
+                        return Yii::t('attr','Yes (Email is visible by all members)');
+                        break;
+                    case self::EMAIL_IS_NOT_VISIBLE:
+                        return Yii::t('attr','No (Email is not visible by other members)');
+                        break;
+                    case null:
+                        return Yii::t('attr','By default (Email is not visible by other members)');
+                        break;
+                    default:
+                        return $this->isEmailVisible;
+                        break;
+                }
+            default:
+                return $this->$attribute;
+        }
+    }
+
+    /**
+     * Returns data array of the attribute for create/update.
+     * @param string the attribute name
+     * @return array the attribute's data
+     */
+    public function getAttributeData($attribute)
+    {
+        switch($attribute)
+        {
+            case 'isEmailConfirmed':
+                return array(
+                    self::EMAIL_IS_NOT_CONFIRMED=>Yii::t('attr','No (Member has not yet confirmed indicated email)'),
+                    self::EMAIL_IS_CONFIRMED=>Yii::t('attr','Yes (Member has confirmed indicated email)'),
+                );
+            case 'isEmailVisible':
+                return array(
+                    null=>Yii::t('attr','By default (Email is not visible by other members)'),
+                    self::EMAIL_IS_NOT_VISIBLE=>Yii::t('attr','No (Email is not visible by other members)'),
+                    self::EMAIL_IS_VISIBLE=>Yii::t('attr','Yes (Email is visible by all members)'),
+                );
+            default:
+                return $this->$attribute;
+        }
+    }
+
+    /**
+     * Whether user email is visible by all members.
+     * @return bool
+     */
+    public function isEmailVisible()
+    {
+        return $this->isEmailVisible==='1';
     }
 }

@@ -36,7 +36,7 @@ class _CUserIdentity extends CUserIdentity
             $this->errorCode=self::ERROR_USERNAME_INVALID;
         else if(md5($this->password)!==$user->password)
             $this->errorCode=self::ERROR_PASSWORD_INVALID;
-        else if($user->isActive==='0')
+        else if($user->isActive===User::IS_NOT_ACTIVE)
             $this->errorCode=self::ERROR_ACCOUNT_IS_INACTIVE;
         else if(MArea::isBackend() && !User::isAdministrator($user->accessType))
         {

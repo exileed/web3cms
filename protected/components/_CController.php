@@ -26,10 +26,10 @@ class _CController extends CController
         // set user preferences (interface, language, and so on)
         if(!Yii::app()->user->isGuest)
         {
-            if(isset(Yii::app()->user->interface))
+            if(isset(Yii::app()->user->interface) && !empty(Yii::app()->user->interface))
                 // set user preferred interface
                 W3::setInterface(Yii::app()->user->interface);
-            if(isset(Yii::app()->user->language))
+            if(isset(Yii::app()->user->language) && !empty(Yii::app()->user->language))
                 // set user preferred language
                 W3::setLanguage(Yii::app()->user->language);
         }

@@ -18,9 +18,11 @@ return array(
         'application.extensions.*',
     ),
 
+    // main is the default layout
+    'layout'=>'main',
     // alternate layoutPath
     'layoutPath'=>dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'_layouts'.DIRECTORY_SEPARATOR,
-
+    
     // application-level parameters that can be accessed
     // using Yii::app()->params['paramName'] and MParams class
     'params'=>require(dirname(__FILE__).'/params.php'),
@@ -32,6 +34,17 @@ return array(
 
     // application components
     'components'=>array(
+        'db'=>array(
+            //'connectionString'=>'sqlite:'.dirname(__FILE__).'/../data/web3cms.db',
+            // CREATE DATABASE `web3cms_r9` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+            'connectionString'=>'mysql:host=localhost;dbname=web3cms_r9',
+            'username'=>'web3cms', //'web3cms'
+            'password'=>'web3cms', //'web3cms'
+            'charset'=>'utf8', //comment this if you are using a different db charset
+        ),
+        'errorHandler'=>array(
+            'errorAction'=>'site/error',
+        ),
         'log'=>array(
             'class'=>'CLogRouter',
             'routes'=>array(
@@ -62,13 +75,13 @@ return array(
                     'logFile'=>'trace.log', //
                     'maxFileSize'=>1024, //
                     // to track down problems with specific users:
-                    /*'filter' => array(
-                        'class' => 'CLogFilter',
-                        'prefixSession' => true,
-                        'prefixUser' => false,
-                        'logUser' => false,
-                        'logVars' => array(),
-                    ),*/
+                    //'filter' => array(
+                        //'class' => 'CLogFilter',
+                        //'prefixSession' => true,
+                        //'prefixUser' => false,
+                        //'logUser' => false,
+                        //'logVars' => array(),
+                    //),
                 ),
                 array(
                     'class'=>'CFileLogRoute',
@@ -78,6 +91,13 @@ return array(
                 ),
             ),
         ),
+        'urlManager'=>array(
+            'urlFormat'=>'path',
+            //'caseSensitive'=>false,
+            //'showScriptName'=>true,
+            //'urlSuffix'=>'.html',
+            'rules'=>require(dirname(__FILE__).'/routes.php'),
+        ),
         'user'=>array(
             // override CWebUser class
             'class'=>'_CWebUser',
@@ -85,20 +105,6 @@ return array(
             'allowAutoLogin'=>true,
             // force 401 HTTP error if authentication needed
             'loginUrl'=>array('user/login'),
-        ),
-        'db'=>array(
-            //'connectionString'=>'sqlite:'.dirname(__FILE__).'/../data/web3cms.db',
-            // CREATE DATABASE `web3cms_r8` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-            'connectionString'=>'mysql:host=localhost;dbname=web3cms_r8',
-            'username'=>'web3cms', //'web3cms'
-            'password'=>'web3cms', //'web3cms'
-            'charset'=>'utf8', //comment this if you are using a different db charset
-        ),
-        'urlManager'=>array(
-            'urlFormat'=>'path', //comment this if htaccess is not supported by your server
-            'rules'=>array(
-                //'user/confirm-email'=>'user/confirmEmail',
-            ),
         ),
     ),
 );

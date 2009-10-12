@@ -2,6 +2,20 @@
                    Web3CMS Change Log
                    ==================
 
+Version 1.0.9.r9 (update1) October 11, 2009
+-------------------------------------------
+- Inf: System datetime fields switched to int(10) time
+       createDate DATETIME -> createTime INTEGER(10)
+- Mod: backend/config/main.php : backend config is now a union with frontend config
+       old way was error prone. thanks for idea to forum member Maxximus
+- New: components/MDate.php : date manager
+       is used to display dates and number of seconds as 'full', 'long', 'medium' and 'short'
+- New: components/WPreItemActionBar.php : pre-item-action-bar widget
+       is used to display the page specific links usually between page label and content main item
+- New: components/MClientScript.php : manage client script
+       is used to register repeated js / css code
+- Mod: MParams is fully optimized
+
 Version 1.0.9.r8 (backend) September 20, 2009
 ---------------------------------------------
 - Upg: from Yii 1.0.8 to Yii 1.0.9

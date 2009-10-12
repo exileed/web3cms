@@ -40,6 +40,7 @@ class WMainMenu extends CWidget
                 $item2['url']=$item['url'];
             $pattern=isset($item['pattern'])?$item['pattern']:$item['url'];
             $item2['active']=$this->isActive($pattern,$controller->uniqueID,$action->id);
+            $item2['options']=isset($item['options'])?$item['options']:'';
             $items[]=$item2;
         }
         Yii::app()->getClientScript()->registerScript('mainmenu',

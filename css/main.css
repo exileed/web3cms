@@ -161,7 +161,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
     color: #555;
     text-decoration: none;
 }
-.w3-content ul.w3-breadcrumbs li.active a {
+.w3-content ul.w3-breadcrumbs li.w3-active a {
     color: #555;
 }
 .w3-content ul.w3-breadcrumbs li a span {
@@ -181,33 +181,33 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 }
 
 
-.w3-content .w3-pre-grid-action-bar {
+.w3-content .w3-pre-item-action-bar {
     float: right;
     margin-bottom: .6em;
     /*margin-bottom: 2.9em;*/ /*without float right: height of links = ~1.5+.4+.4=2.3; 0.6 is space between pre-grid & grid*/
 }
-.w3-content .w3-pre-grid-action-bar ul {
+.w3-content .w3-pre-item-action-bar ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
-.w3-content .w3-pre-grid-action-bar ul li {
+.w3-content .w3-pre-item-action-bar ul li {
     float: left;
     margin: 0 0 0 .3em;
     padding: 0;
 }
-.w3-content .w3-pre-grid-action-bar ul li.w3-first {
+.w3-content .w3-pre-item-action-bar ul li.w3-first {
     margin-left: 0;
 }
 /*inspired from http://jqueryui.com/themeroller/ 'Open Dialog' link*/
-.w3-content .w3-pre-grid-action-bar ul li a {
+.w3-content .w3-pre-item-action-bar ul li a {
     display: block;
     padding: .4em 1em;
 }
-.w3-content .w3-pre-grid-action-bar ul li a.w3-with-icon {
+.w3-content .w3-pre-item-action-bar ul li a.w3-with-icon {
     padding-left: 20px; /*icon's size is 16px*/
 }
-.w3-content .w3-pre-grid-action-bar ul li a:hover {
+.w3-content .w3-pre-item-action-bar ul li a:hover {
     text-decoration: none;
 }
 
@@ -237,9 +237,40 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 /* right cell */
 .w3-grid-row .w3-grid-row-value {
     float: left;
-    margin-left: 1em;
     font-size: 1.2em;
+    margin-left: 1em;
 }
+
+
+.w3-content .w3-items-list .w3-item {
+    padding: 1em 1.4em; /*just like ui-tabs-panel*/
+}
+
+.w3-content .w3-items-list .w3-item {
+	font-size: 1.2em;
+    margin-top: .8em;
+}
+.w3-content .w3-items-list .w3-item.w3-first {
+    margin-top: 0;
+}
+
+/* left cell */
+/*.w3-grid-row .w3-grid-row-label {*/
+    /*color: #222222 is from ui-widget-content*/
+    /*float: left;*/
+    /*font-family: sans-serif;*/ /*is default in most browsers*/
+    /*font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    width: 12em;
+}*/
+
+/* right cell */
+/*.w3-grid-row .w3-grid-row-value {
+    float: left;
+    font-size: 1.2em;
+    margin-left: 1em;
+}*/
 
 
 /* form and main-form are looking the same... differentiate it for novices*/
@@ -352,7 +383,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 
 
 .w3-widget {
-    font-size: 1.3em;
+    font-size: 1.2em; /*1.3em*/
 }
 
 .w3-icon-left {

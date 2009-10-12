@@ -84,7 +84,7 @@ class UserController extends _CController
             if($form->validate())
             {
                 // set the welcome message
-                MUserFlash::setTopSuccess(Yii::t('user',
+                MUserFlash::setTopSuccess(Yii::t('feedback',
                     '{screenName}, you have been successfully logged in.',
                     array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
                 ));
@@ -94,10 +94,8 @@ class UserController extends _CController
                     // update user stats
                     if(($userDetails=UserDetails::model()->findByPk(Yii::app()->user->id))!==false)
                         $userDetails->saveAttributes(array(
-                            'lastLoginDate'=>date('Y-m-d H:i:s'),
-                            'lastLoginGmtDate'=>gmdate('Y-m-d H:i:s'),
-                            'lastVisitDate'=>date('Y-m-d H:i:s'),
-                            'lastVisitGmtDate'=>gmdate('Y-m-d H:i:s'),
+                            'lastLoginTime'=>time(),
+                            'lastVisitTime'=>time(),
                             'totalTimeLoggedIn'=>$userDetails->totalTimeLoggedIn+60
                         ));
                     else
@@ -117,7 +115,7 @@ class UserController extends _CController
         }
         if(!Yii::app()->user->isGuest)
             // warn user if already logged in
-            MUserFlash::setTopInfo(Yii::t('user',
+            MUserFlash::setTopInfo(Yii::t('feedback',
                 '{screenName}, this action will log you out from your current account.',
                 array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
             ));
@@ -132,15 +130,17 @@ class UserController extends _CController
     {
         $isLoggedIn=!Yii::app()->user->isGuest;
         $screenName=$isLoggedIn ? Yii::app()->user->screenName : '';
-        // log user out and destroy all sessions
+        // log user out and destroy all session data
+        // if you want to keep the session alive, then use Yii::app()->user->logout(false) instead
         Yii::app()->user->logout();
-        if($isLoggedIn) // if user was logged in, we should notify of being logged out
+        // if user was logged in, we should notify about logout
+        if($isLoggedIn)
         {
             if(!Yii::app()->getSession()->getIsStarted())
-                // have to re-open session destroyed on logout. this is necessary for user flash
+                // if session is destroyed, we need to re-open it. this is necessary for user flash
                 Yii::app()->getSession()->open();
             // set the goodbye message
-            MUserFlash::setTopInfo(Yii::t('user',
+            MUserFlash::setTopInfo(Yii::t('feedback',
                 '{screenName}, you have been successfully logged out.',
                 array('{screenName}'=>'<strong>'.$screenName.'</strong>')
             ));

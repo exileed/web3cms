@@ -16,21 +16,14 @@ class UserDetails extends _CActiveRecord
      * @var string $gender
      * @var string $birthDate
      * @var string $textStatus
-     * @var string $lastLoginDate
-     * @var string $lastLoginGmtDate
-     * @var string $lastVisitDate
-     * @var string $lastVisitGmtDate
+     * @var integer $lastLoginTime
+     * @var integer $lastVisitTime
      * @var integer $totalTimeLoggedIn
      * @var string $secretQuestion
      * @var string $secretAnswer
      * @var string $adminComment
-     * @var string $updateDate
-     * @var string $updateGmtDate
+     * @var integer $updateTime
      */
-    // userId is not in safeAttributes
-    //public $userId;
-    public $emailConfirmationKey;
-    public $isEmailVisible;
 
     const EMAIL_IS_CONFIRMED='1';
     const EMAIL_IS_NOT_CONFIRMED='0';
@@ -47,7 +40,7 @@ class UserDetails extends _CActiveRecord
     }
 
     /**
-     * @return string the associated database table name
+     * @return string the associated database table name (without prefix)
      */
     protected function _tableName()
     {
@@ -89,6 +82,8 @@ class UserDetails extends _CActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
+            // user details has an 'user' record associated
+            'user' => array(self::BELONGS_TO,'User','userId','alias'=>'UserDetailsUser'),
         );
     }
 
@@ -100,6 +95,7 @@ class UserDetails extends _CActiveRecord
         return array(
             'isEmailConfirmed'=>Yii::t('t','Email is confirmed'),
             'isEmailVisible'=>Yii::t('t','Email is visible'),
+            'updateTime'=>Yii::t('t','Update date'),
             'userId'=>'User',
             'passwordHint'=>'Password Hint',
             'emailConfirmationKey'=>'Email Confirmation Key',
@@ -110,16 +106,12 @@ class UserDetails extends _CActiveRecord
             'gender'=>'Gender',
             'birthDate'=>'Birth Date',
             'textStatus'=>'Text Status',
-            'lastLoginDate'=>'Last login date',
-            'lastLoginGmtDate'=>'Last login date (GMT)',
-            'lastVisitDate'=>'Last visit date',
-            'lastVisitGmtDate'=>'Last visit date (GMT)',
+            'lastLoginTime'=>'Last login date',
+            'lastVisitTime'=>'Last visit date',
             'totalTimeLoggedIn'=>'Total Time Logged In',
             'secretQuestion'=>'Secret Question',
             'secretAnswer'=>'Secret Answer',
             'adminComment'=>'Admin Comment',
-            'updateDate'=>'Update date',
-            'updateGmtDate'=>'Update date (GMT)',
         );
     }
 
@@ -128,27 +120,23 @@ class UserDetails extends _CActiveRecord
      */
     protected function beforeValidate($on)
     {
-        //if($on==='update')
-        //{
-            if(isset($this->isEmailVisible) && $this->isEmailVisible!==self::EMAIL_IS_VISIBLE && $this->isEmailVisible!==self::EMAIL_IS_NOT_VISIBLE)
-                // convert empty value "" to null
-                $this->isEmailVisible=null;
-        //}
-        return true;
+        if(isset($_POST[__CLASS__]['isEmailConfirmed']) && $this->isEmailConfirmed!==self::EMAIL_IS_CONFIRMED && $this->isEmailConfirmed!==self::EMAIL_IS_NOT_CONFIRMED)
+            // enum('0','1') null
+            $this->isEmailConfirmed=null;
+        if(isset($_POST[__CLASS__]['isEmailVisible']) && $this->isEmailVisible!==self::EMAIL_IS_VISIBLE && $this->isEmailVisible!==self::EMAIL_IS_NOT_VISIBLE)
+            // enum('0','1') null
+            $this->isEmailVisible=null;
+        // parent does all common work
+        return parent::beforeValidate($on);
     }
 
     /**
      * Last model processing before save in db.
      */
-    protected function beforeSave()
+    /*protected function beforeSave()
     {
-        //if($this->isNewRecord)
-        //{
-            $this->updateDate=date('Y-m-d H:i:s');
-            $this->updateGmtDate=gmdate('Y-m-d H:i:s');
-        //}
         return true;
-    }
+    }*/
 
     /**
      * Returns i18n (translated) representation of the attribute value for view.

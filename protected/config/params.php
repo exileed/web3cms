@@ -49,10 +49,10 @@ return array(
     'copyrightBy'=>'My Company', //'My Company'
     // title of your cms, displayed in the header section (above menu)
     // reset this on any page with MParams::setHeaderTitle($title);
-    'headerTitle'=>'My Web3CMS', //My Web3CMS
+    'headerTitle'=>'My Web3CMS', //'My Web3CMS'
     // html doctype. possible values: strict/transitional
     // reset this on any page with MParams::setHtmlDoctype('transitional');
-    'htmlDoctype'=>'transitional', //transitional
+    'htmlDoctype'=>'transitional', //'transitional'
     // jQuery UI CSS Framework to use by default
     // possible values: see 'availableInterfaces' above
     // copy any from http://jqueryui.com/themeroller to {root}/css/ui/{interface}

@@ -1,6 +1,7 @@
 <?php
 /**
- * Manage Frontend & Backend Area
+ * MArea class file.
+ * Manage frontend & backend area.
  */
 class MArea
 {

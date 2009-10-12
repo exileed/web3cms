@@ -55,6 +55,15 @@ class _CHtml extends CHtml
     }
     
     /* 100% parent */
+    public static function activeLabelEx($model,$attribute,$htmlOptions=array())
+    {
+        $realAttribute=$attribute;
+        self::resolveName($model,$attribute); // strip off square brackets if any
+        $htmlOptions['required']=$model->isAttributeRequired($attribute,self::$scenario);
+        return self::activeLabel($model,$realAttribute,$htmlOptions);
+    }
+    
+    /* 100% parent */
     public static function activeTextField($model,$attribute,$htmlOptions=array())
     {
         self::resolveNameID($model,$attribute,$htmlOptions);
@@ -131,7 +140,7 @@ class _CHtml extends CHtml
         if($content!=='')
         {
             if($header===null)
-                $header=/*'<p>'.*/Yii::t('user','Please fix the following input errors:')/*.'</p>'*/;
+                $header=/*'<p>'.*/Yii::t('feedback','Please fix the following input errors:')/*.'</p>'*/;
             if(!isset($htmlOptions['class']))
                 $htmlOptions['class']=self::$errorSummaryCss;
             return /*self::tag('div',$htmlOptions,*/$header."\n<ul>\n$content</ul>".$footer/*)*/;

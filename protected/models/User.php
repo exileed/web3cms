@@ -14,28 +14,8 @@ class User extends _CActiveRecord
      * @var string $accessType
      * @var integer $accessLevel
      * @var string $isActive
-     * @var string $createDate
-     * @var string $createGmtDate
+     * @var integer $createTime
      */
-    // id is not in safeAttributes
-    //public $id;
-    //public $accessLevel;
-    //public $accessType;
-    //public $createDate;
-    //public $createGmtDate;
-    public $email;
-    public $email2;
-    public $emailConfirmationKey;
-    public $interface;
-    //public $isActive;
-    public $language;
-    public $password;
-    public $password2;
-    public $screenName;
-    public $screenNameSame;
-    public $username;
-    public $verifyCode;
-    //protected static $_isAction;
 
     private static $_privateData;
 
@@ -47,8 +27,8 @@ class User extends _CActiveRecord
     const CLIENT_T='Client';
     const CONSULTANT='consultant';
     const CONSULTANT_T='Consultant';
-    const MODERATOR='moderator';
-    const MODERATOR_T='Moderator';
+    const MANAGER='manager';
+    const MANAGER_T='Manager';
     const ADMINISTRATOR='administrator';
     const ADMINISTRATOR_T='Administrator';
 
@@ -62,7 +42,7 @@ class User extends _CActiveRecord
     }
 
     /**
-     * @return string the associated database table name
+     * @return string the associated database table name (without prefix)
      */
     protected function _tableName()
     {
@@ -90,6 +70,17 @@ class User extends _CActiveRecord
             // on confirmEmailUrl
             // email and emailConfirmationKey are required
             array('email, emailConfirmationKey', 'required', 'on'=>'confirmEmailUrl'),
+            // on create
+            // email, password, screenName and username are required
+            array('email, password, screenName, username', 'required', 'on'=>'create'),
+            // email, screenName and username have to be unique
+            array('email, screenName, username', 'unique', 'on'=>'create'),
+            // email has to be a valid email address
+            array('email', 'email', 'on'=>'create'),
+            // set min/max length
+            array('password', 'length', 'min'=>4, 'max'=>64, 'on'=>'create'),
+            array('screenName', 'length', 'min'=>3, 'max'=>32, 'on'=>'create'),
+            array('username', 'length', 'min'=>3, 'max'=>32, 'on'=>'create'),
             // on register
             // email, password, screenName and username are required
             array('email, password, screenName, username', 'required', 'on'=>'register'),
@@ -146,7 +137,11 @@ class User extends _CActiveRecord
     {
         return array(
             // user has a 'details' record associated
-            'details' => array(self::HAS_ONE, 'UserDetails', 'userId'),
+            'details' => array(self::HAS_ONE,'UserDetails','userId','alias'=>'UserUserDetails'),
+            // one user has many 'manager time' records associated
+            'allManagerTime' => array(self::HAS_MANY,'Time','managerId','order'=>"??.`id` ASC",'alias'=>'UserManagerTime'),
+            // one user has many 'consultant time' records associated
+            'allConsultantTime' => array(self::HAS_MANY,'Time','consultantId','order'=>"??.`id` ASC",'alias'=>'UserConsultantTime'),
         );
     }
 
@@ -158,14 +153,13 @@ class User extends _CActiveRecord
         return array(
             'accessLevel'=>Yii::t('t','Access level'),
             'accessType'=>Yii::t('t','Access type'),
-            'createDate'=>Yii::t('t','Registration date'),
-            'createGmtDate'=>Yii::t('t','Registration date (GMT)'),
+            'createTime'=>Yii::t('t','Registration date'),
             'email'=>Yii::t('t','Email'),
             'email2'=>Yii::t('t','Repeat email'),
             'emailConfirmationKey'=>Yii::t('t','Confirmation key'),
             'id'=>Yii::t('t','ID'),
             'interface'=>Yii::t('t','Interface'),
-            'isActive'=>Yii::t('t','Is active'),
+            'isActive'=>Yii::t('t','Member is active'),
             'language'=>Yii::t('t','Language'),
             'password'=>Yii::t('t','Password'),
             'password2'=>Yii::t('t','Repeat password'),
@@ -181,13 +175,22 @@ class User extends _CActiveRecord
      */
     protected function beforeValidate($on)
     {
-        if($on==='register')
+        if($on==='create' || $on==='register')
         {
             if($this->screenNameSame)
                 // make screenName same as username
                 $this->screenName=$this->username;
         }
-        return true;
+        if(isset($_POST[__CLASS__]['isActive']) && $this->isActive!==self::IS_ACTIVE && $this->isActive!==self::IS_NOT_ACTIVE)
+            // enum('0','1') null
+            $this->isActive=null;
+        if(isset($_POST[__CLASS__]['accessType']) && $this->accessType!==self::MEMBER && $this->accessType!==self::CLIENT
+            && $this->accessType!==self::CONSULTANT && $this->accessType!==self::MANAGER && $this->accessType!==self::ADMINISTRATOR
+        )
+            // we hope to switch to roles in nearest future
+            $this->accessType=self::MEMBER;
+        // parent does all common work
+        return parent::beforeValidate($on);
     }
 
     /**
@@ -195,12 +198,9 @@ class User extends _CActiveRecord
      */
     protected function beforeSave()
     {
-        if($this->isNewRecord)
-        {
+        if(isset($_POST[__CLASS__]['password']))
+            // password needs to be encrypted
             $this->password=md5($this->password);
-            $this->createDate=date('Y-m-d H:i:s');
-            $this->createGmtDate=gmdate('Y-m-d H:i:s');
-        }
         return true;
     }
 
@@ -236,8 +236,8 @@ class User extends _CActiveRecord
                     case self::CONSULTANT:
                         return Yii::t('t',self::CONSULTANT_T);
                         break;
-                    case self::MODERATOR:
-                        return Yii::t('t',self::MODERATOR_T);
+                    case self::MANAGER:
+                        return Yii::t('t',self::MANAGER_T);
                         break;
                     case self::ADMINISTRATOR:
                         return Yii::t('t',self::ADMINISTRATOR_T);
@@ -291,7 +291,7 @@ class User extends _CActiveRecord
                     self::MEMBER=>Yii::t('t',self::MEMBER_T),
                     self::CLIENT=>Yii::t('t',self::CLIENT_T),
                     self::CONSULTANT=>Yii::t('t',self::CONSULTANT_T),
-                    self::MODERATOR=>Yii::t('t',self::MODERATOR_T),
+                    self::MANAGER=>Yii::t('t',self::MANAGER_T),
                     self::ADMINISTRATOR=>Yii::t('t',self::ADMINISTRATOR_T),
                 );
             case 'interface':
@@ -307,6 +307,18 @@ class User extends _CActiveRecord
             default:
                 return $this->$attribute;
         }
+    }
+
+    /**
+     * Find all active members.
+     * @return array of User objects
+     */
+    public static function findAllActiveRecords()
+    {
+        $criteria=new CDbCriteria;
+        $t=self::model()->tableName();
+        $criteria->condition="`$t`.`isActive` IS NULL OR `$t`.`isActive` != '".self::IS_NOT_ACTIVE."'";
+        return self::model()->findAll($criteria);
     }
 
     /**
@@ -402,15 +414,15 @@ class User extends _CActiveRecord
     }
 
     /**
-     * Whether user is moderator.
+     * Whether user is manager.
      * @param string accessType
      * @return bool
      */
-    public static function isModerator($accessType=null)
+    public static function isManager($accessType=null)
     {
         if(!is_null($accessType))
-            return $accessType===self::MODERATOR;
-        return self::getPrivateData('accessType')===self::MODERATOR;
+            return $accessType===self::MANAGER;
+        return self::getPrivateData('accessType')===self::MANAGER;
     }
 
     /**
@@ -428,7 +440,7 @@ class User extends _CActiveRecord
     /**
      * Whether user is accessType.
      * Use this function if you have a custom accessType in db,
-     * custom = not one of (member, client, consultant, moderator, administrator).
+     * custom = not one of (member, client, consultant, manager, administrator).
      * @param string accessType
      * @return bool
      */
@@ -445,8 +457,8 @@ class User extends _CActiveRecord
             case self::CONSULTANT:
                 return self::isConsultant();
                 break;
-            case self::MODERATOR:
-                return self::isModerator();
+            case self::MANAGER:
+                return self::isManager();
                 break;
             case self::ADMINISTRATOR:
                 return self::isAdministrator();

@@ -1,5 +1,5 @@
 RewriteEngine on
 
-RedirectMatch (.*)admin\.php$ $1backend.php
-RedirectMatch (.*)admin$ $1backend.php
-RedirectMatch (.*)admin/$ $1backend.php
+#RedirectMatch (.*)admin\.php$ $1backend.php
+#RedirectMatch (.*)admin$ $1backend.php
+#RedirectMatch (.*)admin/$ $1backend.php

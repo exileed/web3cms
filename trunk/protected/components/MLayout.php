@@ -152,7 +152,7 @@ class MLayout
             ($column='w3-layout-three-column') && ($details='w3-layout-sidebar1-content-sidebar2');
         $controller='w3-controller-'.Yii::app()->controller->getId();
         $controllerAction=$controller.'-'.Yii::app()->controller->getAction()->getId();
-        $interface='interface-'.MParams::getInterface();
+        $interface='w3-interface-'.MParams::getInterface();
         return $column.' '.$details.' '.$controller.' '.$controllerAction.' '.$interface;
     }
 

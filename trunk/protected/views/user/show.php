@@ -1,44 +1,60 @@
-<?php MParams::setPageLabel(Yii::t('t','Profile of member "{screenName}"',array('{screenName}'=>$model->screenName))); ?>
-<?php MUserFlash::setSidebarInfo(Yii::t('t','Some useful links will be added here soon.')); ?>
+<?php MParams::setPageLabel($me ? Yii::t('page','View my profile') : Yii::t('page','View "{screenName}" member',array('{screenName}'=>$model->screenName))); ?>
+<?php MUserFlash::setSidebarInfo(Yii::t('feedback','Some useful links will be added here soon.')); ?>
 <?php $this->widget('application.components.WContentHeader',array(
     'breadcrumbs'=>array(
-        /*array(
-            'url'=>CHtml::normalizeUrl(array($this->getId().'/'.$this->getAction()->getId())),
-            'active'=>true
-        ),*/
-        $me ?
         array(
-            //'label'=>Yii::t('t','My profile'),
-            'url'=>CHtml::normalizeUrl(array($this->getId().'/'.$this->getAction()->getId())),
-            'active'=>true
-        ) :
-        array(
-            //'label'=>Yii::t('t','Profile of member "{screenName}"',array('{screenName}'=>$screenName)),
-            'url'=>CHtml::normalizeUrl(array($this->getId().'/'.$this->getAction()->getId(),'id'=>$_GET['id'])),
-            'active'=>true
+            'label'=>Yii::t('link','Members'),
+            'url'=>CHtml::normalizeUrl(array($this->id.'/')),
+            'active'=>false
         ),
+        array(
+            'url'=>$me ?
+                CHtml::normalizeUrl(array($this->action->id)) :
+                CHtml::normalizeUrl(array($this->action->id,'id'=>$model->id))
+            ,
+            'active'=>true
+        )
     ),
 )); ?>
-<?php if($me || $admin): ?>
-<div class="w3-pre-grid-action-bar ui-widget">
-  <ul>
-    <li class="ui-state-default ui-corner-all w3-first"><?php echo CHtml::link('<span class="w3-inner-icon-left ui-icon ui-icon-pencil"></span>'.Yii::t('t',$me ? 'Edit my profile' : 'Edit profile'),$me ? array('user/update') : array('user/update','id'=>$model->id),array('class'=>'w3-with-icon')); ?></li>
-    <li class="ui-state-default ui-corner-all w3-last"><?php echo CHtml::link(Yii::t('t','Change interface'),$me ? array('user/updateInterface') : array('user/updateInterface','id'=>$model->id)); ?></li>
-  </ul>
-</div>
-<div class="clear">&nbsp;</div>
-<?php Yii::app()->getClientScript()->registerScript('w3ActionButton',
-"jQuery('.w3-pre-grid-action-bar ul li a').hover(
-    function(){ jQuery(this).parent().removeClass('ui-state-default').addClass('ui-state-hover'); }, 
-    function(){ jQuery(this).parent().removeClass('ui-state-hover').addClass('ui-state-default'); } 
-)
-.mousedown(function(){ jQuery(this).parent().addClass('ui-state-active'); })
-.mouseup(function(){ jQuery(this).parent().removeClass('ui-state-active'); });"); ?>
-
+<?php $this->var->links=array(); ?>
+<?php if($me): ?>
+<?php $this->var->links=array(
+    array(
+        'text'=>Yii::t('link','Edit my profile'),
+        'url'=>array('update'),
+        'icon'=>'pencil'
+    ),
+    array(
+        'text'=>Yii::t('link','Change interface'),
+        'url'=>array('updateInterface'),
+    )
+); ?>
+<?php elseif(User::isAdministrator()): ?>
+<?php $this->var->links=array(
+    array(
+        'text'=>Yii::t('link','Edit member\'s profile'),
+        'url'=>array('update','id'=>$model->id),
+        'icon'=>'pencil'
+    ),
+    array(
+        'text'=>Yii::t('link','Change interface'),
+        'url'=>array('updateInterface','id'=>$model->id),
+    )
+); ?>
+<?php endif; ?>
+<?php if(User::isAdministrator()): ?>
+<?php $this->var->links=array_merge($this->var->links,array(array(
+    'text'=>Yii::t('link','Create a new member'),
+    'url'=>array('create'),
+    'icon'=>'plus'
+))); ?>
+<?php endif; ?>
+<?php if(count($this->var->links)): ?>
+<?php $this->widget('application.components.WPreItemActionBar',array('links'=>$this->var->links)); ?>
 <?php endif; ?>
 <div class="w3-data-grid ui-widget-content ui-corner-all">
 
-<?php if($me || $admin): ?>
+<?php if($me || User::isAdministrator()): ?>
 <div class="w3-grid-row w3-first">
   <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('isActive')); ?></div>
   <div class="w3-grid-row-value"><?php echo CHtml::encode($model->getAttributeView('isActive')); ?></div>
@@ -78,7 +94,7 @@
   <div class="w3-grid-row-value"><?php echo CHtml::encode($model->getAttributeView('interface')); ?></div>
   <div class="clear">&nbsp;</div>
 </div>
-<?php if($me || $admin): ?>
+<?php if($me || User::isAdministrator()): ?>
 <div class="w3-grid-row">
   <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('accessType')); ?></div>
   <div class="w3-grid-row-value"><?php echo CHtml::encode($model->getAttributeView('accessType')); ?></div>
@@ -106,9 +122,16 @@
 </div>
 <?php endif; ?>
 <div class="w3-grid-row">
-  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('createDate')); ?></div>
-  <div class="w3-grid-row-value"><?php echo CHtml::encode($model->createDate); ?></div>
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->getAttributeLabel('createTime')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode(MDate::format($model->createTime,'full')); ?></div>
   <div class="clear">&nbsp;</div>
 </div>
+<?php if(($me || User::isAdministrator()) && $model->details->updateTime): ?>
+<div class="w3-grid-row">
+  <div class="w3-grid-row-label"><?php echo CHtml::encode($model->details->getAttributeLabel('updateTime')); ?></div>
+  <div class="w3-grid-row-value"><?php echo CHtml::encode(MDate::format($model->details->updateTime,'full')); ?></div>
+  <div class="clear">&nbsp;</div>
+</div>
+<?php endif; ?>
 
 </div>

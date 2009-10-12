@@ -1,10 +1,10 @@
-<?php MParams::setPageLabel(Yii::t('t','Login',array(1))); ?>
+<?php MParams::setPageLabel(Yii::t('page','Login')); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($form)); ?>
-<?php MUserFlash::setSidebarInfo(Yii::t('t','Some useful links will be added here soon.')); ?>
+<?php MUserFlash::setSidebarInfo(Yii::t('feedback','Some useful links will be added here soon.')); ?>
 <?php $this->widget('application.components.WContentHeader',array(
     'breadcrumbs'=>array(
         array(
-            'url'=>CHtml::normalizeUrl(array($this->getId().'/'.$this->getAction()->getId())),
+            'url'=>CHtml::normalizeUrl(array($this->action->id)),
             'active'=>true
         ),
     ),
@@ -15,14 +15,14 @@
 <?php echo _CHtml::activeHiddenField($form,'loginWithField')."\n"; ?>
 
 <div class="w3-form-row w3-first">
-  <div class="w3-form-row-label"><?php echo _CHtml::activeLabel($form,$form->getLoginWithField()); ?></div>
+  <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($form,$form->getLoginWithField()); ?></div>
   <div class="w3-form-row-input">
     <?php echo _CHtml::activeTextField($form,$form->getLoginWithField(),array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>
 <div class="w3-form-row">
-  <div class="w3-form-row-label"><?php echo _CHtml::activeLabel($form,'password'); ?></div>
+  <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($form,'password'); ?></div>
   <div class="w3-form-row-input">
     <?php echo _CHtml::activePasswordField($form,'password',array('class'=>'w3-input-text ui-widget-content ui-corner-all','maxlength'=>64))."\n"; ?>
   </div>
@@ -34,7 +34,7 @@
   <div class="w3-form-row-input">
     <div class="w3-form-row-text">
       <?php echo _CHtml::activeCheckBox($form,'rememberMe')."\n"; ?>
-      <?php echo _CHtml::activeLabel($form,'rememberMe')."\n"; ?>
+      <?php echo _CHtml::activeLabelEx($form,'rememberMe')."\n"; ?>
     </div>
   </div>
   <div class="clear">&nbsp;</div>
@@ -43,7 +43,7 @@
 <div class="w3-form-row">
   <div class="w3-form-row-label">&nbsp;</div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::submitButton(Yii::t('t','Enter'),array('class'=>'w3-input-button ui-button ui-state-default ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::submitButton(Yii::t('link','Log in'),array('class'=>'w3-input-button ui-button ui-state-default ui-corner-all'))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>

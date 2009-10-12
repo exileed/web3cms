@@ -45,7 +45,7 @@ class UserLoginForm extends CFormModel
     public function attributeLabels()
     {
         return array(
-            'rememberMe'=>Yii::t('t','Remember me on this computer'),
+            'rememberMe'=>Yii::t('feedback','Remember my member account on this computer'),
             'password'=>Yii::t('t','Password'),
             'username'=>Yii::t('t','Username'),
             'usernameOrEmail'=>Yii::t('t','Username or email'),
@@ -79,10 +79,10 @@ class UserLoginForm extends CFormModel
                     // log user in and save in session all appended data
                     Yii::app()->user->login($identity,$duration);
                     // set user preferences (for welcome message, and so on)
-                    if(isset(Yii::app()->user->interface))
+                    if(isset(Yii::app()->user->interface) && !empty(Yii::app()->user->interface))
                         // set user preferred interface
                         W3::setInterface(Yii::app()->user->interface);
-                    if(isset(Yii::app()->user->language))
+                    if(isset(Yii::app()->user->language) && !empty(Yii::app()->user->language))
                         // set user preferred language
                         W3::setLanguage(Yii::app()->user->language);
                     break;
@@ -96,9 +96,9 @@ class UserLoginForm extends CFormModel
                     break;
                 case _CUserIdentity::ERROR_ACCOUNT_IS_INACTIVE:
                     // set the error message
-                    MUserFlash::setTopError(Yii::t('user',
+                    MUserFlash::setTopError(Yii::t('feedback',
                         'We are sorry, but your member account is marked as "inactive". Inactive member accounts are temporarely inaccessible. {contactLink}.',
-                        array('{contactLink}'=>_CHtml::link(Yii::t('t','Contact',array(0)),array('site/contact')))
+                        array('{contactLink}'=>CHtml::link(Yii::t('link','Contact us'),array('site/contact')))
                     ));
                     // add to username (first field in the login form) error css class
                     // and make the validate() to fail
@@ -108,7 +108,7 @@ class UserLoginForm extends CFormModel
                     break;
                 case _CUserIdentity::ERROR_IS_NOT_ADMINISTRATOR:
                     // set the error message
-                    MUserFlash::setTopError(Yii::t('user',
+                    MUserFlash::setTopError(Yii::t('feedback',
                         'We are sorry, but your access type is {accessType}. Required access type: {requiredAccessType}.',
                         array(
                             '{accessType}'=>Yii::app()->controller->var->userAccessType,

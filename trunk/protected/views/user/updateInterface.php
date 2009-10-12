@@ -1,32 +1,37 @@
-<?php MParams::setPageLabel(Yii::t('t','Change interface')); ?>
+<?php MParams::setPageLabel(Yii::t('page','Change interface')); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($model)); ?>
-<?php MUserFlash::setSidebarInfo(Yii::t('user','Some useful links will be added here soon.')); ?>
+<?php MUserFlash::setSidebarInfo(Yii::t('feedback','Some useful links will be added here soon.')); ?>
 <?php $this->widget('application.components.WContentHeader',array(
     'breadcrumbs'=>array(
-        $me ?
         array(
-            'label'=>Yii::t('t','My profile'),
-            'url'=>CHtml::normalizeUrl(array('user/show')),
-            'active'=>false
-        ) :
-        array(
-            'label'=>Yii::t('t','Profile of member "{screenName}"',array('{screenName}'=>$screenName)),
-            'url'=>CHtml::normalizeUrl(array('user/show','id'=>$_GET['id'])),
+            'label'=>Yii::t('link','Members'),
+            'url'=>CHtml::normalizeUrl(array($this->id.'/')),
             'active'=>false
         ),
+        $me ?
         array(
-            'url'=>CHtml::normalizeUrl(array($this->getId().'/'.$this->getAction()->getId())),
+            'label'=>Yii::t('link','My profile'),
+            'url'=>CHtml::normalizeUrl($idIsSpecified?array('show','id'=>$model->id):array('show')),
+        ) :
+        array(
+            'label'=>Yii::t('link','"{screenName}" member',array('{screenName}'=>$model->screenName)),
+            'url'=>CHtml::normalizeUrl(array('show','id'=>$model->id)),
+        ),
+        array(
+            'url'=>CHtml::normalizeUrl(array($this->action->id)),
             'active'=>true
         ),
     ),
 )); ?>
-<div class="w3-pre-grid-action-bar ui-widget">
-  <ul>
-    <li class="ui-state-default ui-corner-all w3-first w3-last"><?php echo CHtml::link('<span class="w3-inner-icon-left ui-icon ui-icon-person"></span>'.Yii::t('t',$me ? 'My profile' : 'View profile'),$me ? array('user/show') : array('user/show','id'=>$model->id),array('class'=>'w3-with-icon')); ?></li>
-  </ul>
-</div>
-<div class="clear">&nbsp;</div>
-
+<?php $this->widget('application.components.WPreItemActionBar',array(
+    'links'=>array(
+        array(
+            'text'=>$me ? Yii::t('link','Show my profile') : Yii::t('link','Show member'),
+            'url'=>($me && !$idIsSpecified) ? array('show') : array('show','id'=>$model->id),
+            'icon'=>'person'
+        ),
+    ),
+)); ?>
 <div class="w3-main-form-wrapper ui-widget-content ui-corner-all">
 
 <?php echo _CHtml::beginForm('','post',array('class'=>'w3-main-form'))."\n"; ?>
@@ -41,7 +46,7 @@
 </div>
 <div class="w3-form-row">
   <div class="w3-form-row-input w3-form-row-2columns w3-center">
-    <?php echo _CHtml::submitButton(Yii::t('t','Apply selected user interface'),array('class'=>'w3-input-button w3-button-big ui-button ui-state-default ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::submitButton(Yii::t('link','Apply selected user interface'),array('class'=>'w3-input-button w3-button-big ui-button ui-state-default ui-corner-all'))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>
@@ -50,13 +55,6 @@
 
 </div><!-- w3-main-form-wrapper -->
 
-<?php Yii::app()->getClientScript()->registerScript('w3ActionButton',
-"jQuery('.w3-pre-grid-action-bar ul li a').hover(
-    function(){ jQuery(this).parent().removeClass('ui-state-default').addClass('ui-state-hover'); }, 
-    function(){ jQuery(this).parent().removeClass('ui-state-hover').addClass('ui-state-default'); } 
-)
-.mousedown(function(){ jQuery(this).parent().addClass('ui-state-active'); })
-.mouseup(function(){ jQuery(this).parent().removeClass('ui-state-active'); });"); ?>
 <?php Yii::app()->getClientScript()->registerScript('applyInterfaceOnTheFly1',
 "function changeJqueryUIDynamically(radioButton){
     if(typeof(radioButton)=='object' && radioButton.length==1){
@@ -89,10 +87,4 @@ jQuery('input[type=\"radio\"][name=\"User[interface]\"]').click(
         }
     }
 );"); ?>
-<?php Yii::app()->getClientScript()->registerScript('w3FormButton',
-"jQuery('.w3-form-row .w3-input-button').hover(
-    function(){ jQuery(this).addClass('ui-state-hover'); },
-    function(){ jQuery(this).removeClass('ui-state-hover'); }
-)
-.mousedown(function(){ jQuery(this).addClass('ui-state-active'); })
-.mouseup(function(){ jQuery(this).removeClass('ui-state-active'); });"); ?>
+<?php MClientScript::registerScript('w3FormButton'); ?>

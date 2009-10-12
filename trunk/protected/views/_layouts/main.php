@@ -6,7 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="language" content="en" /> 
+<meta name="language" content="<?php echo MParams::getLanguage(); ?>" /> 
 <meta name="robots" content="all" />
 <meta name="description" content="<?php echo MParams::getMetaDescription(); ?>" />
 <meta name="keywords" content="<?php echo MParams::getMetaKeywordsAsString(); ?>" />
@@ -31,12 +31,13 @@
 <div class="clear">&nbsp;</div>
 <?php $this->widget('application.components.WMainMenu',array(
     'items'=>array(
-        array('label'=>Yii::t('t','Home',array(1)), 'url'=>array('site/index')),
-        array('label'=>Yii::t('t','Contact',array(0)), 'url'=>array('site/contact')),
-        array('label'=>Yii::t('t','Login',array(0)), 'url'=>Yii::app()->user->loginUrl, 'visible'=>Yii::app()->user->isGuest),
-        array('label'=>Yii::t('t','Register',array(1)), 'url'=>array('user/register'), 'visible'=>Yii::app()->user->isGuest),
-        array('label'=>Yii::t('t','My profile'), 'url'=>array('user/show'), 'visible'=>!Yii::app()->user->isGuest),
-        array('label'=>Yii::t('t','Logout'), 'url'=>array('user/logout'), 'visible'=>!Yii::app()->user->isGuest),
+        array('label'=>Yii::t('link','Home'), 'url'=>array('site/index'), 'options'=>array('title'=>Yii::t('link','Main page'))),
+        array('label'=>Yii::t('link','Contact'), 'url'=>array('site/contact'), 'options'=>array('title'=>Yii::t('link','Contact us'))),
+        array('label'=>Yii::t('link','Login'), 'url'=>Yii::app()->user->loginUrl, 'visible'=>Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Authenticate using my member account'))),
+        array('label'=>Yii::t('link','Register'), 'url'=>array('user/register'), 'visible'=>Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Register a new member account'))),
+        array('label'=>Yii::t('link','Member'), 'url'=>array('user/'), 'visible'=>!Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Browse members'))),
+        array('label'=>Yii::t('link','My profile'), 'url'=>array('user/show'), 'visible'=>!Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','View my profile'))),
+        array('label'=>Yii::t('link','Logout'), 'url'=>array('user/logout'), 'visible'=>!Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Leave my member account'))),
     ),
 )); ?>
 </div><!-- w3-header -->

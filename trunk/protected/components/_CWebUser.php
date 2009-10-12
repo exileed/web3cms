@@ -12,51 +12,52 @@ class _CWebUser extends CWebUser
      * might be changed by either admin or user himself.
      * TODO: finish working on this function and test it
      */
-	protected function restoreFromCookie()
-	{
-		$app=Yii::app();
-		$cookie=$app->getRequest()->getCookies()->itemAt($this->getStateKeyPrefix());
-		if($cookie && !empty($cookie->value) && ($data=$app->getSecurityManager()->validateData($cookie->value))!==false)
-		{
-			$data=unserialize($data);
-			if(isset($data[0],$data[1],$data[2]))
-			{
-				list($id,$name,$states)=$data;
-				// this code is being rewritten: $this->changeIdentity($id,$name,$states);
-				// below is the new code
-				$identity=new _CUserIdentity($id,'');
-				$identity->authenticateByCookie();
-				switch($identity->errorCode)
-				{
-				    case _CUserIdentity::ERROR_NONE:
-				        $this->login($identity);
+    protected function restoreFromCookie()
+    {
+        $app=Yii::app();
+        $cookie=$app->getRequest()->getCookies()->itemAt($this->getStateKeyPrefix());
+        if($cookie && !empty($cookie->value) && ($data=$app->getSecurityManager()->validateData($cookie->value))!==false)
+        {
+            $data=unserialize($data);
+            if(isset($data[0],$data[1],$data[2]))
+            {
+                list($id,$name,$states)=$data;
+                // this code is being rewritten: $this->changeIdentity($id,$name,$states);
+                // below is the new code
+                $identity=new _CUserIdentity($id,'');
+                $identity->authenticateByCookie();
+                switch($identity->errorCode)
+                {
+                    case _CUserIdentity::ERROR_NONE:
+                        $this->login($identity);
+                        // LOOKS LIKE MAIN CONTROLLER IS NOT INITIALIZED YET
                         /*// set user preferences (for welcome message, and so on)
-                        if(isset(Yii::app()->user->interface))
+                        if(isset(Yii::app()->user->interface) && !empty(Yii::app()->user->interface))
                             // set user preferred interface
                             W3::setInterface(Yii::app()->user->interface);
-                        if(isset(Yii::app()->user->language))
+                        if(isset(Yii::app()->user->language) && !empty(Yii::app()->user->language))
                             // set user preferred language
                             W3::setLanguage(Yii::app()->user->language);
                         // set the welcome-back message
-                        MUserFlash::setTopSuccess(Yii::t('user',
+                        MUserFlash::setTopSuccess(Yii::t('feedback',
                             '{screenName}, welcome back! Automatic authentication has been successfully passed.',
                             array('{screenName}'=>'<strong>'.$this->getState('screenName').'</strong>')
                         ));*/
-				        break;
+                        break;
                     case _CUserIdentity::ERROR_ACCOUNT_IS_INACTIVE:
                         // set the error message
-                        /*MUserFlash::setTopError(Yii::t('user',
+                        /*MUserFlash::setTopError(Yii::t('feedback',
                             'We are sorry, but your member account is marked as "inactive". Inactive member accounts are temporarely inaccessible. {contactLink}.',
-                            array('{contactLink}'=>_CHtml::link(Yii::t('t','Contact',array(0)),array('site/contact')))
+                            array('{contactLink}'=>CHtml::link(Yii::t('link','Contact us'),array('site/contact')))
                         ));*/
                         break;
                     case _CUserIdentity::ERROR_UNKNOWN_IDENTITY:
-				    default:
-				        // should we call logout() here?
-				        //throw new CHttpException(401,Yii::t('yii','Unknown Identity'));
-				        break;
-				}
-			}
-		}
-	}
+                    default:
+                        // should we call logout() here?
+                        //throw new CHttpException(401,Yii::t('yii','Unknown Identity'));
+                        break;
+                }
+            }
+        }
+    }
 }

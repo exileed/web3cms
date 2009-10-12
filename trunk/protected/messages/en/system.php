@@ -9,6 +9,7 @@ return array(
     'Failed creating UserDetails record. Member ID: {userId}. Method called: {method}.' => 'Failed creating UserDetails record. Member ID: {userId}. Method called: {method}.',
     'Incorrect parameter in method call: {method}.' => 'Incorrect parameter in method call: {method}.',
     'Member with ID {userId} has no UserDetails record associated. Method called: {method}.' => 'Member with ID {userId} has no UserDetails record associated. Method called: {method}.',
+    'Missing parameter in file params.php: {parameter}.' => 'Missing parameter in file params.php: {parameter}.',
     'Unacceptable value of {parameter} system parameter: {value}. Method called: {method}.' => 'Wrong value of {parameter} system parameter: {value}. Method called: {method}.',
     'Unacceptable values of layout constants... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.' => 'Unacceptable values of layout constants... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.',
     'Unacceptable values of layout parameters... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.' => 'Unacceptable values of layout parameters... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.',

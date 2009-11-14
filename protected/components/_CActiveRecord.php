@@ -11,11 +11,17 @@ class _CActiveRecord extends CActiveRecord
      * @var string
      */
     protected $tablePrefix;
+
+    /**
+     * common constants
+     */
+    //const IS_ACTIVE='1';
+    //const IS_NOT_ACTIVE='0';
  
     /**
      * Force the child classes to use our table name prefixer.
      */
-    final public function tableName()
+    /*final */public function tableName()
     {
         // if we haven't retrieved the table prefix yet
         if($this->tablePrefix===null)
@@ -41,9 +47,31 @@ class _CActiveRecord extends CActiveRecord
     protected function beforeValidate($on)
     {
         if($this->isNewRecord)
-            isset($this->tableSchema->columns['createTime']) && ($this->createTime=time());
+        {
+            if(isset($this->tableSchema->columns['createTime']) && ($this->createTime===null || $this->createTime===1234567890))
+                $this->createTime=time();
+        }
         else
-            isset($this->tableSchema->columns['updateTime']) && ($this->updateTime=time());
+        {
+            if(isset($this->tableSchema->columns['updateTime']))
+                $this->updateTime=time();
+        }
         return true;
     }
+
+    /**
+     * Find all active records.
+     * @param array of additional conditions
+     * @return array of active record objects
+     */
+    /*public function findAllActiveRecords($conditions=array())
+    {
+        $id=(isset($conditions[0]) && ctype_digit($conditions[0]) && $conditions[0]>=1) ? $conditions[0] : null;
+        $criteria=new CDbCriteria;
+        $t=self::model()->tableName();
+        $criteria->condition="`$t`.`isActive` IS NULL OR `$t`.`isActive` != '".self::IS_NOT_ACTIVE."'";
+        if($id)
+            $criteria->condition.=" OR `$t`.`id` = '$id'";
+        return self::model()->findAll($criteria);
+    }*/
 }

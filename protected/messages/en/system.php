@@ -1,9 +1,16 @@
 <?php
 
 // i18n - English Language Pack (System Messages)
-return array(
+return
+// your custom translation
+array(
+)
++
+// official translation
+array(
     'Available interfaces: {availableInterfaces}.' => 'Available interfaces: {availableInterfaces}.',
     'Available languages: {availableLanguages}.' => 'Available languages: {availableLanguages}.',
+    'Could not delete the {model} model. Model ID: {modelId}. Method called: {method}.' => 'Could not delete the {model} model. Model ID: {modelId}. Method called: {method}.',
     'Could not load {model} model. Model ID: {modelId}. Method called: {method}.' => 'Could not load {model} model. Model ID: {modelId}. Method called: {method}.',
     'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.' => 'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.',
     'Failed creating UserDetails record. Member ID: {userId}. Method called: {method}.' => 'Failed creating UserDetails record. Member ID: {userId}. Method called: {method}.',

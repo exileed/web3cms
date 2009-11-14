@@ -36,8 +36,8 @@ return array(
     'components'=>array(
         'db'=>array(
             //'connectionString'=>'sqlite:'.dirname(__FILE__).'/../data/web3cms.db',
-            // CREATE DATABASE `web3cms_r9` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-            'connectionString'=>'mysql:host=localhost;dbname=web3cms_r9',
+            // CREATE DATABASE `web3cms_r10` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+            'connectionString'=>'mysql:host=localhost;dbname=web3cms_r10',
             'username'=>'web3cms', //'web3cms'
             'password'=>'web3cms', //'web3cms'
             'charset'=>'utf8', //comment this if you are using a different db charset

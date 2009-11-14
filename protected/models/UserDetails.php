@@ -3,16 +3,19 @@
 class UserDetails extends _CActiveRecord
 {
     /**
-     * The followings are the available columns in table 'UserDetails':
+     * The followings are the available columns in table 'W3UserDetails':
      * @var integer $userId
      * @var string $passwordHint
      * @var string $isEmailConfirmed
      * @var string $emailConfirmationKey
      * @var string $isEmailVisible
      * @var string $isScreenNameEditable
+     * @var integer $deactivationTime
      * @var string $firstName
      * @var string $middleName
      * @var string $lastName
+     * @var string $initials
+     * @var string $occupation
      * @var string $gender
      * @var string $birthDate
      * @var string $textStatus
@@ -21,7 +24,7 @@ class UserDetails extends _CActiveRecord
      * @var integer $totalTimeLoggedIn
      * @var string $secretQuestion
      * @var string $secretAnswer
-     * @var string $adminComment
+     * @var string $administratorNote
      * @var integer $updateTime
      */
 
@@ -57,6 +60,8 @@ class UserDetails extends _CActiveRecord
             array('firstName','length','max'=>128),
             array('middleName','length','max'=>128),
             array('lastName','length','max'=>128),
+            array('initials','length','max'=>16),
+            array('occupation','length','max'=>128),
             array('secretAnswer','length','max'=>255),
             array('totalTimeLoggedIn', 'numerical', 'integerOnly'=>true),
         );
@@ -68,10 +73,15 @@ class UserDetails extends _CActiveRecord
      */
     public function safeAttributes()
     {
-        return array(
+        $retval=array(
             'emailConfirmationKey',
+            'initials',
             'isEmailVisible',
+            'occupation',
         );
+        if(User::isAdministrator())
+            $retval=array_merge($retval,array('administratorNote','deactivationTime','isScreenNameEditable'));
+        return $retval;
     }
 
     /**
@@ -82,8 +92,10 @@ class UserDetails extends _CActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
-            // user details has an 'user' record associated
-            'user' => array(self::BELONGS_TO,'User','userId','alias'=>'UserDetailsUser'),
+            // user details belongs to an 'user' record associated
+            'user' => array(self::BELONGS_TO,'User','userId',
+                'alias'=>'UserDetailsUser'
+            ),
         );
     }
 
@@ -93,8 +105,12 @@ class UserDetails extends _CActiveRecord
     public function attributeLabels()
     {
         return array(
+            'deactivationTime'=>Yii::t('t','Deactivation date'),
+            'Deact'=>Yii::t('t','Deact.[Deactivation]'),
             'isEmailConfirmed'=>Yii::t('t','Email is confirmed'),
             'isEmailVisible'=>Yii::t('t','Email is visible'),
+            'initials'=>Yii::t('t','Initials'),
+            'occupation'=>Yii::t('t','Occupation'),
             'updateTime'=>Yii::t('t','Update date'),
             'userId'=>'User',
             'passwordHint'=>'Password Hint',
@@ -111,7 +127,7 @@ class UserDetails extends _CActiveRecord
             'totalTimeLoggedIn'=>'Total Time Logged In',
             'secretQuestion'=>'Secret Question',
             'secretAnswer'=>'Secret Answer',
-            'adminComment'=>'Admin Comment',
+            'administratorNote'=>'Administrator note',
         );
     }
 
@@ -152,29 +168,22 @@ class UserDetails extends _CActiveRecord
                 {
                     case self::EMAIL_IS_CONFIRMED:
                         return Yii::t('attr','Yes (Member has confirmed indicated email)');
-                        break;
                     case self::EMAIL_IS_NOT_CONFIRMED:
                         return Yii::t('attr','No (Member has not yet confirmed indicated email)');
-                        break;
                     default:
                         return $this->isEmailConfirmed;
-                        break;
                 }
             case 'isEmailVisible':
                 switch($this->isEmailVisible)
                 {
                     case self::EMAIL_IS_VISIBLE:
                         return Yii::t('attr','Yes (Email is visible by all members)');
-                        break;
                     case self::EMAIL_IS_NOT_VISIBLE:
                         return Yii::t('attr','No (Email is not visible by other members)');
-                        break;
                     case null:
                         return Yii::t('attr','By default (Email is not visible by other members)');
-                        break;
                     default:
                         return $this->isEmailVisible;
-                        break;
                 }
             default:
                 return $this->$attribute;
@@ -212,6 +221,6 @@ class UserDetails extends _CActiveRecord
      */
     public function isEmailVisible()
     {
-        return $this->isEmailVisible==='1';
+        return $this->isEmailVisible===self::EMAIL_IS_VISIBLE;
     }
 }

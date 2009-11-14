@@ -45,7 +45,7 @@ class UserLoginForm extends CFormModel
     public function attributeLabels()
     {
         return array(
-            'rememberMe'=>Yii::t('feedback','Remember my member account on this computer'),
+            'rememberMe'=>Yii::t('hint','Remember my member account on this computer'),
             'password'=>Yii::t('t','Password'),
             'username'=>Yii::t('t','Username'),
             'usernameOrEmail'=>Yii::t('t','Username or email'),
@@ -96,7 +96,7 @@ class UserLoginForm extends CFormModel
                     break;
                 case _CUserIdentity::ERROR_ACCOUNT_IS_INACTIVE:
                     // set the error message
-                    MUserFlash::setTopError(Yii::t('feedback',
+                    MUserFlash::setTopError(Yii::t('hint',
                         'We are sorry, but your member account is marked as "inactive". Inactive member accounts are temporarely inaccessible. {contactLink}.',
                         array('{contactLink}'=>CHtml::link(Yii::t('link','Contact us'),array('site/contact')))
                     ));
@@ -108,7 +108,7 @@ class UserLoginForm extends CFormModel
                     break;
                 case _CUserIdentity::ERROR_IS_NOT_ADMINISTRATOR:
                     // set the error message
-                    MUserFlash::setTopError(Yii::t('feedback',
+                    MUserFlash::setTopError(Yii::t('hint',
                         'We are sorry, but your access type is {accessType}. Required access type: {requiredAccessType}.',
                         array(
                             '{accessType}'=>Yii::app()->controller->var->userAccessType,

@@ -2,7 +2,7 @@
 <?php foreach($success as $userFlash): ?>
   <div class="w3-content-item<?php echo MLayout::getNumberOfItemsContent()?'':' w3-first'; ?>">
     <div class="w3-user-flash-content-summary ui-widget ui-state-highlight ui-corner-all">
-        <span class="w3-icon-left ui-icon ui-icon-check"></span>
+        <span class="w3-icon-left ui-icon ui-icon-circle-check"></span>
         <?php echo $userFlash; ?> 
     </div>
   </div><!-- w3-content-item -->

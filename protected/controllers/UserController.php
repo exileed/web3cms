@@ -2,10 +2,8 @@
 
 class UserController extends _CController
 {
-    const PAGE_SIZE=10;
-
     /**
-     * @var string specifies the default action to be 'list'.
+     * @var string specifies the default action to be 'grid'.
      */
     public $defaultAction='grid';
 
@@ -36,17 +34,13 @@ class UserController extends _CController
                 //'actions'=>array('login'),
                 //'users'=>array('@'),
             //),
-            array('allow',  // allow all users to perform 'captcha', 'confirmEmail', 'grid', 'list', 'login', 'logout', 'register' and 'show' actions
-                'actions'=>array('captcha','confirmEmail','grid','list','login','logout','register','show'),
+            array('allow', // allow all users to perform 'captcha', 'confirmEmail', 'grid', 'gridData', 'list', 'login', 'logout', 'register' and 'show' actions
+                'actions'=>array('captcha','confirmEmail','grid','gridData','list','login','logout','register','show'),
                 'users'=>array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create', 'update' and 'updateInterface' actions
                 'actions'=>array('create','update','updateInterface'),
                 'users'=>array('@'),
-            ),
-            array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions'=>array('admin','delete'),
-                'users'=>array('admin'),
             ),
             array('deny',  // deny all users
                 'users'=>array('*'),
@@ -79,7 +73,7 @@ class UserController extends _CController
         $model=new User;
         // collect user input data
         if(isset($_POST['User']))
-            // use the magic of safeAttributes()
+            // collect user input data
             $model->attributes=$_POST['User'];
         else
         {
@@ -91,13 +85,13 @@ class UserController extends _CController
         if((isset($_POST['User']) && $model->validate('confirmEmail')) || (!isset($_POST['User']) && isset($_GET['email'],$_GET['key']) && $model->validate('confirmEmailUrl')))
         {
             // find user by email
-            if(($user=User::model()->with('details')->findByAttributes(array('email'=>$model->email)))!==false)
+            if(($user=User::model()->with('details')->findByAttributes(array('email'=>$model->email)))!==null)
             {
                 if(is_object($user->details))
                 {
                     if($user->details->isEmailConfirmed==='1')
                         // was confirmed earlier
-                        MUserFlash::setTopInfo(Yii::t('feedback',
+                        MUserFlash::setTopInfo(Yii::t('hint',
                             'Email address {email} was confirmed earlier.',
                             array('{email}'=>'<strong>'.$user->email.'</strong>')
                         ));
@@ -105,7 +99,7 @@ class UserController extends _CController
                     {
                         if($user->details->emailConfirmationKey!==$model->emailConfirmationKey)
                             // wrong key
-                            MUserFlash::setTopError(Yii::t('feedback',
+                            MUserFlash::setTopError(Yii::t('hint',
                                 'We are sorry, but email address {email} has a different confirmation key. You provided: {emailConfirmationKey}.',
                                 array(
                                     '{email}'=>'<strong>'.$user->email.'</strong>',
@@ -118,7 +112,7 @@ class UserController extends _CController
                             if($user->details->saveAttributes(array('isEmailConfirmed'=>'1')))
                             {
                                 // set success message
-                                MUserFlash::setTopSuccess(Yii::t('feedback',
+                                MUserFlash::setTopSuccess(Yii::t('hint',
                                     'Email address {email} has been successfully confirmed.',
                                     array('{email}'=>'<strong>'.$user->email.'</strong>')
                                 ));
@@ -132,17 +126,13 @@ class UserController extends _CController
                             else
                             {
                                 // set error message
-                                MUserFlash::setTopError(Yii::t('feedback',
+                                MUserFlash::setTopError(Yii::t('hint',
                                     'Error! Email address {email} could not be confirmed.',
                                     array('{email}'=>'<strong>'.$user->email.'</strong>')
                                 ));
                                 Yii::log(W3::t('system',
                                     'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.',
-                                    array(
-                                        '{model}'=>'UserDetails',
-                                        '{modelId}'=>$user->details->userId,
-                                        '{method}'=>__METHOD__.'()'
-                                    )
+                                    array('{model}'=>get_class($user->details),'{modelId}'=>$user->details->userId,'{method}'=>__METHOD__.'()')
                                 ),'error','w3');
                             }
                         }
@@ -151,7 +141,7 @@ class UserController extends _CController
                 else
                 {
                     // hmmm, user details does not exists
-                    MUserFlash::setTopError(Yii::t('feedback','System failure! Please accept our apologies...'));
+                    MUserFlash::setTopError(Yii::t('hint','System failure! Please accept our apologies...'));
                     Yii::log(W3::t('system',
                         'Member with ID {userId} has no UserDetails record associated. Method called: {method}.',
                         array(
@@ -164,7 +154,7 @@ class UserController extends _CController
             else
             {
                 // email is not registered?
-                MUserFlash::setTopInfo(Yii::t('feedback',
+                MUserFlash::setTopInfo(Yii::t('hint',
                     'A member account with email address {email} could not be found.',
                     array('{email}'=>'<strong>'.$model->email.'</strong>')
                 ));
@@ -185,26 +175,31 @@ class UserController extends _CController
         if(!User::isAdministrator())
         {
             // not enough rights
-            MUserFlash::setTopSuccess(Yii::t('feedback','We are sorry, but you don\'t have enough rights to create a new member.'));
-            $this->redirect(array($this->id.'/'));
+            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to create a new member.'));
+            $this->redirect($this->getGotoUrl());
         }
         $model=new User;
         if(isset($_POST['User']))
         {
             // collect user input data
             $model->attributes=$_POST['User'];
+            // email and username are not in safeAttributes
+            if(isset($_POST['User']['email']))
+                $model->email=$_POST['User']['email'];
+            if(isset($_POST['User']['username']))
+                $model->username=$_POST['User']['username'];
+            // instantiate a new user details object
+            $model->details=new UserDetails(array(
+                'emailConfirmationKey'=>md5(uniqid(rand(),true)),
+            ));
+            if(isset($_POST['UserDetails']))
+                $model->details->attributes=$_POST['UserDetails'];
             // validate with $on = 'create' and save without validation
             if(($validated=$model->validate($this->action->id))!==false && ($saved=$model->save(false))!==false)
             {
-                // prepare data
-                $emailConfirmationKey=md5(uniqid(rand(),true));
-                // create user details record
-                $userDetails=new UserDetails;
-                $userDetails->userId=$model->id;
-                $userDetails->attributes=array(
-                    'emailConfirmationKey'=>$emailConfirmationKey,
-                );
-                if($userDetails->save()===false)
+                // save user details record
+                $model->details->userId=$model->id;
+                if($model->details->save()===false)
                     // hmmm, what could be the problem?
                     Yii::log(W3::t('system',
                         'Failed creating UserDetails record. Member ID: {userId}. Method called: {method}.',
@@ -214,7 +209,7 @@ class UserController extends _CController
                         )
                     ),'error','w3');
                 // set success message
-                MUserFlash::setTopSuccess(Yii::t('feedback',
+                MUserFlash::setTopSuccess(Yii::t('hint',
                     'The new "{screenName}" member record has been successfully created.',
                     array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
                 ));
@@ -225,10 +220,13 @@ class UserController extends _CController
         else
         {
             // pre-assigned attributes (default values for a new record)
-            $model->screenNameSame=true;
-            $model->language=MParams::getLanguage();
             $model->interface=MParams::getInterface();
+            $model->language=MParams::getLanguage();
+            $model->screenNameSame=true;
         }
+        if(!isset($model->details))
+            // new associated user details
+            $model->details=new UserDetails;
         // display the create form
         $this->render('create',array('model'=>$model));
     }
@@ -252,7 +250,7 @@ class UserController extends _CController
             if($form->validate())
             {
                 // set the welcome message
-                MUserFlash::setTopSuccess(Yii::t('feedback',
+                MUserFlash::setTopSuccess(Yii::t('hint',
                     '{screenName}, you have been successfully logged in.',
                     array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
                 ));
@@ -260,7 +258,7 @@ class UserController extends _CController
                 if(!Yii::app()->user->isGuest)
                 {
                     // update user stats
-                    if(($userDetails=UserDetails::model()->findByPk(Yii::app()->user->id))!==false)
+                    if(($userDetails=UserDetails::model()->findByPk(Yii::app()->user->id))!==null)
                         $userDetails->saveAttributes(array(
                             'lastLoginTime'=>time(),
                             'lastVisitTime'=>time(),
@@ -276,14 +274,12 @@ class UserController extends _CController
                             )
                         ),'error','w3');
                 }
-                // go to previous/profile page
-                $url=Yii::app()->homeUrl==Yii::app()->user->returnUrl ? array('user/show') : Yii::app()->user->returnUrl;
-                $this->redirect($url);
+                $this->redirect($this->getGotoUrl());
             }
         }
         if(!Yii::app()->user->isGuest)
             // warn user if already logged in
-            MUserFlash::setTopInfo(Yii::t('feedback',
+            MUserFlash::setTopInfo(Yii::t('hint',
                 '{screenName}, this action will log you out from your current account.',
                 array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
             ));
@@ -308,13 +304,12 @@ class UserController extends _CController
                 // if session is destroyed, we need to re-open it. this is necessary for user flash
                 Yii::app()->getSession()->open();
             // set the goodbye message
-            MUserFlash::setTopInfo(Yii::t('feedback',
+            MUserFlash::setTopInfo(Yii::t('hint',
                 '{screenName}, you have been successfully logged out.',
                 array('{screenName}'=>'<strong>'.$screenName.'</strong>')
             ));
         }
-        // go to home page
-        $this->redirect(Yii::app()->homeUrl);
+        $this->redirect($this->getGotoUrl());
     }
 
     /**
@@ -327,8 +322,19 @@ class UserController extends _CController
         // collect user input data
         if(isset($_POST['User']))
         {
-            // use the magic of safeAttributes()
+            // collect user input data
             $model->attributes=$_POST['User'];
+            // email and username are not in safeAttributes
+            if(isset($_POST['User']['email']))
+                $model->email=$_POST['User']['email'];
+            if(isset($_POST['User']['username']))
+                $model->username=$_POST['User']['username'];
+            // instantiate a new user details object
+            $model->details=new UserDetails(array(
+                'emailConfirmationKey'=>md5(uniqid(rand(),true)),
+            ));
+            if(isset($_POST['UserDetails']))
+                $model->details->attributes=$_POST['UserDetails'];
             // validate with $on = 'register'
             if($model->validate('register'))
             {
@@ -345,15 +351,9 @@ class UserController extends _CController
                 // create user record (without validation)
                 if($model->save(false))
                 {
-                    // prepare data
-                    $emailConfirmationKey=md5(uniqid(rand(),true));
-                    // create user details record
-                    $userDetails=new UserDetails;
-                    $userDetails->userId=$model->id;
-                    $userDetails->attributes=array(
-                        'emailConfirmationKey'=>$emailConfirmationKey,
-                    );
-                    if($userDetails->save()===false)
+                    // save user details record
+                    $model->details->userId=$model->id;
+                    if($model->details->save()===false)
                         // hmmm, what could be the problem?
                         Yii::log(W3::t('system',
                             'Failed creating UserDetails record. Member ID: {userId}. Method called: {method}.',
@@ -363,7 +363,7 @@ class UserController extends _CController
                             )
                         ),'error','w3');
                     // set success message
-                    MUserFlash::setTopSuccess(Yii::t('feedback',
+                    MUserFlash::setTopSuccess(Yii::t('hint',
                         '{screenName}, your member account has been successfully created.',
                         array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
                     ));
@@ -374,13 +374,13 @@ class UserController extends _CController
                         array(
                             '{siteTitle}'=>MParams::getSiteTitle(),
                             '{screenName}'=>$model->screenName,
-                            '{emailConfirmationKey}'=>$emailConfirmationKey,
-                            '{emailConfirmationLink}'=>Yii::app()->createAbsoluteUrl($this->id.'/confirmEmail',array('email'=>$model->email,'key'=>$emailConfirmationKey)),
+                            '{emailConfirmationKey}'=>$model->details->emailConfirmationKey,
+                            '{emailConfirmationLink}'=>Yii::app()->createAbsoluteUrl($this->id.'/confirmEmail',array('email'=>$model->email,'key'=>$model->details->emailConfirmationKey)),
                         )
                     );
                     @mail($model->email,Yii::t('email','New member account'),$content,$headers);
-                    // created a user account? please, login...
-                    $this->redirect(Yii::app()->user->loginUrl);
+                    // go to login page
+                    $this->redirect($this->getGotoUrl());
                 }
             }
         }
@@ -393,11 +393,14 @@ class UserController extends _CController
         }
         if(!Yii::app()->user->isGuest)
             // warn user if already logged in
-            MUserFlash::setTopInfo(Yii::t('feedback',
+            MUserFlash::setTopInfo(Yii::t('hint',
                 '{screenName}, this action will log you out from your current account.',
                 array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
             ));
-        // display the register form
+        if(!isset($model->details))
+            // new associated user details
+            $model->details=new UserDetails;
+        // render the view file
         $this->render('register',array('model'=>$model));
     }
 
@@ -407,7 +410,7 @@ class UserController extends _CController
     public function actionShow()
     {
         $me=(isset($_GET['id']) && (Yii::app()->user->isGuest || $_GET['id']!==Yii::app()->user->id)) ? false : true;
-        $model=$this->loadUser($me ? Yii::app()->user->id : $_GET['id']);
+        $model=$this->loadUser(array('id'=>($me ? Yii::app()->user->id : $_GET['id']),'with'=>array('details')));
         $this->render('show',array('model'=>$model,'me'=>$me));
     }
 
@@ -426,12 +429,13 @@ class UserController extends _CController
         // whether it's me. alternative: admin update member's account.
         $me=($idIsSpecified && $_GET['id']!==Yii::app()->user->id) ? false : true;
         // load model. if model doesn't exist, throw an http exception
-        $model=$this->loadUser($me ? Yii::app()->user->id : $_GET['id']);
+        $model=$this->loadUser(array('id'=>($me ? Yii::app()->user->id : $_GET['id']),'with'=>array('details')));
         // whether data is passed
         if(isset($_POST['User']))
         {
             // collect user input data
             $model->attributes=$_POST['User'];
+            // email is assigned in {@link User::beforeValidate}
             // validate with $on = 'update' and save without validation
             if(($validated=$model->validate($this->action->id))!==false && ($saved=$model->save(false))!==false)
             {
@@ -450,7 +454,7 @@ class UserController extends _CController
                 }
                 if(isset($_POST['UserDetails']))
                 {
-                    // use the magic of safeAttributes()
+                    // collect user input data
                     $model->details->attributes=$_POST['UserDetails'];
                     // validate with $on = 'update'
                     if($model->details->validate('update'))
@@ -458,9 +462,12 @@ class UserController extends _CController
                         if($model->details->save())
                         {
                             // set success message
-                            MUserFlash::setTopSuccess(Yii::t('feedback',
-                                '{screenName}, your profile has been updated.',
-                                array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
+                            MUserFlash::setTopSuccess(Yii::t('hint',
+                                $me ?
+                                    '{screenName}, your profile has been updated.' :
+                                    'The member account "{screenName}" has been updated.'
+                                ,
+                                array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
                             ));
                             // go to 'show' page
                             $this->redirect($me ? array('show') : array('show','id'=>$model->id));
@@ -468,17 +475,16 @@ class UserController extends _CController
                         else
                         {
                             // set error message
-                            MUserFlash::setTopError(Yii::t('feedback',
-                                'Error! {screenName}, your profile could not be updated.',
-                                array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
+                            MUserFlash::setTopError(Yii::t('hint',
+                                $me ?
+                                    'Error! {screenName}, your profile could not be updated.' :
+                                    'Error! The member account "{screenName}" could not be updated.'
+                                ,
+                                array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
                             ));
                             Yii::log(W3::t('system',
                                 'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.',
-                                array(
-                                    '{model}'=>'UserDetails',
-                                    '{modelId}'=>$model->details->userId,
-                                    '{method}'=>__METHOD__.'()'
-                                )
+                                array('{model}'=>get_class($model->details),'{modelId}'=>$model->details->userId,'{method}'=>__METHOD__.'()')
                             ),'error','w3');
                         }
                     }
@@ -487,17 +493,16 @@ class UserController extends _CController
             else if($validated && !$saved)
             {
                 // set error message
-                MUserFlash::setTopError(Yii::t('feedback',
-                    'Error! {screenName}, your profile could not be updated.',
-                    array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
+                MUserFlash::setTopError(Yii::t('hint',
+                    $me ?
+                        'Error! {screenName}, your profile could not be updated.' :
+                        'Error! The member account "{screenName}" could not be updated.'
+                    ,
+                    array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
                 ));
                 Yii::log(W3::t('system',
                     'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.',
-                    array(
-                        '{model}'=>'User',
-                        '{modelId}'=>$model->id,
-                        '{method}'=>__METHOD__.'()'
-                    )
+                    array('{model}'=>get_class($model),'{modelId}'=>$model->id,'{method}'=>__METHOD__.'()')
                 ),'error','w3');
             }
         }
@@ -514,13 +519,13 @@ class UserController extends _CController
     {
         // if not admin
         if(isset($_GET['id']) && !User::isAdministrator())
-            // redirect from user/update/id/2 to user/update
+            // redirect from user/updateInterface/id/2 to user/updateInterface
             $this->redirect(array($this->action->id));
         $idIsSpecified=isset($_GET['id']);
         // whether it's me. alternative: admin update member's account.
         $me=($idIsSpecified && $_GET['id']!==Yii::app()->user->id) ? false : true;
         // load model. if model doesn't exist, throw an http exception
-        $model=$this->loadUser($me ? Yii::app()->user->id : $_GET['id']);
+        $model=$this->loadUser(array('id'=>($me ? Yii::app()->user->id : $_GET['id']),'with'=>array('details')));
         // whether data is passed
         if(isset($_POST['User']))
         {
@@ -543,9 +548,12 @@ class UserController extends _CController
                     // we overrode auto-login with {@link _CWebUser::restoreFromCookie}
                 }
                 // set success message
-                MUserFlash::setTopSuccess(Yii::t('feedback',
-                    '{screenName}, new user interface has been applied.',
-                    array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
+                MUserFlash::setTopSuccess(Yii::t('hint',
+                    $me ?
+                        '{screenName}, new user interface has been applied.' :
+                        'The user interface for member account "{screenName}" has been updated.'
+                    ,
+                    array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
                 ));
                 // go to 'show' page
                 $this->redirect($me ? array('show') : array('show','id'=>$model->id));
@@ -553,17 +561,16 @@ class UserController extends _CController
             else if($validated && !$saved)
             {
                 // set error message
-                MUserFlash::setTopError(Yii::t('feedback',
-                    'Error! {screenName}, new user interface could not be applied.',
-                    array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
+                MUserFlash::setTopError(Yii::t('hint',
+                    $me ?
+                        'Error! {screenName}, new user interface could not be applied.' :
+                        'Error! The user interface for member account "{screenName}" could not be updated.'
+                    ,
+                    array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
                 ));
                 Yii::log(W3::t('system',
                     'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.',
-                    array(
-                        '{model}'=>'User',
-                        '{modelId}'=>$model->id,
-                        '{method}'=>__METHOD__.'()'
-                    )
+                    array('{model}'=>get_class($model),'{modelId}'=>$model->id,'{method}'=>__METHOD__.'()')
                 ),'error','w3');
             }
         }
@@ -572,33 +579,18 @@ class UserController extends _CController
     }
 
     /**
-     * Deletes a particular model.
-     * If deletion is successful, the browser will be redirected to the 'list' page.
-     */
-    /*public function actionDelete()
-    {
-        if(Yii::app()->request->isPostRequest)
-        {
-            // we only allow deletion via POST request
-            $this->loadUser()->delete();
-            $this->redirect(array('list'));
-        }
-        else
-            throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
-    }*/
-
-    /**
      * Lists all models.
      */
     public function actionList()
     {
         $criteria=new CDbCriteria;
+        $criteria->order="`".User::model()->tableName()."`.`screenName` ASC";
 
         $pages=new CPagination(User::model()->count($criteria));
-        $pages->pageSize=self::PAGE_SIZE;
+        $pages->pageSize=self::LIST_PAGE_SIZE;
         $pages->applyLimit($criteria);
 
-        $models=User::model()->findAll($criteria);
+        $models=User::model()->with('details')->findAll($criteria);
 
         $this->render('list',array(
             'models'=>$models,
@@ -614,13 +606,21 @@ class UserController extends _CController
         $criteria=new CDbCriteria;
 
         $pages=new CPagination(User::model()->count($criteria));
-        $pages->pageSize=self::PAGE_SIZE;
+        $pages->pageSize=self::GRID_PAGE_SIZE;
         $pages->applyLimit($criteria);
 
         $sort=new CSort('User');
+        $sort->attributes=array(
+            User::model()->tableName().'.accessLevel'=>'accessLevel',
+            User::model()->tableName().'.email'=>'email',
+            User::model()->tableName().'.screenName'=>'screenName',
+            'UserUserDetails.deactivationTime'=>'deactivationTime',
+            'UserUserDetails.occupation'=>'occupation',
+        );
+        $sort->defaultOrder="`".User::model()->tableName()."`.`screenName` ASC";
         $sort->applyOrder($criteria);
 
-        $models=User::model()->findAll($criteria);
+        $models=User::model()->with('details')->findAll($criteria);
 
         $this->render('grid',array(
             'models'=>$models,
@@ -630,57 +630,120 @@ class UserController extends _CController
     }
 
     /**
-     * Manages all models.
+     * Print out array of models for the jqGrid rows.
      */
-    public function actionAdmin()
+    public function actionGridData()
     {
-        $this->processAdminCommand();
+        if(Yii::app()->request->isPostRequest)
+        {
+            // specify request details
+            $jqGrid=$this->processJqGridRequest();
 
-        $criteria=new CDbCriteria;
+            // get models
+            $criteria=new CDbCriteria;
+            if($jqGrid['searchField']!==null && $jqGrid['searchString']!==null && $jqGrid['searchOper']!==null)
+            {
+                $field=array(
+                    'accessType'=>"`".User::model()->tableName()."`.`accessType`",
+                    'createTime'=>"`".User::model()->tableName()."`.`createTime`",
+                    'email'=>"`".User::model()->tableName()."`.`email`",
+                    'screenName'=>"`".User::model()->tableName()."`.`screenName`",
+                    'deactivationTime'=>"UserUserDetails.`deactivationTime`",
+                    'occupation'=>"UserUserDetails.`occupation`",
+                );
+                $operation=$this->getJqGridOperationArray();
+                $keywordFormula=$this->getJqGridKeywordFormulaArray();
+                if(isset($field[$jqGrid['searchField']]) && isset($operation[$jqGrid['searchOper']]))
+                {
+                    $criteria->condition='('.$field[$jqGrid['searchField']].' '.$operation[$jqGrid['searchOper']].' :keyword)';
+                    $criteria->params=array(':keyword'=>str_replace('keyword',$jqGrid['searchString'],$keywordFormula[$jqGrid['searchOper']]));
+                }
+            }
 
-        $pages=new CPagination(User::model()->count($criteria));
-        $pages->pageSize=self::PAGE_SIZE;
-        $pages->applyLimit($criteria);
+            if($jqGrid['searchField']==='deactivationTime' || $jqGrid['searchField']==='occupation')
+                $pages=new CPagination(User::model()->with('details')->count($criteria));
+            else
+                $pages=new CPagination(User::model()->count($criteria));
+            $pages->pageSize=$jqGrid['pageSize']!==null ? $jqGrid['pageSize'] : self::GRID_PAGE_SIZE;
+            $pages->applyLimit($criteria);
+    
+            $sort=new CSort('User');
+            $sort->attributes=array(
+                User::model()->tableName().'.accessLevel'=>'accessType',
+                User::model()->tableName().'.createTime'=>'createTime',
+                User::model()->tableName().'.email'=>'email',
+                User::model()->tableName().'.screenName'=>'screenName',
+                'UserUserDetails.deactivationTime'=>'deactivationTime',
+                'UserUserDetails.occupation'=>'occupation',
+            );
+            $sort->defaultOrder="`".User::model()->tableName()."`.`screenName` ASC";
+            $sort->applyOrder($criteria);
 
-        $sort=new CSort('User');
-        $sort->applyOrder($criteria);
-
-        $models=User::model()->findAll($criteria);
-
-        $this->render('admin',array(
-            'models'=>$models,
-            'pages'=>$pages,
-            'sort'=>$sort,
-        ));
+            $models=User::model()->with('details')->findAll($criteria);
+    
+            // create resulting data array
+            $data=array(
+                'page'=>$pages->getCurrentPage()+1,
+                'total'=>$pages->getPageCount(),
+                'records'=>$pages->getItemCount(),
+                'rows'=>array()
+            );
+            foreach($models as $model)
+            {
+                $data['rows'][]=array('id'=>$model->id,'cell'=>array(
+                    CHtml::encode($model->screenName),
+                    CHtml::encode($model->details->occupation),
+                    CHtml::encode($model->email),
+                    CHtml::encode(MDate::format($model->createTime,'medium',null)),
+                    CHtml::encode(MDate::format($model->details->deactivationTime,'medium',null)),
+                    CHtml::encode($model->getAttributeView('accessType')),
+                    CHtml::link('<span class="ui-icon ui-icon-zoomin"></span>',array('show','id'=>$model->id),array(
+                        'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-first ui-corner-all',
+                        'title'=>Yii::t('link','Show')
+                    )).
+                    CHtml::link('<span class="ui-icon ui-icon-pencil"></span>',array('update','id'=>$model->id),array(
+                        'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-last ui-corner-all',
+                        'title'=>Yii::t('link','Edit')
+                    )),
+                ));
+            }
+            $this->printJson($data);
+        }
+        else
+            throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
     }
 
     /**
      * Returns the data model based on the primary key given in the GET variable.
      * If the data model is not found, an HTTP exception will be raised.
-     * @param integer the primary key value. Defaults to null, meaning using the 'id' GET variable
+     * @param array of parameters
      */
-    public function loadUser($id=null)
+    public function loadUser($parameters=array())
     {
         if($this->_model===null)
         {
-            if($id!==null || isset($_GET['id']))
-                $this->_model=User::model()->with('details')->findByPk($id!==null ? $id : $_GET['id']);
+            // processing parameters
+            if(ctype_digit($parameters))
+                $id=$parameters;
+            else if(isset($parameters['id']))
+                $id=$parameters['id'];
+            else if(isset($_GET['id']))
+                $id=$_GET['id'];
+            else
+                $id=null;
+            $with=isset($parameters['with']) ? $parameters['with'] : null;
+            // load the model
+            if($id!==null)
+            {
+                if($with===null)
+                    $this->_model=User::model()->findByPk($id);
+                else
+                    $this->_model=User::model()->with($with)->findByPk($id);
+            }
+            // check whether is success
             if($this->_model===null)
-                throw new CHttpException(404,Yii::t('http','The requested page does not exist.'));
+                throw new CHttpException(404,'The requested page does not exist.');
         }
         return $this->_model;
     }
-
-    /**
-     * Executes any command triggered on the admin page.
-     */
-    /*protected function processAdminCommand()
-    {
-        if(isset($_POST['command'], $_POST['id']) && $_POST['command']==='delete')
-        {
-            $this->loadUser($_POST['id'])->delete();
-            // reload the current page to avoid duplicated delete actions
-            $this->refresh();
-        }
-    }*/
 }

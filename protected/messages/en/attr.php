@@ -1,30 +1,24 @@
 <?php
 
 // i18n - English Language Pack (Attributes)
-return array(
-    '- Please select -' => '- Please select -',
+return
+// your custom translation
+array(
+)
++
+// official translation
+array(
     'By default (Do not bill to company)' => 'By default (Do not bill to company)',
     'By default (Email is not visible by other members)' => 'By default (Email is not visible by other members)',
     'By default (Member account is On)' => 'By default (Member account is On)',
     'By default (The record is not confirmed by the project manager)' => 'By default (The record is not confirmed by the project manager)',
     'By default (The record will not be shown in search results)' => 'By default (The record will not be shown in search results)',
-    'Cancelled' => 'Cancelled',
-    'Completed' => 'Completed',
-    'High' => 'High',
-    'Highest' => 'Highest',
-    'In progress' => 'In progress',
-    'Low' => 'Low',
-    'Lowest' => 'Lowest',
-    'Medium' => 'Medium',
     'No (Do not bill to company)' => 'No (Do not bill to company)',
     'No (Email is not visible by other members)' => 'No (Email is not visible by other members)',
     'No (Member account is Off)' => 'No (Member account is Off)',
     'No (Member has not yet confirmed indicated email)' => 'No (Member has not yet confirmed indicated email)',
     'No (The record is not confirmed by the project manager)' => 'No (The record is not confirmed by the project manager)',
     'No (The record will not be shown in search results)' => 'No (The record will not be shown in search results)',
-    'Not started' => 'Not started',
-    'Ready for production' => 'Ready for production',
-    'Ready to test' => 'Ready to test',
     'Yes (Bill to company)' => 'Yes (Bill to company)',
     'Yes (Email is visible by all members)' => 'Yes (Email is visible by all members)',
     'Yes (Member account is On)' => 'Yes (Member account is On)',

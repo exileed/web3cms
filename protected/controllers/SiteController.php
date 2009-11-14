@@ -3,6 +3,11 @@
 class SiteController extends _CController
 {
     /**
+     * @var string specifies the default action to be 'index'.
+     */
+    public $defaultAction='index';
+    
+    /**
      * Declares class-based actions.
      */
     public function actions()
@@ -23,9 +28,8 @@ class SiteController extends _CController
      */
     public function actionIndex()
     {
-        // renders the view file 'protected/views/site/index.php'
-        // using the default layout 'protected/views/_layouts/main.php'
         $this->render('index');
+        //$this->redirect($this->getGotoUrl());
     }
 
     /**
@@ -41,7 +45,7 @@ class SiteController extends _CController
             {
                 $headers="From: {$contact->email}\r\nReply-To: {$contact->email}";
                 @mail(MParams::getAdminEmailAddress(),$contact->subject,$contact->content,$headers);
-                MUserFlash::setTopInfo(Yii::t('feedback','Thank you for contacting us. We will respond to you as soon as possible.'));
+                MUserFlash::setTopInfo(Yii::t('hint','Thank you for contacting us. We will respond to you as soon as possible.'));
                 $this->refresh();
             }
         }
@@ -49,19 +53,30 @@ class SiteController extends _CController
     }
 
     /**
-     * Displays site error, while url stays the same
-     * (url of the page where the HTTP exception has been raised).
-     * If the action is triggered by an error we render 'error' view,
-     * if not - we trigger 404 error manually.
-     * (Manually means action will call itself, but with a 404 'Page not found.' error.)
+     * Displays the site error, while url stays the same
+     * (the url of the page where the HTTP exception has been raised).
+     * If action is triggered by an error, then the 'error' view is rendered,
+     * otherwise - the 404 error is triggered manually.
      * Note: log in runtime/error.log is still being written.
      */
     public function actionError()
     {
         $error=Yii::app()->errorHandler->error;
         if($error)
-            $this->render('error',array('error'=>$error));
+        {
+            /*if(Yii::app()->request->isAjaxRequest)
+            {
+                if(!headers_sent())
+                    header('HTTP/1.0 '.$error['code']);
+                exit;
+            }
+            else*/
+                // render the view file
+                $this->render('error',array('error'=>$error));
+        }
         else
+            // following will cause the script to run the current action again
+            // with the 404 'not found' error.
             throw new CHttpException(404,Yii::t('http','Page not found.'));
     }
 }

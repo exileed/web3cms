@@ -1,7 +1,13 @@
 <?php
 
 // i18n - Russian Language Pack (Emails)
-return array(
+return
+// your custom translation
+array(
+)
++
+// official translation
+array(
     'New member account' => 'ÐÐ¾Ð²Ð°Ñ ÑƒÑ‡Ñ‘Ñ‚Ð½Ð°Ñ Ð·Ð°Ð¿Ð¸ÑÑŒ', /*'Íîâàÿ ó÷¸òíàÿ çàïèñü'*/
     'Content(New member account)' => 'Ð”Ð¾Ð±Ñ€Ð¾ Ð¿Ð¾Ð¶Ð°Ð»Ð¾Ð²Ð°Ñ‚ÑŒ Ðº {siteTitle}
 

@@ -1,11 +1,18 @@
 <?php
 
 // i18n - Russian Language Pack (System Messages)
-return array(
+return
+// your custom translation
+array(
+)
++
+// official translation
+array(
     'Available interfaces: {availableInterfaces}.' => 'Доступные внешние виды: {availableInterfaces}.', /*'Р”РѕСЃС‚СѓРїРЅС‹Рµ РІРЅРµС€РЅРёРµ РІРёРґС‹: {availableInterfaces}.'*/
     'Available languages: {availableLanguages}.' => 'Доступные языки: {availableLanguages}.', /*'Р”РѕСЃС‚СѓРїРЅС‹Рµ СЏР·С‹РєРё: {availableLanguages}.'*/
-    'Could not load {model} model. Model ID: {modelId}. Method called: {method}.' => 'Не удалось загрузить модель {model}. Модель ID: {modelId}. Вызывался метод: {method}.', /*'РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ РјРѕРґРµР»СЊ {model}. РњРѕРґРµР»СЊ ID: {modelId}. Р’С‹Р·С‹РІР°Р»СЃСЏ РјРµС‚РѕРґ: {method}.'*/
-    'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.' => 'Не смог сохранить атрибуты модели {model}. Модель ID: {modelId}. Вызывался метод: {method}.', /*'РќРµ СЃРјРѕРі СЃРѕС…СЂР°РЅРёС‚СЊ Р°С‚СЂРёР±СѓС‚С‹ РјРѕРґРµР»Рё {model}. РњРѕРґРµР»СЊ ID: {modelId}. Р’С‹Р·С‹РІР°Р»СЃСЏ РјРµС‚РѕРґ: {method}.'*/
+    'Could not delete the {model} model. Model ID: {modelId}. Method called: {method}.' => 'Не удалось удалить модель {model}. ID модели: {modelId}. Вызываемый метод: {method}.', /*'РќРµ СѓРґР°Р»РѕСЃСЊ СѓРґР°Р»РёС‚СЊ РјРѕРґРµР»СЊ {model}. ID РјРѕРґРµР»Рё: {modelId}. Р’С‹Р·С‹РІР°РµРјС‹Р№ РјРµС‚РѕРґ: {method}.'*/
+    'Could not load {model} model. Model ID: {modelId}. Method called: {method}.' => 'Не удалось загрузить модель {model}. ID модели: {modelId}. Вызываемый метод: {method}.', /*'РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ РјРѕРґРµР»СЊ {model}. ID РјРѕРґРµР»Рё: {modelId}. Р’С‹Р·С‹РІР°РµРјС‹Р№ РјРµС‚РѕРґ: {method}.'*/
+    'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.' => 'Не удалось сохранить атрибуты модели {model}. ID модели: {modelId}. Вызываемый метод: {method}.', /*'РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ Р°С‚СЂРёР±СѓС‚С‹ РјРѕРґРµР»Рё {model}. ID РјРѕРґРµР»Рё: {modelId}. Р’С‹Р·С‹РІР°РµРјС‹Р№ РјРµС‚РѕРґ: {method}.'*/
     'Failed creating UserDetails record. Member ID: {userId}. Method called: {method}.' => 'Не удалось создать запись UserDetails. ID участника: {userId}. Вызывался метод: {method}.', /*'РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ Р·Р°РїРёСЃСЊ UserDetails. ID СѓС‡Р°СЃС‚РЅРёРєР°: {userId}. Р’С‹Р·С‹РІР°Р»СЃСЏ РјРµС‚РѕРґ: {method}.'*/
     'Incorrect parameter in method call: {method}.' => 'Неверный параметер в вызове метода: {method}.', /*'РќРµРІРµСЂРЅС‹Р№ РїР°СЂР°РјРµС‚РµСЂ РІ РІС‹Р·РѕРІРµ РјРµС‚РѕРґР°: {method}.'*/
     'Member with ID {userId} has no UserDetails record associated. Method called: {method}.' => 'Участник с ID {userId} не имеет соответствующей UserDetails записи. Вызывался метод: {method}.', /*'РЈС‡Р°СЃС‚РЅРёРє СЃ ID {userId} РЅРµ РёРјРµРµС‚ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµР№ UserDetails Р·Р°РїРёСЃРё. Р’С‹Р·С‹РІР°Р»СЃСЏ РјРµС‚РѕРґ: {method}.'*/

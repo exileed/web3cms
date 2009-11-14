@@ -1,20 +1,20 @@
 <?php if($displayBreadcrumbs): ?>
 <ul class="w3-breadcrumbs">
 <?php $n=0; ?>
-<?php foreach($breadcrumbs as $item): ?>
-<?php $liClass=''; ?>
+<?php foreach($breadcrumbs as $link): ?>
+<?php $class=''; ?>
 <?php if($n===0): ?>
-<?php $liClass='w3-first'; ?>
+<?php $class='w3-first'; ?>
 <?php endif; ?>
 <?php if($n+1===$c): ?>
-<?php $liClass=($liClass===''?'':$liClass.' ').'w3-last'; ?>
+<?php $class=($class===''?'':$class.' ').'w3-last'; ?>
 <?php endif; ?>
-<?php if($item['active']): ?>
-<?php $liClass=($liClass===''?'':$liClass.' ').'w3-active'; ?>
+<?php if($link['active']===true): ?>
+<?php $class=($class===''?'':$class.' ').'w3-active'; ?>
 <?php else: ?>
-<?php $item['label'].='<span>&rsaquo;&rsaquo;</span>'; ?>
+<?php $link['text'].='<span>&rsaquo;&rsaquo;</span>'; ?>
 <?php endif; ?>
-    <li<?php echo $liClass===''?'':' class="'.$liClass.'"'; ?>><?php echo CHtml::link($item['label'],$item['url']); ?></li>
+    <li<?php echo $class===''?'':' class="'.$class.'"'; ?>><?php echo CHtml::link($link['text'],$link['url'],$link['options']); ?></li>
 <?php $n++; ?>
 <?php endforeach; ?>
 </ul>

@@ -55,11 +55,11 @@ class MParams
         // initialize core default parameters
         self::$coreDefaultData=array(
             /**
-     		 * From: "adminEmailName" <adminEmailAddress>
+              * From: "adminEmailName" <adminEmailAddress>
              */
             'adminEmailAddress'=>'phpdevmd@web3cms.com',
             /**
-     		 * From: "adminEmailName" <adminEmailAddress>
+              * From: "adminEmailName" <adminEmailAddress>
              */
             'adminEmailName'=>'Web3CMS Staff',
             /**
@@ -120,15 +120,15 @@ class MParams
              */
             'interface'=>'start',
             /**
-     		 * Site language.
+              * Site language.
              */
             'language'=>'en',
             /**
-     		 * html > head > meta[description]
+              * html > head > meta[description]
              */
             'metaDescription'=>'Web3CMS - Web 2.0 Content Management System based on Yii Framework.',
             /**
-     		 * html > head > meta[keywords]
+              * html > head > meta[keywords]
              */
             'metaKeywords'=>array('web3cms','yii'),
             /**
@@ -148,7 +148,7 @@ class MParams
              */
             'pathToFiles'=>dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR,
             /**
-     		 * Whether or not register jquery-ui css in {@link W3Init::css}.
+              * Whether or not register jquery-ui css in {@link W3Init::css}.
              */
             'registerJqueryUI'=>true,
             /**
@@ -157,7 +157,7 @@ class MParams
              */
             'siteTitle'=>MArea::isBackend() ? 'Web3CMS Administrator' : 'Web3CMS',
             /**
-     		 * System language - language for system messages (mostly in logs).
+              * System language - language for system messages (mostly in logs).
              */
             'systemLanguage'=>'en',
             /**
@@ -189,26 +189,26 @@ class MParams
         // set data from params.php
         $data=Yii::app()->params;
         $parameters=array(
-        	'systemLanguage', // should be first
-        	'adminEmailAddress',
-        	'adminEmailName',
-        	'availableInterfaces',
-        	'availableLanguages',
-        	'language', // should go after availableLanguages
-        	'copyrightBy',
-        	'headerTitle',
-        	'htmlDoctype',
-        	'interface',
-        	'metaDescription',
-        	'metaKeywords',
-        	'modelAttributes',
-        	'pageTitleFormula',
-        	'pathToFiles',
-        	'registerJqueryUI',
-        	'siteTitle',
-        	'tablePrefix',
-        	'urlToFiles',
-        	'userLoginWithField'
+            'systemLanguage', // should be first
+            'adminEmailAddress',
+            'adminEmailName',
+            'availableInterfaces',
+            'availableLanguages',
+            'language', // should go after availableLanguages
+            'copyrightBy',
+            'headerTitle',
+            'htmlDoctype',
+            'interface',
+            'metaDescription',
+            'metaKeywords',
+            'modelAttributes',
+            'pageTitleFormula',
+            'pathToFiles',
+            'registerJqueryUI',
+            'siteTitle',
+            'tablePrefix',
+            'urlToFiles',
+            'userLoginWithField'
         );
         // our universal setters
         foreach($parameters as $parameter)
@@ -244,7 +244,7 @@ class MParams
         // languages array
         $array=self::getAvailableLanguages();
         foreach($array as $n=>$item)
-            $array[$n]=Yii::t('t',$item,array(0));
+            $array[$n]=Yii::t('t',$item.'[language]');
         self::setAvailableLanguages($array);
         // one line strings
         self::setHeaderTitle(Yii::t('t',self::getHeaderTitle()));

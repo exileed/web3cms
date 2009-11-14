@@ -1,10 +1,10 @@
 <?php MParams::setPageLabel(Yii::t('page','Login')); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($form)); ?>
-<?php MUserFlash::setSidebarInfo(Yii::t('feedback','Hint: You may login with <tt>demo/demo</tt> or <tt>admin/admin</tt>.')); ?>
+<?php MUserFlash::setSidebarInfo(Yii::t('hint','Hint: You may login with <tt>demo/demo</tt> or <tt>admin/admin</tt>.')); ?>
 <?php $this->widget('application.components.WContentHeader',array(
     'breadcrumbs'=>array(
         array(
-            'url'=>CHtml::normalizeUrl(array($this->action->id)),
+            'url'=>array($this->action->id),
             'active'=>true
         ),
     ),
@@ -43,7 +43,7 @@
 <div class="w3-form-row">
   <div class="w3-form-row-label">&nbsp;</div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::submitButton(Yii::t('link','Log in'),array('class'=>'w3-input-button ui-button ui-state-default ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::submitButton(Yii::t('link','Log in'),array('class'=>'w3-input-button ui-state-default ui-corner-all'))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>
@@ -53,4 +53,4 @@
 </div><!-- w3-main-form-wrapper -->
 
 <?php MClientScript::registerScript('focusOnFormFirstItem'); ?>
-<?php MClientScript::registerScript('w3FormButton'); ?>
+<?php MClientScript::registerScript('formButton'); ?>

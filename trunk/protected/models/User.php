@@ -3,7 +3,7 @@
 class User extends _CActiveRecord
 {
     /**
-     * The followings are the available columns in table 'User':
+     * The followings are the available columns in table 'W3User':
      * @var integer $id
      * @var string $username
      * @var string $password
@@ -16,7 +16,35 @@ class User extends _CActiveRecord
      * @var string $isActive
      * @var integer $createTime
      */
+    /**
+     * @var string, the 'Repeat email' field
+     */
+    public $email2;
 
+    /**
+     * @var string, is necessary for {@link UserController::actionConfirmEmail}
+     */
+    public $emailConfirmationKey;
+
+    /**
+     * @var string, the 'Repeat password' field
+     */
+    public $password2;
+
+    /**
+     * @var boolean whether screenName is the same as username
+     */
+    public $screenNameSame;
+
+    /**
+     * @var boolean string verification code
+     */
+    public $verifyCode;
+
+    /**
+     * @var array of user private data, like 'accessType'.
+     * Is used by {@link isAdministrator} and so on.
+     */
     private static $_privateData;
 
     const IS_ACTIVE='1';
@@ -71,21 +99,20 @@ class User extends _CActiveRecord
             // email and emailConfirmationKey are required
             array('email, emailConfirmationKey', 'required', 'on'=>'confirmEmailUrl'),
             // on create
-            // email, password, screenName and username are required
-            array('email, password, screenName, username', 'required', 'on'=>'create'),
-            // email, screenName and username have to be unique
-            array('email, screenName, username', 'unique', 'on'=>'create'),
+            // email, password and screenName are required
+            array('email, password, screenName', 'required', 'on'=>'create'),
+            // email and screenName have to be unique
+            array('email, screenName', 'unique', 'on'=>'create'),
             // email has to be a valid email address
             array('email', 'email', 'on'=>'create'),
             // set min/max length
             array('password', 'length', 'min'=>4, 'max'=>64, 'on'=>'create'),
             array('screenName', 'length', 'min'=>3, 'max'=>32, 'on'=>'create'),
-            array('username', 'length', 'min'=>3, 'max'=>32, 'on'=>'create'),
             // on register
-            // email, password, screenName and username are required
-            array('email, password, screenName, username', 'required', 'on'=>'register'),
-            // email, screenName and username have to be unique
-            array('email, screenName, username', 'unique', 'on'=>'register'),
+            // email, password and screenName are required
+            array('email, password, screenName', 'required', 'on'=>'register'),
+            // email and screenName have to be unique
+            array('email, screenName', 'unique', 'on'=>'register'),
             // email has to be a valid email address
             array('email', 'email', 'on'=>'register'),
             // password should be compared with password2
@@ -93,10 +120,11 @@ class User extends _CActiveRecord
             // set min/max length
             array('password', 'length', 'min'=>4, 'max'=>64, 'on'=>'register'),
             array('screenName', 'length', 'min'=>3, 'max'=>32, 'on'=>'register'),
-            array('username', 'length', 'min'=>3, 'max'=>32, 'on'=>'register'),
             // verifyCode needs to be entered correctly
             array('verifyCode', 'captcha', 'on'=>'register', 'allowEmpty'=>!extension_loaded('gd')),
             // on update
+            // email has to be a valid email address
+            array('email', 'email', 'on'=>'update'),
             // screenName is required
             array('screenName', 'required', 'on'=>'update'),
             // screenName has to be unique
@@ -104,8 +132,19 @@ class User extends _CActiveRecord
             // set min/max length
             array('screenName', 'length', 'min'=>3, 'max'=>32, 'on'=>'update'),
         );
-        // email should be compared with email2
-        $this->hasVirtualAttribute('email2') && ($retval[]=array('email', 'compare', 'compareAttribute'=>'email2', 'on'=>'register'));
+        if($this->hasVirtualAttribute('username'))
+        {
+            // username is allowed
+            $retval[]=array('username', 'required', 'on'=>'create');
+            $retval[]=array('username', 'unique', 'on'=>'create');
+            $retval[]=array('username', 'length', 'min'=>3, 'max'=>32, 'on'=>'create');
+            $retval[]=array('username', 'required', 'on'=>'register');
+            $retval[]=array('username', 'unique', 'on'=>'register');
+            $retval[]=array('username', 'length', 'min'=>3, 'max'=>32, 'on'=>'register');
+        }
+        if($this->hasVirtualAttribute('email2'))
+            // email should be compared with email2
+            $retval[]=array('email', 'compare', 'compareAttribute'=>'email2', 'on'=>'register');
         return $retval;
     }
 
@@ -115,8 +154,8 @@ class User extends _CActiveRecord
      */
     public function safeAttributes()
     {
-        return array(
-            'email',
+        $retval=array(
+            //'email',
             'email2',
             'emailConfirmationKey',
             'interface',
@@ -125,9 +164,12 @@ class User extends _CActiveRecord
             'password2',
             'screenName',
             'screenNameSame',
-            'username',
+            //'username',
             'verifyCode',
         );
+        if(User::isAdministrator())
+            $retval=array_merge($retval,array('accessLevel','accessType','isActive'));
+        return $retval;
     }
 
     /**
@@ -136,12 +178,99 @@ class User extends _CActiveRecord
     public function relations()
     {
         return array(
-            // user has a 'details' record associated
-            'details' => array(self::HAS_ONE,'UserDetails','userId','alias'=>'UserUserDetails'),
-            // one user has many 'manager time' records associated
-            'allManagerTime' => array(self::HAS_MANY,'Time','managerId','order'=>"??.`id` ASC",'alias'=>'UserManagerTime'),
+            // each user has a 'details' record associated
+            'details' => array(self::HAS_ONE,'UserDetails','userId',
+                'alias'=>'UserUserDetails'
+            ),
+            // many user has many 'company' records associated
+            /*'allCompany' => array(self::MANY_MANY,'Company',
+                User2Company::model()->tableName().'(userId,companyId)',
+                'order'=>"allCompany_UserCompany.`companyPriority` ASC, allCompany_UserCompany.`id` ASC",
+                'alias'=>'UserCompany'
+            ),
+            // one user has many 'consultant2project' records associated
+            'allConsultant2Project' => array(self::HAS_MANY,'User2Project','userId',
+                'condition'=>"??.`role`='consultant'",
+                'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
+                'alias'=>'UserConsultant2Project'
+            ),
+            // many user has many 'consultant project' records associated
+            'allConsultantProject' => array(self::MANY_MANY,'Project',
+                User2Project::model()->tableName().'(userId,projectId)',
+                'condition'=>"allConsultantProject_UserConsultantProject.`role`='consultant'",
+                'order'=>"allConsultantProject_UserConsultantProject.`projectPriority` ASC, allConsultantProject_UserConsultantProject.`id` ASC",
+                'alias'=>'UserConsultantProject'
+            ),
+            // one user has many 'consultant2task' records associated
+            'allConsultant2Task' => array(self::HAS_MANY,'User2Task','userId',
+                'condition'=>"??.`role`='consultant'",
+                'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
+                'alias'=>'UserConsultant2Task'
+            ),
+            // many user has many 'consultant task' records associated
+            'allConsultantTask' => array(self::MANY_MANY,'Task',
+                User2Task::model()->tableName().'(userId,taskId)',
+                'condition'=>"allConsultantTask_UserConsultantTask.`role`='consultant'",
+                'order'=>"allConsultantTask_UserConsultantTask.`taskPriority` ASC, allConsultantTask_UserConsultantTask.`id` ASC",
+                'alias'=>'UserConsultantTask'
+            ),
             // one user has many 'consultant time' records associated
-            'allConsultantTime' => array(self::HAS_MANY,'Time','consultantId','order'=>"??.`id` ASC",'alias'=>'UserConsultantTime'),
+            'allConsultantTime' => array(self::HAS_MANY,'Time','consultantId',
+                'order'=>"??.`id` ASC",
+                'alias'=>'UserConsultantTime'
+            ),
+            // one user has many 'manager2project' records associated
+            'allManager2Project' => array(self::HAS_MANY,'User2Project','userId',
+                'condition'=>"??.`role`='manager'",
+                'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
+                'alias'=>'UserManager2Project'
+            ),
+            // many user has many 'manager project' records associated
+            'allManagerProject' => array(self::MANY_MANY,'Project',
+                User2Project::model()->tableName().'(userId,projectId)',
+                'condition'=>"allManagerProject_UserManagerProject.`role`='manager'",
+                'order'=>"allManagerProject_UserManagerProject.`projectPriority` ASC, allManagerProject_UserManagerProject.`id` ASC",
+                'alias'=>'UserManagerProject'
+            ),
+            // one user has many 'manager2task' records associated
+            'allManager2Task' => array(self::HAS_MANY,'User2Task','userId',
+                'condition'=>"??.`role`='manager'",
+                'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
+                'alias'=>'UserManager2Task'
+            ),
+            // many user has many 'manager task' records associated
+            'allManagerTask' => array(self::MANY_MANY,'Task',
+                User2Task::model()->tableName().'(userId,taskId)',
+                'condition'=>"allManagerTask_UserManagerTask.`role`='manager'",
+                'order'=>"allManagerTask_UserManagerTask.`taskPriority` ASC, allManagerTask_UserManagerTask.`id` ASC",
+                'alias'=>'UserManagerTask'
+            ),
+            // one user has many 'manager time' records associated
+            'allManagerTime' => array(self::HAS_MANY,'Time','managerId',
+                'order'=>"??.`id` ASC",
+                'alias'=>'UserManagerTime'
+            ),
+            // many user has many 'project' records associated
+            'allProject' => array(self::MANY_MANY,'Project',
+                User2Project::model()->tableName().'(userId,projectId)',
+                'order'=>"allProject_UserProject.`projectPriority` ASC, allProject_UserProject.`id` ASC",
+                'alias'=>'UserProject'
+            ),
+            // one user has many 'user2company' records associated
+            'allUser2Company' => array(self::HAS_MANY,'User2Company','userId',
+                'order'=>"??.`companyPriority` ASC, ??.`id` ASC",
+                'alias'=>'UserUser2Company'
+            ),
+            // one user has many 'user2project' records associated
+            'allUser2Project' => array(self::HAS_MANY,'User2Project','userId',
+                'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
+                'alias'=>'UserUser2Project'
+            ),
+            // one user has many 'user2task' records associated
+            'allUser2Task' => array(self::HAS_MANY,'User2Task','userId',
+                'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
+                'alias'=>'UserUser2Task'
+            ),*/
         );
     }
 
@@ -163,9 +292,11 @@ class User extends _CActiveRecord
             'language'=>Yii::t('t','Language'),
             'password'=>Yii::t('t','Password'),
             'password2'=>Yii::t('t','Repeat password'),
+            'Registered'=>Yii::t('t','Registered[member]'),
             'screenName'=>Yii::t('t','Screen name'),
             'screenNameSame'=>Yii::t('t','Same as username'),
             'username'=>Yii::t('t','Username'),
+            'User interface'=>Yii::t('t','User interface'),
             'verifyCode'=>Yii::t('t','Verification code'),
         );
     }
@@ -175,11 +306,23 @@ class User extends _CActiveRecord
      */
     protected function beforeValidate($on)
     {
-        if($on==='create' || $on==='register')
+        if(($on==='create' || $on==='register') && $this->screenNameSame && $this->username!=='' && $this->username!==null)
+            // make screenName same as username
+            $this->screenName=$this->username;
+        if($this->isNewRecord && !$this->hasVirtualAttribute('username') && ($this->username==='' || $this->username===null))
         {
-            if($this->screenNameSame)
-                // make screenName same as username
-                $this->screenName=$this->username;
+            // if username is not allowed, we make it equal to email
+            // because in db username field is unique key
+            $this->username=substr($this->email,0,128);
+            if(User::model()->findByAttributes(array('username'=>$this->username))!==null)
+                // if username is already in use, generate an unique id
+                $this->username=md5(uniqid(rand(),true));
+        }
+        if($on==='update' && isset($_POST[__CLASS__]['email']) && $this->email!==$_POST[__CLASS__]['email'])
+        {
+            // email is being updated
+            $this->email=$_POST[__CLASS__]['email'];
+            $this->details->isEmailConfirmed='0';
         }
         if(isset($_POST[__CLASS__]['isActive']) && $this->isActive!==self::IS_ACTIVE && $this->isActive!==self::IS_NOT_ACTIVE)
             // enum('0','1') null
@@ -189,6 +332,12 @@ class User extends _CActiveRecord
         )
             // we hope to switch to roles in nearest future
             $this->accessType=self::MEMBER;
+        if(isset($_POST[__CLASS__]['accessType']))
+        {
+            // if access type changed, we need to adjust access level
+            $accessLevel=array(self::MEMBER=>1,self::CLIENT=>2,self::CONSULTANT=>3,self::MANAGER=>4,self::ADMINISTRATOR=>5);
+            $this->accessLevel=$accessLevel[$this->accessType];
+        }
         // parent does all common work
         return parent::beforeValidate($on);
     }
@@ -205,14 +354,15 @@ class User extends _CActiveRecord
     }
 
     /**
-     * Whether requested attribute is allowed by /config/params.php 'modelAttributes'
+     * Whether this AR has the named attribute (table column or class property)
+     * and it is not disallowed by config
+     * (params.php 'modelAttributes', {@link MParams::getModelAttributes}).
      * @param string attribute name
-     * @return boolean whether this AR has the named attribute (table column)
-     * and it is allowed in config params/MParams.
+     * @return boolean
      */
     public function hasVirtualAttribute($name)
     {
-        return property_exists(get_class($this),$name) && MParams::getModelAttributes(get_class($this),$name)!==false;
+        return ($this->hasAttribute($name) || property_exists(get_class($this),$name)) && MParams::getModelAttributes(get_class($this),$name)!==false;
     }
 
     /**
@@ -229,22 +379,16 @@ class User extends _CActiveRecord
                 {
                     case self::MEMBER:
                         return Yii::t('t',self::MEMBER_T);
-                        break;
                     case self::CLIENT:
                         return Yii::t('t',self::CLIENT_T);
-                        break;
                     case self::CONSULTANT:
                         return Yii::t('t',self::CONSULTANT_T);
-                        break;
                     case self::MANAGER:
                         return Yii::t('t',self::MANAGER_T);
-                        break;
                     case self::ADMINISTRATOR:
                         return Yii::t('t',self::ADMINISTRATOR_T);
-                        break;
                     default:
                         return $this->accessType;
-                        break;
                 }
             case 'interface':
                 $availableInterfaces=MParams::getAvailableInterfaces();
@@ -256,21 +400,17 @@ class User extends _CActiveRecord
                 {
                     case self::IS_ACTIVE:
                         return Yii::t('attr','Yes (Member account is On)');
-                        break;
                     case self::IS_NOT_ACTIVE:
                         return Yii::t('attr','No (Member account is Off)');
-                        break;
                     case null:
                         return Yii::t('attr','By default (Member account is On)');
-                        break;
                     default:
                         return $this->isActive;
-                        break;
                 }
             case 'language':
                 $availableLanguages=MParams::getAvailableLanguages();
                 if((is_string($this->language) || is_int($this->language)) && array_key_exists($this->language,$availableLanguages))
-                    return Yii::t('t',$availableLanguages[$this->language],array(0));
+                    return Yii::t('t',$availableLanguages[$this->language]);
                 return $this->language;
             default:
                 return $this->$attribute;
@@ -311,13 +451,17 @@ class User extends _CActiveRecord
 
     /**
      * Find all active members.
+     * @param array of additional conditions
      * @return array of User objects
      */
-    public static function findAllActiveRecords()
+    public function findAllActiveRecords($conditions=array())
     {
+        $id=(isset($conditions[0]) && ctype_digit($conditions[0]) && $conditions[0]>=1) ? $conditions[0] : null;
         $criteria=new CDbCriteria;
         $t=self::model()->tableName();
         $criteria->condition="`$t`.`isActive` IS NULL OR `$t`.`isActive` != '".self::IS_NOT_ACTIVE."'";
+        if($id)
+            $criteria->condition.=" OR `$t`.`id` = '$id'";
         return self::model()->findAll($criteria);
     }
 
@@ -335,9 +479,9 @@ class User extends _CActiveRecord
         // user is guest if he is not logged in
         if(!Yii::app()->user->isGuest)
         {
-            if(($user=self::model()->findByPk(Yii::app()->user->id))!==false)
+            if(($user=self::model()->findByPk(Yii::app()->user->id))!==null)
             {
-                // simple save it in a private array for later accessing by {@link self::getPrivateData()}
+                // just save it in a private array for later accessing by {@link getPrivateData}
                 self::$_privateData['accessLevel']=$user->accessLevel;
                 self::$_privateData['accessType']=$user->accessType;
             }
@@ -346,11 +490,7 @@ class User extends _CActiveRecord
                 // hmmm, user was not loaded? how's that possible...
                 Yii::log(W3::t('system',
                     'Could not load {model} model. Model ID: {modelId}. Method called: {method}.',
-                    array(
-                        '{model}'=>__CLASS__,
-                        '{modelId}'=>Yii::app()->user->id,
-                        '{method}'=>__METHOD__.'()'
-                    )
+                    array('{model}'=>__CLASS__,'{modelId}'=>Yii::app()->user->id,'{method}'=>__METHOD__.'()')
                 ),'error','w3');
                 // still hoping that the model load above will get fixed,
                 // so we won't need to self::$_privateData=array();
@@ -372,7 +512,7 @@ class User extends _CActiveRecord
         if(is_null(self::$_privateData))
             // private data is usually being set from this point
             self::setPrivateData();
-        // if we called setPrivateData() it doesn't necessary mean that
+        // if we called {@link setPrivateData} it doesn't necessary mean that
         // $_privateData[$name] is set, so we have to check to avoid php notice
         return isset(self::$_privateData[$name]) ? self::$_privateData[$name] : null;
     }
@@ -380,7 +520,7 @@ class User extends _CActiveRecord
     /**
      * Whether user is member.
      * @param string accessType
-     * @return bool
+     * @return boolean
      */
     public static function isMember($accessType=null)
     {
@@ -392,7 +532,7 @@ class User extends _CActiveRecord
     /**
      * Whether user is client.
      * @param string accessType
-     * @return bool
+     * @return boolean
      */
     public static function isClient($accessType=null)
     {
@@ -404,7 +544,7 @@ class User extends _CActiveRecord
     /**
      * Whether user is consultant.
      * @param string accessType
-     * @return bool
+     * @return boolean
      */
     public static function isConsultant($accessType=null)
     {
@@ -416,7 +556,7 @@ class User extends _CActiveRecord
     /**
      * Whether user is manager.
      * @param string accessType
-     * @return bool
+     * @return boolean
      */
     public static function isManager($accessType=null)
     {
@@ -428,7 +568,7 @@ class User extends _CActiveRecord
     /**
      * Whether user is administrator.
      * @param string accessType
-     * @return bool
+     * @return boolean
      */
     public static function isAdministrator($accessType=null)
     {
@@ -442,7 +582,7 @@ class User extends _CActiveRecord
      * Use this function if you have a custom accessType in db,
      * custom = not one of (member, client, consultant, manager, administrator).
      * @param string accessType
-     * @return bool
+     * @return boolean
      */
     public static function isAccessType($accessType)
     {
@@ -472,7 +612,7 @@ class User extends _CActiveRecord
     /**
      * Set whether is action $action.
      * @param string $action
-     * @param bool $value
+     * @param boolean $value
      */
     /*public static function setIsAction($action,$value)
     {
@@ -482,7 +622,7 @@ class User extends _CActiveRecord
     /**
      * Get whether is action $action.
      * @param string $action
-     * @return bool
+     * @return boolean
      */
     /*public static function getIsAction($action)
     {

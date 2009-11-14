@@ -84,7 +84,7 @@ class UserController extends _CController
             if($form->validate())
             {
                 // set the welcome message
-                MUserFlash::setTopSuccess(Yii::t('feedback',
+                MUserFlash::setTopSuccess(Yii::t('hint',
                     '{screenName}, you have been successfully logged in.',
                     array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
                 ));
@@ -92,7 +92,7 @@ class UserController extends _CController
                 if(!Yii::app()->user->isGuest)
                 {
                     // update user stats
-                    if(($userDetails=UserDetails::model()->findByPk(Yii::app()->user->id))!==false)
+                    if(($userDetails=UserDetails::model()->findByPk(Yii::app()->user->id))!==null)
                         $userDetails->saveAttributes(array(
                             'lastLoginTime'=>time(),
                             'lastVisitTime'=>time(),
@@ -115,7 +115,7 @@ class UserController extends _CController
         }
         if(!Yii::app()->user->isGuest)
             // warn user if already logged in
-            MUserFlash::setTopInfo(Yii::t('feedback',
+            MUserFlash::setTopInfo(Yii::t('hint',
                 '{screenName}, this action will log you out from your current account.',
                 array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
             ));
@@ -140,7 +140,7 @@ class UserController extends _CController
                 // if session is destroyed, we need to re-open it. this is necessary for user flash
                 Yii::app()->getSession()->open();
             // set the goodbye message
-            MUserFlash::setTopInfo(Yii::t('feedback',
+            MUserFlash::setTopInfo(Yii::t('hint',
                 '{screenName}, you have been successfully logged out.',
                 array('{screenName}'=>'<strong>'.$screenName.'</strong>')
             ));

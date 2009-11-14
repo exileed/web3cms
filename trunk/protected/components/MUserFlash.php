@@ -1,6 +1,7 @@
 <?php
 /**
- * Manage User Flash
+ * MUserFlash class file.
+ * Manage user flash (feedback messages) for the {@link WUserFlash} widget.
  */
 class MUserFlash
 {
@@ -23,7 +24,6 @@ class MUserFlash
     /**
      * Get array of messages from user flash reporting system.
      * If user flash has no messages, then return an empty array.
-     * 
      * @param string $id
      * @param bool $delete
      * @return array of messages
@@ -44,7 +44,6 @@ class MUserFlash
     /**
      * Set/append a new string into user flash (reporting system) array.
      * In case of append, new value is checked for repeat (to prevent double-messaging).
-     * 
      * @param string $id
      * @param string message $str
      * @param bool $append
@@ -68,7 +67,6 @@ class MUserFlash
 
     /**
      * Check whether user flash reporting system has any message for the given id.
-     * 
      * @param string $id
      * @return bool
      */
@@ -79,7 +77,6 @@ class MUserFlash
 
     /**
      * Check user flash id
-     * 
      * @param string $id
      * @return string
      */

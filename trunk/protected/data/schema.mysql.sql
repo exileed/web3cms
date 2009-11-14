@@ -21,10 +21,12 @@ CREATE TABLE W3UserDetails
     `emailConfirmationKey` VARCHAR(32) NOT NULL DEFAULT '',
     `isEmailVisible` ENUM('0','1') NULL,
     `isScreenNameEditable` ENUM('0','1') NULL,
-    `deactivateTime` INTEGER(10) NULL,
+    `deactivationTime` INTEGER(10) NULL,
     `firstName` VARCHAR(128) NULL,
     `middleName` VARCHAR(128) NULL,
     `lastName` VARCHAR(128) NULL,
+    `initials` VARCHAR(16) NULL,
+    `occupation` VARCHAR(128) NULL,
     `gender` ENUM('male','female') NULL,
     `birthDate` DATE NULL,
     `textStatus` TEXT NULL,
@@ -33,12 +35,11 @@ CREATE TABLE W3UserDetails
     `totalTimeLoggedIn` INTEGER(9) NOT NULL DEFAULT '0',
     `secretQuestion` TEXT NULL,
     `secretAnswer` VARCHAR(255) NULL,
-    `administratorNotes` TEXT NULL,
+    `administratorNote` TEXT NULL,
     `updateTime` INTEGER(10) NULL,
     CONSTRAINT FK_user FOREIGN KEY (`userId`)
         REFERENCES W3User (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) CHARACTER SET utf8 COLLATE utf8_general_ci;
-
 
 INSERT INTO W3User (`id`, `username`, `password`, `email`, `screenName`, `accessType`, `accessLevel`, `isActive`, `createTime`) VALUES ('1','admin','21232f297a57a5a743894a0e4a801fc3','admin@example.com','Administrator','administrator','5','1',UNIX_TIMESTAMP());
 INSERT INTO W3User (`id`, `username`, `password`, `email`, `screenName`, `accessType`, `accessLevel`, `isActive`, `createTime`) VALUES ('2','demo','fe01ce2a7fbac8fafaed7c982a04e229','demo@example.com','Demo Member','member','1','1',UNIX_TIMESTAMP());

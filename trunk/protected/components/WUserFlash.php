@@ -1,12 +1,23 @@
 <?php
 /**
- * Widget User Flash
+ * WUserFlash class file.
+ * WUserFlash is a widget displaying user flash (feedback messages).
  */
 class WUserFlash extends CWidget
 {
+    /**
+     * @var string type of this widget, it's position.
+     */
     public $type;
+    /**
+     * @var string in which container is displaying,
+     * 'sidebar1' or 'sidebar2'.
+     */
     public $in;
 
+    /**
+     * When widget is called, following function is run.
+     */
     public function run()
     {
         if($this->type=='contentSummary')
@@ -21,6 +32,9 @@ class WUserFlash extends CWidget
             $this->topSummary();
     }
 
+    /**
+     * User flash messages displayed in the 'content' part of the page.
+     */
     public function contentSummary()
     {
         if(MUserFlash::hasContentSuccess() || MUserFlash::hasContentInfo() || MUserFlash::hasContentError())
@@ -34,6 +48,9 @@ class WUserFlash extends CWidget
         }
     }
 
+    /**
+     * User flash messages displayed in the sidebar part of the page.
+     */
     public function sidebarSummary()
     {
         if(MUserFlash::hasSidebarSuccess() || MUserFlash::hasSidebarInfo() || MUserFlash::hasSidebarError())
@@ -48,6 +65,9 @@ class WUserFlash extends CWidget
         }
     }
 
+    /**
+     * User flash messages displayed in the 'sidebar1' part of the page.
+     */
     public function sidebar1Summary()
     {
         if(MUserFlash::hasSidebar1Success() || MUserFlash::hasSidebar1Info() || MUserFlash::hasSidebar1Error())
@@ -61,6 +81,9 @@ class WUserFlash extends CWidget
         }
     }
 
+    /**
+     * User flash messages displayed in the 'sidebar2' part of the page.
+     */
     public function sidebar2Summary()
     {
         if(MUserFlash::hasSidebar2Success() || MUserFlash::hasSidebar2Info() || MUserFlash::hasSidebar2Error())
@@ -74,6 +97,10 @@ class WUserFlash extends CWidget
         }
     }
 
+    /**
+     * User flash messages displayed in the 'top' part of the page,
+     * between header and the main part.
+     */
     public function topSummary()
     {
         if(MUserFlash::hasTopSuccess() || MUserFlash::hasTopInfo() || MUserFlash::hasTopError())

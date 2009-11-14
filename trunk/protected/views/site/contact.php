@@ -1,10 +1,10 @@
 <?php MParams::setPageLabel(Yii::t('page','Contact us')); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($contact)); ?>
-<?php MUserFlash::setSidebarInfo(Yii::t('feedback','If you have business inquiries or other questions, please fill out this form to contact us. Thank you.')); ?>
+<?php MUserFlash::setSidebarInfo(Yii::t('hint','If you have business inquiries or other questions, please fill out this form to contact us. Thank you.')); ?>
 <?php $this->widget('application.components.WContentHeader',array(
     'breadcrumbs'=>array(
         array(
-            'url'=>CHtml::normalizeUrl(array($this->action->id)),
+            'url'=>array($this->action->id),
             'active'=>true
         ),
     ),
@@ -48,8 +48,8 @@
     <div class="w3-form-row-text">
       <?php $this->widget('CCaptcha'); echo "\n"; ?>
       <?php echo _CHtml::activeTextField($contact,'verifyCode',array('class'=>'w3-input-text w3-input-w50percents ui-widget-content ui-corner-all'))."\n"; ?>
-      <br/><?php echo Yii::t('feedback','Please enter the letters as they are shown in the image above.')."\n"; ?>
-      <br/><?php echo Yii::t('feedback','Letters are not case-sensitive.')."\n"; ?>
+      <br/><?php echo Yii::t('hint','Please enter the letters as they are shown in the image above.')."\n"; ?>
+      <br/><?php echo Yii::t('hint','Letters are not case-sensitive.')."\n"; ?>
     </div>
   </div>
   <div class="clear">&nbsp;</div>
@@ -58,7 +58,7 @@
 <div class="w3-form-row">
   <div class="w3-form-row-label">&nbsp;</div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::submitButton(Yii::t('t','Submit'),array('class'=>'w3-input-button ui-button ui-state-default ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::submitButton(Yii::t('t','Submit'),array('class'=>'w3-input-button ui-state-default ui-corner-all'))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>
@@ -67,14 +67,5 @@
 
 </div><!-- w3-main-form-wrapper -->
 
-<?php Yii::app()->getClientScript()->registerScript('focusOnFirstInput',
-"jQuery('.w3-content form.w3-main-form .w3-input-text:first').focus();"); ?>
-<?php Yii::app()->getClientScript()->registerScript('focusOnFirstErrorInput',
-"jQuery('.w3-content form.w3-main-form .ui-state-error:first').focus();"); ?>
-<?php Yii::app()->getClientScript()->registerScript('w3FormButton',
-"jQuery('.w3-form-row .w3-input-button').hover(
-    function(){ jQuery(this).addClass('ui-state-hover'); },
-    function(){ jQuery(this).removeClass('ui-state-hover'); }
-)
-.mousedown(function(){ jQuery(this).addClass('ui-state-active'); })
-.mouseup(function(){ jQuery(this).removeClass('ui-state-active'); });"); ?>
+<?php MClientScript::registerScript('focusOnFormFirstItem'); ?>
+<?php MClientScript::registerScript('formButton'); ?>

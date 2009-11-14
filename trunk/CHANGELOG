@@ -2,6 +2,13 @@
                    Web3CMS Change Log
                    ==================
 
+Version 1.0.9.r10 (update2) November 14, 2009
+---------------------------------------------
+- Most important in this release is few more widgets (grid, list of links, drop down link),
+and a better tested system. It still may contain few bugs, due to the
+Project Management System that we are currently working on;
+we hope to start releasing PMS soon.
+
 Version 1.0.9.r9 (update1) October 11, 2009
 -------------------------------------------
 - Inf: System datetime fields switched to int(10) time

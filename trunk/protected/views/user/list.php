@@ -1,14 +1,5 @@
 <?php MParams::setPageLabel(Yii::t('page','List of members')); ?>
-<?php MUserFlash::setSidebarInfo(Yii::t('feedback','Some useful links will be added here soon.')); ?>
-<?php $this->widget('application.components.WContentHeader',array(
-    'breadcrumbs'=>array(
-        array(
-            'url'=>CHtml::normalizeUrl(array($this->action->id)),
-            'active'=>true
-        )
-    ),
-)); ?>
-<?php $this->widget('application.components.WPreItemActionBar',array(
+<?php MListOfLinks::set('sidebar',array(
     'links'=>array(
         array(
             'text'=>Yii::t('link','View as grid'),
@@ -23,14 +14,24 @@
         ) : null,
     ),
 )); ?>
+<?php $this->widget('application.components.WContentHeader',array(
+    'breadcrumbs'=>array(
+        array(
+            'url'=>array($this->action->id),
+            'active'=>true
+        )
+    ),
+)); ?>
+<?php if($pages->getPageCount()>=2): ?>
+<div style="padding: .5em 0 .9em 0;">
 <?php $this->widget('CLinkPager',array('pages'=>$pages)); ?>
+</div>
 
+<?php endif; ?>
 <div class="w3-items-list">
 <?php foreach($models as $n=>$model): ?>
+
 <div class="w3-item<?php echo $n ? '' : ' w3-first'; ?> ui-widget-content ui-corner-all">
-<?php echo CHtml::encode($model->getAttributeLabel('id')); ?>:
-<?php echo CHtml::link($model->id,array('show','id'=>$model->id)); ?>
-<br/>
 <?php echo CHtml::encode($model->getAttributeLabel('username')); ?>:
 <?php echo CHtml::encode($model->username); ?>
 <br/>
@@ -40,28 +41,23 @@
 <?php echo CHtml::encode($model->getAttributeLabel('screenName')); ?>:
 <?php echo CHtml::encode($model->screenName); ?>
 <br/>
-<?php echo CHtml::encode($model->getAttributeLabel('language')); ?>:
-<?php echo CHtml::encode($model->language); ?>
-<br/>
-<?php echo CHtml::encode($model->getAttributeLabel('interface')); ?>:
-<?php echo CHtml::encode($model->interface); ?>
-<br/>
 <?php echo CHtml::encode($model->getAttributeLabel('accessType')); ?>:
-<?php echo CHtml::encode($model->accessType); ?>
-<br/>
-<?php echo CHtml::encode($model->getAttributeLabel('accessLevel')); ?>:
-<?php echo CHtml::encode($model->accessLevel); ?>
+<?php echo CHtml::encode($model->getAttributeView('accessType')); ?>
 <br/>
 <?php echo CHtml::encode($model->getAttributeLabel('isActive')); ?>:
 <?php echo CHtml::encode($model->isActive); ?>
 <br/>
 <?php echo CHtml::encode($model->getAttributeLabel('createTime')); ?>:
-<?php echo CHtml::encode($model->createTime); ?>
+<?php echo CHtml::encode(MDate::format($model->createTime,'full')); ?>
 <br/>
-
+<?php echo CHtml::link(Yii::t('link','Show'),array('show','id'=>$model->id))."\n"; ?>
+<?php echo CHtml::link(Yii::t('link','Edit'),array('update','id'=>$model->id))."\n"; ?>
 </div>
+
 <?php endforeach; ?>
 </div>
+<?php if($pages->getPageCount()>=2): ?>
 
 <br/>
+<?php endif; ?>
 <?php $this->widget('CLinkPager',array('pages'=>$pages)); ?>

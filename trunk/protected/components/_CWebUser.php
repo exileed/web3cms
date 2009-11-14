@@ -39,14 +39,14 @@ class _CWebUser extends CWebUser
                             // set user preferred language
                             W3::setLanguage(Yii::app()->user->language);
                         // set the welcome-back message
-                        MUserFlash::setTopSuccess(Yii::t('feedback',
+                        MUserFlash::setTopSuccess(Yii::t('hint',
                             '{screenName}, welcome back! Automatic authentication has been successfully passed.',
                             array('{screenName}'=>'<strong>'.$this->getState('screenName').'</strong>')
                         ));*/
                         break;
                     case _CUserIdentity::ERROR_ACCOUNT_IS_INACTIVE:
                         // set the error message
-                        /*MUserFlash::setTopError(Yii::t('feedback',
+                        /*MUserFlash::setTopError(Yii::t('hint',
                             'We are sorry, but your member account is marked as "inactive". Inactive member accounts are temporarely inaccessible. {contactLink}.',
                             array('{contactLink}'=>CHtml::link(Yii::t('link','Contact us'),array('site/contact')))
                         ));*/

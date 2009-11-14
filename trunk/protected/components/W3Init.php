@@ -40,7 +40,7 @@ class W3Init
         // 960 css
         $cs->registerCssFile(Yii::app()->request->baseUrl.'/css/960.css');
         // yii css
-        $cs->registerCssFile(Yii::app()->request->baseUrl.'/css/yii.css');
+        //$cs->registerCssFile(Yii::app()->request->baseUrl.'/css/yii.css');
         // all jquery plugins css
         //$cs->registerCssFile(Yii::app()->request->baseUrl.'/css/jquery-1.3.x.plugins.css');
         // jquery-ui
@@ -74,7 +74,7 @@ class W3Init
         //$cs->registerScriptFile(Yii::app()->request->baseUrl.'/js/jquery-1.3.x.plugins.js',CClientScript::POS_HEAD);
         // jquery-ui
         $cs->registerScriptFile(Yii::app()->request->baseUrl.'/js/jquery-ui-'.MParams::jqueryUIVersion.'.custom.min.js',CClientScript::POS_HEAD);
-        // attribute target is not allowed in xhtml strict
+        // attribute 'target' is not allowed by xhtml strict doctype
         $cs->registerScript('targetBlank',"jQuery(\"a[rel^='external']\").attr({'target': '_blank'});",CClientScript::POS_READY);
         // call noConflict() function if prototype.js was included before jquery
         // details at http://docs.jquery.com/Using_jQuery_with_Other_Libraries

@@ -1,7 +1,13 @@
 <?php
 
 // i18n - English Language Pack (CSS Themes)
-return array(
+return
+// your custom translation
+array(
+)
++
+// official translation
+array(
     'Black tie' => 'Black tie',
     'Blitzer' => 'Blitzer',
     'Cupertino' => 'Cupertino',

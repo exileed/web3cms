@@ -1,7 +1,13 @@
 <?php
 
 // i18n - English Language Pack (Links)
-return array(
+return
+// your custom translation
+array(
+)
++
+// official translation
+array(
     'Add a company' => 'Add a company',
     'Add a company payment' => 'Add a company payment',
     'Add an expense' => 'Add an expense',
@@ -21,10 +27,12 @@ return array(
     'Browse projects' => 'Browse projects',
     'Browse tasks' => 'Browse tasks',
     'Browse time' => 'Browse time',
+    'Cancel[form]' => 'Cancel',
     'Change interface' => 'Change interface',
     'Companies' => 'Companies',
     'Company' => 'Company',
     'Company payment' => 'Company payment',
+    'Company payment number "{paymentNumber}"' => 'Company payment number "{paymentNumber}"',
     'Company payments' => 'Company payments',
     'Confirm' => 'Confirm',
     'Contact' => 'Contact',
@@ -39,6 +47,11 @@ return array(
     'Create a new project' => 'Create a new project',
     'Create a new task' => 'Create a new task',
     'Create a new time record' => 'Create a new time record',
+    'Delete' => 'Delete',
+    'Delete expense' => 'Delete expense',
+    'Delete the record number {id}' => 'Delete the record number {id}',
+    'Delete time record' => 'Delete time record',
+    'Edit' => 'Edit',
     'Edit company' => 'Edit company',
     'Edit company payment' => 'Edit company payment',
     'Edit expense' => 'Edit expense',
@@ -50,6 +63,7 @@ return array(
     'Edit task' => 'Edit task',
     'Edit time record' => 'Edit time record',
     'Expense' => 'Expense',
+    'Expense number "{expenseNumber}"' => 'Expense number "{expenseNumber}"',
     'Expenses' => 'Expenses',
     'Grid of companies' => 'Grid of companies',
     'Grid of company payments' => 'Grid of company payments',
@@ -62,6 +76,8 @@ return array(
     'Grid of time records' => 'Grid of time records',
     'Home' => 'Home',
     'Invoice' => 'Invoice',
+    'Invoice {number}' => 'Invoice {number}',
+    'Invoice number "{invoiceNumber}"' => 'Invoice number "{invoiceNumber}"',
     'Invoices' => 'Invoices',
     'Leave my member account' => 'Leave my member account',
     'List of companies' => 'List of companies',
@@ -80,13 +96,16 @@ return array(
     'Main page' => 'Main page',
     'Member' => 'Member',
     'Members' => 'Members',
+    'My company' => 'My company',
     'My profile' => 'My profile',
+    'Payment {number} ({method})' => 'Payment {number} ({method})',
     'Project' => 'Project',
     'Projects' => 'Projects',
     'Register' => 'Register',
     'Register member account' => 'Register member account',
     'Save' => 'Save',
     '"{screenName}" member' => '"{screenName}" member',
+    'Show' => 'Show',
     'Show company' => 'Show company',
     'Show company payment' => 'Show company payment',
     'Show expense' => 'Show expense',
@@ -101,14 +120,12 @@ return array(
     'Time' => 'Time',
     'Time records' => 'Time records',
     '"{title}" company' => '"{title}" company',
-    '"{title}" company payment' => '"{title}" company payment',
-    '"{title}" expense' => '"{title}" expense',
-    '"{title}" invoice' => '"{title}" invoice',
     '"{title}" location' => '"{title}" location',
     '"{title}" project' => '"{title}" project',
     '"{title}" task' => '"{title}" task',
     '"{title}" time record' => '"{title}" time record',
     'View as grid' => 'View as grid',
     'View as list' => 'View as list',
+    'View my company' => 'View my company',
     'View my profile' => 'View my profile',
 );

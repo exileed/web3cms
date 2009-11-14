@@ -31,7 +31,7 @@ class MDate
      * @param string format of the field
      * @return string
      */
-    public static function formatToDB($time,$format='datetime')
+    public static function formatToDb($time,$format='datetime')
     {
         // validate first parameter
         if(!is_int($time) && !ctype_digit($time) && strtotime($time)===false)

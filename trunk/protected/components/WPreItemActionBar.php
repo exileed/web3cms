@@ -12,31 +12,51 @@
  */
 class WPreItemActionBar extends CWidget
 {
+    /**
+     * @var array of the links
+     */
     public $links;
 
+    /**
+     * When widget is called, following function is run.
+     */
     public function run()
     {
-        // links array should not be empty
-        if(!is_array($this->links) || ($c=count($this->links))===0)
-            return null;
+        // the new array of the links is a validated one
         $links=array();
-        // carefully validate links parameter
-        foreach($this->links as $link)
+        if(is_array($this->links))
         {
-            if(is_array($link) && (isset($link['text']) || isset($link['url']) || isset($link['icon']) || isset($link['options'])))
+            foreach($this->links as $link)
             {
-                $links[]=array(
-                    'text'=>isset($link['text']) ? (string)$link['text'] : '',
-                    'url'=>(isset($link['url']) && (is_array($link['url']) || is_string($link['url']))) ? $link['url'] : '#',
-                    'options'=>(isset($link['options']) && is_array($link['options'])) ? $link['options'] : array()
-                );
-                if(isset($link['icon']) && (is_string($link['icon']) || is_numeric($link['icon'])))
-                    $links[count($links)-1]['icon']=$link['icon'];
+                if(is_array($link) && (isset($link['text']) || isset($link['url']) || isset($link['icon']) || isset($link['options'])))
+                {
+                    $links[]=array(
+                        'text'=>isset($link['text']) ? (string)$link['text'] : '',
+                        'url'=>(isset($link['url']) && (is_array($link['url']) || is_string($link['url']))) ? $link['url'] : '#',
+                        'options'=>(isset($link['options']) && is_array($link['options'])) ? $link['options'] : array()
+                    );
+                    $i=count($links)-1;
+                    if(isset($link['icon']) && (is_string($link['icon']) || is_numeric($link['icon'])))
+                        $links[$i]['icon']=$link['icon'];
+                    if(isset($link['dropDown']))
+                    {
+                        $links[$i]['dropDown']=$link['dropDown'];
+                        if($links[$i]['url']==='#')
+                            $links[$i]['url']='javascript:void(0)';
+                    }
+                }
             }
         }
-        // register script for visual effects
-        MClientScript::registerScript('w3ActionButton');
+        // do not display the widget if the data has no links
+        if(($c=count($links))===0)
+            return null;
+        // data for the renderer
+        $data=array(
+            'c'=>$c,
+            'links'=>$links,
+            'class','n'
+        );
         // render the view file
-        $this->render('wPreItemActionBar',array('links'=>$links,'c'=>$c,'n','liClass'));
+        $this->render('wPreItemActionBar',$data);
     }
 }

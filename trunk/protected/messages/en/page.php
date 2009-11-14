@@ -1,7 +1,13 @@
 <?php
 
 // i18n - English Language Pack (Pages)
-return array(
+return
+// your custom translation
+array(
+)
++
+// official translation
+array(
     'Change interface' => 'Change interface',
     'Confirm email address' => 'Confirm email address',
     'Contact us' => 'Contact us',
@@ -14,6 +20,8 @@ return array(
     'Create a new project' => 'Create a new project',
     'Create a new task' => 'Create a new task',
     'Create a new time record' => 'Create a new time record',
+    'Delete expense' => 'Delete expense',
+    'Delete time record' => 'Delete time record',
     'Edit company' => 'Edit company',
     'Edit company payment' => 'Edit company payment',
     'Edit expense' => 'Edit expense',
@@ -45,14 +53,14 @@ return array(
     'List of time records' => 'List of time records',
     'Login' => 'Login',
     'Register a member account' => 'Register a member account',
+    'View company payment number "{paymentNumber}"' => 'View company payment number "{paymentNumber}"',
+    'View expense number "{expenseNumber}"' => 'View expense number "{expenseNumber}"',
+    'View invoice number "{invoiceNumber}"' => 'View invoice number "{invoiceNumber}"',
+    'View my profile' => 'View my profile',
     'View "{screenName}" member' => 'View "{screenName}" member',
     'View "{title}" company' => 'View "{title}" company',
-    'View "{title}" company payment' => 'View "{title}" company payment',
-    'View "{title}" expense' => 'View "{title}" expense',
-    'View "{title}" invoice' => 'View "{title}" invoice',
     'View "{title}" location' => 'View "{title}" location',
     'View "{title}" project' => 'View "{title}" project',
     'View "{title}" task' => 'View "{title}" task',
     'View "{title}" time record' => 'View "{title}" time record',
-    'View my profile' => 'View my profile',
 );

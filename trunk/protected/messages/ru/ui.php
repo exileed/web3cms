@@ -1,7 +1,13 @@
 <?php
 
 // i18n - Russian Language Pack (CSS Themes)
-return array(
+return
+// your custom translation
+array(
+)
++
+// official translation
+array(
     'Black tie' => 'Р’РµС‡РµСЂРЅРёР№ РєРѕСЃС‚СЋРј', /*'Вечерний костюм'*/
     'Blitzer' => 'Р‘Р»РёС‚С†РµСЂ', /*'Блитцер'*/
     'Cupertino' => 'РљСѓРїРµСЂС‚РёРЅРѕ', /*'Купертино'*/

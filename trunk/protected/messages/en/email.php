@@ -1,7 +1,13 @@
 <?php
 
 // i18n - English Language Pack (Emails)
-return array(
+return
+// your custom translation
+array(
+)
++
+// official translation
+array(
     'New member account' => 'New member account',
     'Content(New member account)' => 'Welcome to {siteTitle}
 

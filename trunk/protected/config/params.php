@@ -91,8 +91,14 @@ return array(
     // or MParams::restoreModelAttributes($model,$attributes);
     'modelAttributes'=>array(
         'User'=>array(
+            //'accessLevel'=>false,
             // email2 is 'Repeat email' field on the register user page
             'email2'=>false,
+            //'id'=>false,
+            //'isEmailConfirmed'=>false,
+            //'isEmailVisible'=>false,
+            // if username is false, set 'userLoginWithField' below to 'email'
+            //'username'=>false,
         ),
     ),
     // page title formula to be used by MParams::setPageTitle();
@@ -102,7 +108,7 @@ return array(
     // hdd path to files folder. must be a valid directory accessible within your hosting
     // reset this on any page with MParams::setPathToFiles($path);
     'pathToFiles'=>dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR,
-    // whether or not register jquery-ui css in {@link W3Init::css()}. possible values: true/false
+    // whether or not register jquery-ui css in {@link W3Init::css}. possible values: true/false
     // reset this on any page with MParams::setRegisterJqueryUI(true);
     'registerJqueryUI'=>true, //true
     // title of your site, used in html > head > title

@@ -53,6 +53,7 @@ array(
     'List of time records' => 'List of time records',
     'Login' => 'Login',
     'Register a member account' => 'Register a member account',
+    'Time report' => 'Time report',
     'View company payment number "{paymentNumber}"' => 'View company payment number "{paymentNumber}"',
     'View expense number "{expenseNumber}"' => 'View expense number "{expenseNumber}"',
     'View invoice number "{invoiceNumber}"' => 'View invoice number "{invoiceNumber}"',

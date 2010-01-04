@@ -1,6 +1,11 @@
 <?php MParams::setPageLabel($me ? Yii::t('page','Edit my profile') : Yii::t('page','Edit member\'s profile')); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($model)); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($model->details)); ?>
+<?php if(User::isAdministrator()): ?>
+<?php MUserFlash::setSidebarInfo(Yii::t('hint','Required: {authRoles}.',
+    array(1,'{authRoles}'=>implode(', ',array(Yii::t('t',User::ADMINISTRATOR_T))))
+)); ?>
+<?php endif; ?>
 <?php MListOfLinks::set('sidebar',array(
     'links'=>array(
         array(

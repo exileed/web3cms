@@ -3,7 +3,7 @@
 <div id="<?php echo $gridPagerId; ?>" class="w3-hidden"></div>
 <?php endif; /*end if displayGrid*/ ?>
 <?php if($displaySGrid===true): ?>
-<div id="<?php echo $sGridWrapperId; ?>" class="w3-items-grid-wrapper ui-widget ui-widget-content ui-corner-all">
+<div id="<?php echo $sGridWrapperId; ?>" class="w3-items-grid-wrapper ui-widget ui-widget-content <?php echo $displaySGridPager===true?'ui-corner-all':'ui-corner-tl ui-corner-tr'; ?>">
 <?php if($displaySTitlebar===true): ?>
   <div class="w3-items-grid-titlebar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix">
     <div class="w3-grid-title"><?php echo $sTitle; ?></div>
@@ -20,7 +20,7 @@
       <tr class="w3-grid-columns-row ui-state-default">
 <?php if(count($sColumns)): ?>
 <?php foreach($sColumns as $sColumn): ?>
-        <th><?php echo $sColumn['title']; ?></th>
+        <th<?php echo ((isset($sColumn['nowrap']) && $sColumn['nowrap']===true) ? ' nowrap="nowrap"' : '') . ((isset($sColumn['width']) && $sColumn['width']!=='') ? ' width="'.$sColumn['width'].'"' : ''); ?>><?php echo $sColumn['title']; ?></th>
 <?php endforeach; ?>
 <?php else: ?>
         <th></th>
@@ -48,6 +48,7 @@
 <?php endforeach; ?>
       </tbody>
     </table><!-- w3-items-grid -->
+<?php if($displaySGridPager===true): ?>
     <div class="w3-items-grid-pager ui-state-default ui-corner-bl ui-corner-br">
       <div class="w3-right-column">
         <?php echo ($totalRecords>=1 ? Yii::t('hint','View {minRow} - {maxRow} of {totalRecords}',array(
@@ -56,6 +57,7 @@
         )."\n"; ?>
       </div>
     </div><!-- w3-items-grid-pager -->
+<?php endif; /*end if displaySGridPager*/ ?>
   </div><!-- <?php echo $sGridId; ?> -->
 </div><!-- w3-items-grid-wrapper -->
 <?php if($displayButtonClose===true): ?>

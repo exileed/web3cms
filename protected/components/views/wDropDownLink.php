@@ -7,6 +7,15 @@
 <?php echo CHtml::link($text,$url,$options)."\n"; ?>
       <div class="w3-hidden">
       <ul>
+<?php if($c>12): ?>
+        <li><ul></ul></li><!-- cheat fg menu for the maxHeight to work -->
+<?php if($maxHeight===null): ?>
+<?php $maxHeight=266; ?>
+<?php endif; ?>
+<?php if($width===null): ?>
+<?php $width=300; ?>
+<?php endif; ?>
+<?php endif; ?>
 <?php foreach($links as $link): ?>
 <?php $class=''; ?>
 <?php if($link['active']===true): ?>
@@ -19,11 +28,14 @@
       </div>
 <?php Yii::app()->getClientScript()->registerCssFile(Yii::app()->request->baseUrl.'/css/menu/fg.menu.css'); ?>
 <?php Yii::app()->getClientScript()->registerScriptFile(Yii::app()->request->baseUrl.'/js/menu/fg.menu.new.js'); ?>
-<?php Yii::app()->getClientScript()->registerScript('dropDownLink',"jQuery('#".$options['id']."').menu({ 
-    content: jQuery('#".$options['id']."').next().html(),
+<?php Yii::app()->getClientScript()->registerScript('dropDownLink['.$options['id'].']',"jQuery('#".$options['id']."').menu({ 
+    content: jQuery('#".$options['id']."').next().html(),".($width!==null ? "
+    width: ".$width."," : '').($maxHeight!==null ? "
+    maxHeight: ".$maxHeight."," : '')."
     showSpeed: 400,
     callerOnState: ''
-});"); ?>
+});");
+/*266 is the height of 12 items*/ ?>
 <?php else: ?>
 <?php echo CHtml::link($text,$url,$options)."\n"; ?>
 <?php endif; ?>

@@ -17,6 +17,5 @@ array(
     'Method' => 'Method',
     'Number' => 'Number',
     'Paypal' => 'Paypal',
-    'Total' => 'Total',
     'Wire' => 'Wire',
 );

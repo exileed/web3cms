@@ -4,6 +4,8 @@
 return
 // your custom translation
 array(
+    'Member' => 'Person',
+    'Members' => 'Persons',
 )
 +
 // official translation
@@ -119,6 +121,7 @@ array(
     'Tasks' => 'Tasks',
     'Time' => 'Time',
     'Time records' => 'Time records',
+    'Time report' => 'Time report',
     '"{title}" company' => '"{title}" company',
     '"{title}" location' => '"{title}" location',
     '"{title}" project' => '"{title}" project',

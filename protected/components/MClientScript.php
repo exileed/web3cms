@@ -72,10 +72,12 @@ jQuery(\".w3-content form.w3-main-form .ui-state-error:first\").focus();";
         if(jQuery(this).find('span.ui-icon').hasClass('ui-icon-circle-triangle-s')){
             jQuery(\"".$selector."\").slideDown('normal');
             jQuery(this).find('span.ui-icon').removeClass('ui-icon-circle-triangle-s').addClass('ui-icon-circle-triangle-n');
+            jQuery(this).closest('.w3-items-grid-titlebar').removeClass('ui-corner-all');
         }
         else{
             jQuery(\"".$selector."\").slideUp('normal');
             jQuery(this).find('span.ui-icon').removeClass('ui-icon-circle-triangle-n').addClass('ui-icon-circle-triangle-s');
+            jQuery(this).closest('.w3-items-grid-titlebar').removeClass('ui-corner-all').addClass('ui-corner-all');
         }
     }
 );";

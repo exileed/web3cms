@@ -1,5 +1,10 @@
 <?php MParams::setPageLabel(Yii::t('page','Change interface')); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($model)); ?>
+<?php if(User::isAdministrator()): ?>
+<?php MUserFlash::setSidebarInfo(Yii::t('hint','Required: {authRoles}.',
+    array(1,'{authRoles}'=>implode(', ',array(Yii::t('t',User::ADMINISTRATOR_T))))
+)); ?>
+<?php endif; ?>
 <?php MListOfLinks::set('sidebar',array(
     'links'=>array(
         array(

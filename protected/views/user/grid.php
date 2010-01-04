@@ -1,4 +1,7 @@
 <?php MParams::setPageLabel(Yii::t('page','Grid of members')); ?>
+<?php MUserFlash::setSidebarInfo(Yii::t('hint','Required: {authRoles}.',
+    array(2,'{authRoles}'=>implode(', ',array(Yii::t('t',User::MANAGER_T),Yii::t('t',User::ADMINISTRATOR_T))))
+)); ?>
 <?php MListOfLinks::set('sidebar',array(
     'links'=>array(
         /*array(
@@ -15,6 +18,7 @@
     ),
 )); ?>
 <?php $this->widget('application.components.WContentHeader',array(
+    'afterLabel'=>false,
     'breadcrumbs'=>array(
         array(
             'url'=>array($this->action->id),
@@ -22,44 +26,19 @@
         )
     ),
 )); ?>
-<?php $this->var->rows=array(); /*rows is an important parameter for the static grid*/ ?>
-<?php foreach($models as $model): ?>
-<?php $this->var->rows=array_merge($this->var->rows,array(array(
-    array(
-        'content'=>CHtml::encode($model->screenName),
+<?php $this->widget('application.components.WPreItemActionBar',array(
+    'links'=>array(
+        array(
+            'dropDown'=>array('links'=>$allAccessType),
+            'text'=>CHtml::encode($accessTypeLinkText),
+            'options'=>array('title'=>Yii::t('t','Access type')),
+        ),
+        array(
+            'dropDown'=>array('links'=>$allState),
+            'text'=>CHtml::encode($stateLinkText),
+        ),
     ),
-    array(
-        'content'=>CHtml::encode($model->details->occupation),
-    ),
-    array(
-        'content'=>CHtml::encode($model->email),
-    ),
-    array(
-        'align'=>'right',
-        'content'=>CHtml::encode(MDate::format($model->createTime,'medium',null)),
-        'title'=>CHtml::encode(MDate::format($model->createTime,'full')),
-    ),
-    array(
-        'align'=>'right',
-        'content'=>CHtml::encode(MDate::format($model->details->deactivationTime,'medium',null)),
-        'title'=>CHtml::encode(MDate::format($model->details->deactivationTime,'full')),
-    ),
-    array(
-        'content'=>CHtml::encode($model->getAttributeView('accessType')),
-    ),
-    array(
-        'content'=>
-            CHtml::link('<span class="ui-icon ui-icon-zoomin"></span>',array('show','id'=>$model->id),array(
-                'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-first ui-corner-all',
-                'title'=>Yii::t('link','Show')
-            )).
-            CHtml::link('<span class="ui-icon ui-icon-pencil"></span>',array('update','id'=>$model->id),array(
-                'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-last ui-corner-all',
-                'title'=>Yii::t('link','Edit')
-            )),
-    ),
-))); ?>
-<?php endforeach; ?>
+)); ?>
 <?php $this->widget('application.components.WItemsGrid',array(
     'columns'=>array(
         array('title'=>CHtml::encode(User::model()->getAttributeLabel('screenName'))),
@@ -81,7 +60,7 @@
     ),
     'pages'=>$pages,
     'rowNum'=>UserController::GRID_PAGE_SIZE,
-    'rows'=>$this->var->rows,
+    'rows'=>$gridRows,
     'sColumns'=>array(
         array('title'=>$sort->link(User::model()->tableName().'.screenName')),
         array('title'=>$sort->link('UserUserDetails.occupation',$sort->resolveLabel('details.occupation'))),
@@ -93,4 +72,5 @@
     ),
     'sortname'=>'screenName',
     'sortorder'=>'asc',
+    'url'=>Yii::app()->createUrl($this->id.'/gridData',$_GET),
 )); ?>

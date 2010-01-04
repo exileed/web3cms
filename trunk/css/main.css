@@ -215,6 +215,16 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 }*/
 
 
+.w3-content h2.w3-regular {
+    color: #222;
+    font-size: 1.8em;
+}
+.w3-content h3.w3-regular {
+    color: #222;
+    font-size: 1.4em;
+}
+
+
 .w3-content .w3-show-item-grid {
     padding: 1em 1.4em; /*just like ui-tabs-panel*/
 }
@@ -362,8 +372,14 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 
 
 /*space between 2 items of the content*/
+.w3-content .w3-between-items-big {
+    height: 3.2em;
+}
 .w3-content .w3-between-items {
     height: 2em;
+}
+.w3-content .w3-between-items-small {
+    height: 1.2em;
 }
 
 
@@ -545,4 +561,11 @@ a.w3-ig.w3-link-icon {
 .w3-inner-icon-right {
     position: absolute;
     right: -18px; /*in the middle between the link text and the right border*/
+}
+
+.w3-position-absolute {
+    position: absolute;
+}
+.w3-position-relative {
+    position: relative;
 }

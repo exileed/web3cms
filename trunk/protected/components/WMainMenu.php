@@ -18,8 +18,6 @@
  *   When the route does not contain the action part, it is treated
  *   as a controller ID and will match all actions of the controller.
  *   If pattern is not given, the url array will be used instead.
- * - options: array, optional. HTML options. 
- *   Is passed as 3rd parameter to {@link CHtml::link}.
  */
 class WMainMenu extends CWidget
 {

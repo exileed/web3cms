@@ -28,8 +28,8 @@ class SiteController extends _CController
      */
     public function actionIndex()
     {
-        $this->render('index');
-        //$this->redirect($this->getGotoUrl());
+        //$this->render('index');
+        $this->redirect($this->getGotoUrl());
     }
 
     /**
@@ -78,5 +78,13 @@ class SiteController extends _CController
             // following will cause the script to run the current action again
             // with the 404 'not found' error.
             throw new CHttpException(404,Yii::t('http','Page not found.'));
+    }
+
+    /**
+     * Display the application wiki.
+     */
+    public function actionWiki()
+    {
+        $this->render('wiki');
     }
 }

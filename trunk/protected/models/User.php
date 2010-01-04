@@ -42,6 +42,14 @@ class User extends _CActiveRecord
     public $verifyCode;
 
     /**
+     * @var integer counters used in the sql queries
+     */
+    public $countTask;
+    public $countTime;
+    public $countConsultantTime;
+    public $countMangerTime;
+
+    /**
      * @var array of user private data, like 'accessType'.
      * Is used by {@link isAdministrator} and so on.
      */
@@ -190,58 +198,73 @@ class User extends _CActiveRecord
             ),
             // one user has many 'consultant2project' records associated
             'allConsultant2Project' => array(self::HAS_MANY,'User2Project','userId',
-                'condition'=>"??.`role`='consultant'",
+                //'condition'=>"??.`role`='".User2Project::CONSULTANT."'",
+                'on'=>"??.`role`='".User2Project::CONSULTANT."'",
                 'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
                 'alias'=>'UserConsultant2Project'
             ),
             // many user has many 'consultant project' records associated
             'allConsultantProject' => array(self::MANY_MANY,'Project',
                 User2Project::model()->tableName().'(userId,projectId)',
-                'condition'=>"allConsultantProject_UserConsultantProject.`role`='consultant'",
+                'on'=>"allConsultantProject_UserConsultantProject.`role`='".User2Project::CONSULTANT."'",
                 'order'=>"allConsultantProject_UserConsultantProject.`projectPriority` ASC, allConsultantProject_UserConsultantProject.`id` ASC",
                 'alias'=>'UserConsultantProject'
             ),
             // one user has many 'consultant2task' records associated
             'allConsultant2Task' => array(self::HAS_MANY,'User2Task','userId',
-                'condition'=>"??.`role`='consultant'",
+                //'condition'=>"??.`role`='".User2Task::CONSULTANT."'",
+                'on'=>"??.`role`='".User2Task::CONSULTANT."'",
                 'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
                 'alias'=>'UserConsultant2Task'
             ),
             // many user has many 'consultant task' records associated
             'allConsultantTask' => array(self::MANY_MANY,'Task',
                 User2Task::model()->tableName().'(userId,taskId)',
-                'condition'=>"allConsultantTask_UserConsultantTask.`role`='consultant'",
+                'on'=>"allConsultantTask_UserConsultantTask.`role`='".User2Project::CONSULTANT."'",
                 'order'=>"allConsultantTask_UserConsultantTask.`taskPriority` ASC, allConsultantTask_UserConsultantTask.`id` ASC",
                 'alias'=>'UserConsultantTask'
+            ),
+            // one user has a number of 'consultant task' records associated
+            'consultantTaskCount' => array(self::STAT,'Task',
+                User2Task::model()->tableName().'(userId,taskId)',
+                //'on'=>"??.`role`='".User2Project::CONSULTANT."'",
             ),
             // one user has many 'consultant time' records associated
             'allConsultantTime' => array(self::HAS_MANY,'Time','consultantId',
                 'order'=>"??.`id` ASC",
                 'alias'=>'UserConsultantTime'
             ),
+            // one user has one of many 'consultant time' records associated
+            //'oneConsultantTime' => array(self::HAS_ONE,'Time','consultantId',
+                //'alias'=>'UserOneConsultantTime'
+            //),
+            // one user has a number of 'consultant time' records associated
+            'consultantTimeCount' => array(self::STAT,'Time','consultantId'),
             // one user has many 'manager2project' records associated
             'allManager2Project' => array(self::HAS_MANY,'User2Project','userId',
-                'condition'=>"??.`role`='manager'",
+                //'condition'=>"??.`role`='".User2Project::MANAGER."'",
+                'on'=>"??.`role`='".User2Project::MANAGER."'",
                 'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
                 'alias'=>'UserManager2Project'
             ),
             // many user has many 'manager project' records associated
             'allManagerProject' => array(self::MANY_MANY,'Project',
                 User2Project::model()->tableName().'(userId,projectId)',
-                'condition'=>"allManagerProject_UserManagerProject.`role`='manager'",
+                'on'=>"allManagerProject_UserManagerProject.`role`='".User2Project::MANAGER."'",
                 'order'=>"allManagerProject_UserManagerProject.`projectPriority` ASC, allManagerProject_UserManagerProject.`id` ASC",
                 'alias'=>'UserManagerProject'
             ),
             // one user has many 'manager2task' records associated
             'allManager2Task' => array(self::HAS_MANY,'User2Task','userId',
-                'condition'=>"??.`role`='manager'",
+                //'condition'=>"??.`role`='".User2Task::MANAGER."'",
+                'on'=>"??.`role`='".User2Task::MANAGER."'",
                 'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
                 'alias'=>'UserManager2Task'
             ),
             // many user has many 'manager task' records associated
             'allManagerTask' => array(self::MANY_MANY,'Task',
                 User2Task::model()->tableName().'(userId,taskId)',
-                'condition'=>"allManagerTask_UserManagerTask.`role`='manager'",
+                'on'=>"allManagerTask_UserManagerTask.`role`='".User2Task::MANAGER."'",
                 'order'=>"allManagerTask_UserManagerTask.`taskPriority` ASC, allManagerTask_UserManagerTask.`id` ASC",
                 'alias'=>'UserManagerTask'
             ),
@@ -250,6 +273,12 @@ class User extends _CActiveRecord
                 'order'=>"??.`id` ASC",
                 'alias'=>'UserManagerTime'
             ),
+            // one user has one of many 'manager time' records associated
+            //'oneManagerTime' => array(self::HAS_ONE,'Time','managerId',
+                //'alias'=>'UserOneManagerTime'
+            //),
+            // one user has a number of 'manager time' records associated
+            'managerTimeCount' => array(self::STAT,'Time','managerId'),
             // many user has many 'project' records associated
             'allProject' => array(self::MANY_MANY,'Project',
                 User2Project::model()->tableName().'(userId,projectId)',

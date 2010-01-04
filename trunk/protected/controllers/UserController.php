@@ -410,7 +410,17 @@ class UserController extends _CController
     public function actionShow()
     {
         $me=(isset($_GET['id']) && (Yii::app()->user->isGuest || $_GET['id']!==Yii::app()->user->id)) ? false : true;
-        $model=$this->loadUser(array('id'=>($me ? Yii::app()->user->id : $_GET['id']),'with'=>array('details')));
+        $id=$me ? Yii::app()->user->id : $_GET['id'];
+        $model=$this->loadUser(array('id'=>$id,'with'=>array('details')));
+        // loaded user is me?
+        $myModel=!Yii::app()->user->isGuest && Yii::app()->user->id===$model->id;
+        if(!$myModel && !User::isManager() && !User::isAdministrator())
+        {
+            // not enough rights
+            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse members.'));
+            $this->redirect($this->getGotoUrl());
+        }
+        // render the view file
         $this->render('show',array('model'=>$model,'me'=>$me));
     }
 
@@ -421,15 +431,24 @@ class UserController extends _CController
      */
     public function actionUpdate()
     {
-        // if not admin
+        /*// if not admin
         if(isset($_GET['id']) && !User::isAdministrator())
             // redirect from user/update/id/2 to user/update
-            $this->redirect(array($this->action->id));
+            $this->redirect(array($this->action->id));*/
         $idIsSpecified=isset($_GET['id']);
         // whether it's me. alternative: admin update member's account.
         $me=($idIsSpecified && $_GET['id']!==Yii::app()->user->id) ? false : true;
+        $id=$me ? Yii::app()->user->id : $_GET['id'];
         // load model. if model doesn't exist, throw an http exception
-        $model=$this->loadUser(array('id'=>($me ? Yii::app()->user->id : $_GET['id']),'with'=>array('details')));
+        $model=$this->loadUser(array('id'=>$id,'with'=>array('details')));
+        // loaded user is me?
+        $myModel=!Yii::app()->user->isGuest && Yii::app()->user->id===$model->id;
+        if(!$myModel && !User::isAdministrator())
+        {
+            // not enough rights
+            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to edit a member account.'));
+            $this->redirect($this->getGotoUrl());
+        }
         // whether data is passed
         if(isset($_POST['User']))
         {
@@ -452,10 +471,20 @@ class UserController extends _CController
                     // we do not need to update user cookie any more because
                     // we overrode auto-login with {@link _CWebUser::restoreFromCookie}
                 }
-                if(isset($_POST['UserDetails']))
+                // user details
+                $details=array();
+                if($model->isActive===User::IS_ACTIVE && $model->details->deactivationTime!==null)
+                    $details['deactivationTime']=null;
+                else if(($model->isActive===User::IS_NOT_ACTIVE || $model->isActive===null) && empty($model->details->deactivationTime))
+                    $details['deactivationTime']=time();
+                if(isset($_POST['UserDetails']) || count($details)>=1)
                 {
-                    // collect user input data
-                    $model->details->attributes=$_POST['UserDetails'];
+                    if(isset($_POST['UserDetails']))
+                        // collect user input data
+                        $model->details->attributes=$_POST['UserDetails'];
+                    foreach($details as $attribute=>$value)
+                        // set attributes outside of the form
+                        $model->details->$attribute=$value;
                     // validate with $on = 'update'
                     if($model->details->validate('update'))
                     {
@@ -517,15 +546,24 @@ class UserController extends _CController
      */
     public function actionUpdateInterface()
     {
-        // if not admin
+        /*// if not admin
         if(isset($_GET['id']) && !User::isAdministrator())
             // redirect from user/updateInterface/id/2 to user/updateInterface
-            $this->redirect(array($this->action->id));
+            $this->redirect(array($this->action->id));*/
         $idIsSpecified=isset($_GET['id']);
         // whether it's me. alternative: admin update member's account.
         $me=($idIsSpecified && $_GET['id']!==Yii::app()->user->id) ? false : true;
+        $id=$me ? Yii::app()->user->id : $_GET['id'];
         // load model. if model doesn't exist, throw an http exception
-        $model=$this->loadUser(array('id'=>($me ? Yii::app()->user->id : $_GET['id']),'with'=>array('details')));
+        $model=$this->loadUser(array('id'=>$id,'with'=>array('details')));
+        // loaded user is me?
+        $myModel=!Yii::app()->user->isGuest && Yii::app()->user->id===$model->id;
+        if(!$myModel && !User::isAdministrator())
+        {
+            // not enough rights
+            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to change the user interface for a member account.'));
+            $this->redirect($this->getGotoUrl());
+        }
         // whether data is passed
         if(isset($_POST['User']))
         {
@@ -603,12 +641,71 @@ class UserController extends _CController
      */
     public function actionGrid()
     {
-        $criteria=new CDbCriteria;
+        if(!User::isManager() && !User::isAdministrator())
+        {
+            // not enough rights
+            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse members.'));
+            $this->redirect($this->getGotoUrl());
+        }
 
-        $pages=new CPagination(User::model()->count($criteria));
+        // specify filter parameters
+        $accessType=isset($_GET['accessType']) ? $_GET['accessType'] : null;
+        if($accessType!=='all' && $accessType!==(string)User::MEMBER && $accessType!==(string)User::CLIENT && $accessType!==(string)User::CONSULTANT && $accessType!==(string)User::MANAGER && $accessType!==(string)User::ADMINISTRATOR)
+            $accessType='all';
+        $state=isset($_GET['state']) ? $_GET['state'] : null;
+        if($state!=='all' && $state!=='active' && $state!=='inactive')
+            $state='all';
+
+        // criteria
+        $criteria=new CDbCriteria;
+        if($accessType===(string)User::MEMBER)
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:member";
+            $criteria->params=array_merge($criteria->params,array(':member'=>User::MEMBER));
+        }
+        else if($accessType===(string)User::CLIENT)
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:client";
+            $criteria->params=array_merge($criteria->params,array(':client'=>User::CLIENT));
+        }
+        else if($accessType===(string)User::CONSULTANT)
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:consultant";
+            $criteria->params=array_merge($criteria->params,array(':consultant'=>User::CONSULTANT));
+        }
+        else if($accessType===(string)User::MANAGER)
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:manager";
+            $criteria->params=array_merge($criteria->params,array(':manager'=>User::MANAGER));
+        }
+        else if($accessType===(string)User::ADMINISTRATOR)
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:administrator";
+            $criteria->params=array_merge($criteria->params,array(':administrator'=>User::ADMINISTRATOR));
+        }
+        if($state==='active')
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."(`".User::model()->tableName()."`.`isActive` IS NULL OR `".User::model()->tableName()."`.`isActive`!=:isNotActive)";
+            $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
+        }
+        else if($state==='inactive')
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`isActive`=:isNotActive";
+            $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
+        }
+
+        // pagination
+        $with=array();
+        if(strpos($criteria->condition,'UserUserDetails')!==false)
+            $with[]='details';
+        if(count($with)>=1)
+            $pages=new CPagination(User::model()->with($with)->count($criteria));
+        else
+            $pages=new CPagination(User::model()->count($criteria));
         $pages->pageSize=self::GRID_PAGE_SIZE;
         $pages->applyLimit($criteria);
 
+        // sort
         $sort=new CSort('User');
         $sort->attributes=array(
             User::model()->tableName().'.accessLevel'=>'accessLevel',
@@ -620,12 +717,152 @@ class UserController extends _CController
         $sort->defaultOrder="`".User::model()->tableName()."`.`screenName` ASC";
         $sort->applyOrder($criteria);
 
+        // find all
         $models=User::model()->with('details')->findAll($criteria);
 
+        // filters data
+        $filters=array('accessType'=>$accessType,'state'=>$state);
+        $allAccessType=array(
+            array(
+                'text'=>Yii::t('t','All'),
+                'url'=>Yii::app()->createUrl($this->id.'/'.$this->action->id,array_merge($filters,array('accessType'=>'all'))),
+                'active'=>$accessType==='all'
+            ),
+            array(
+                'text'=>Yii::t('t',User::MEMBER_T),
+                'url'=>Yii::app()->createUrl($this->id.'/'.$this->action->id,array_merge($filters,array('accessType'=>User::MEMBER))),
+                'active'=>$accessType===(string)User::MEMBER
+            ),
+            array(
+                'text'=>Yii::t('t',User::CLIENT_T),
+                'url'=>Yii::app()->createUrl($this->id.'/'.$this->action->id,array_merge($filters,array('accessType'=>User::CLIENT))),
+                'active'=>$accessType===(string)User::CLIENT
+            ),
+            array(
+                'text'=>Yii::t('t',User::CONSULTANT_T),
+                'url'=>Yii::app()->createUrl($this->id.'/'.$this->action->id,array_merge($filters,array('accessType'=>User::CONSULTANT))),
+                'active'=>$accessType===(string)User::CONSULTANT
+            ),
+            array(
+                'text'=>Yii::t('t',User::MANAGER_T),
+                'url'=>Yii::app()->createUrl($this->id.'/'.$this->action->id,array_merge($filters,array('accessType'=>User::MANAGER))),
+                'active'=>$accessType===(string)User::MANAGER
+            ),
+            array(
+                'text'=>Yii::t('t',User::ADMINISTRATOR_T),
+                'url'=>Yii::app()->createUrl($this->id.'/'.$this->action->id,array_merge($filters,array('accessType'=>User::ADMINISTRATOR))),
+                'active'=>$accessType===(string)User::ADMINISTRATOR
+            ),
+        );
+        switch($accessType)
+        {
+            case 'all':
+                $accessTypeLinkText=Yii::t('t','All');
+                break;
+            case (string)User::MEMBER:
+                $accessTypeLinkText=Yii::t('t',User::MEMBER_T);
+                break;
+            case (string)User::CLIENT:
+                $accessTypeLinkText=Yii::t('t',User::CLIENT_T);
+                break;
+            case (string)User::CONSULTANT:
+                $accessTypeLinkText=Yii::t('t',User::CONSULTANT_T);
+                break;
+            case (string)User::MANAGER:
+                $accessTypeLinkText=Yii::t('t',User::MANAGER_T);
+                break;
+            case (string)User::ADMINISTRATOR:
+                $accessTypeLinkText=Yii::t('t',User::ADMINISTRATOR_T);
+                break;
+            default:
+                $accessTypeLinkText='&nbsp;';
+        }
+        $allState=array(
+            array(
+                'text'=>Yii::t('t','All'),
+                'url'=>Yii::app()->createUrl($this->id.'/'.$this->action->id,array_merge($filters,array('state'=>'all'))),
+                'active'=>$state==='all'
+            ),
+            array(
+                'text'=>Yii::t('t','Active[members]'),
+                'url'=>Yii::app()->createUrl($this->id.'/'.$this->action->id,array_merge($filters,array('state'=>'active'))),
+                'active'=>$state==='active'
+            ),
+            array(
+                'text'=>Yii::t('t','Inactive[members]'),
+                'url'=>Yii::app()->createUrl($this->id.'/'.$this->action->id,array_merge($filters,array('state'=>'inactive'))),
+                'active'=>$state==='inactive'
+            ),
+        );
+        switch($state)
+        {
+            case 'all':
+                $stateLinkText=Yii::t('t','All');
+                break;
+            case 'active':
+                $stateLinkText=Yii::t('t','Active[members]');
+                break;
+            case 'inactive':
+                $stateLinkText=Yii::t('t','Inactive[members]');
+                break;
+            default:
+                $stateLinkText='&nbsp;';
+        }
+
+        // rows for the static grid
+        $gridRows=array();
+        foreach($models as $model)
+        {
+            $gridRows[]=array(
+                array(
+                    'content'=>CHtml::encode($model->screenName),
+                ),
+                array(
+                    'content'=>CHtml::encode($model->details->occupation),
+                ),
+                array(
+                    'content'=>CHtml::encode($model->email),
+                ),
+                array(
+                    'align'=>'right',
+                    'content'=>CHtml::encode(MDate::format($model->createTime,'medium',null)),
+                    'title'=>CHtml::encode(MDate::format($model->createTime,'full')),
+                ),
+                array(
+                    'align'=>'right',
+                    'content'=>CHtml::encode(MDate::format($model->details->deactivationTime,'medium',null)),
+                    'title'=>CHtml::encode(MDate::format($model->details->deactivationTime,'full')),
+                ),
+                array(
+                    'content'=>CHtml::encode($model->getAttributeView('accessType')),
+                ),
+                array(
+                    'content'=>
+                        CHtml::link('<span class="ui-icon ui-icon-zoomin"></span>',array('show','id'=>$model->id),array(
+                            'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-first ui-corner-all',
+                            'title'=>Yii::t('link','Show')
+                        )).
+                        CHtml::link('<span class="ui-icon ui-icon-pencil"></span>',array('update','id'=>$model->id),array(
+                            'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-last ui-corner-all',
+                            'title'=>Yii::t('link','Edit')
+                        )),
+                ),
+            );
+        }
+
+        // render the view file
         $this->render('grid',array(
             'models'=>$models,
             'pages'=>$pages,
             'sort'=>$sort,
+            'accessType'=>$accessType,
+            'state'=>$state,
+            'filters'=>$filters,
+            'allAccessType'=>$allAccessType,
+            'accessTypeLinkText'=>$accessTypeLinkText,
+            'allState'=>$allState,
+            'stateLinkText'=>$stateLinkText,
+            'gridRows'=>$gridRows,
         ));
     }
 
@@ -634,12 +871,23 @@ class UserController extends _CController
      */
     public function actionGridData()
     {
+        if(!User::isManager() && !User::isAdministrator())
+            return null;
+
         if(Yii::app()->request->isPostRequest)
         {
             // specify request details
             $jqGrid=$this->processJqGridRequest();
 
-            // get models
+            // specify filter parameters
+            $accessType=isset($_GET['accessType']) ? $_GET['accessType'] : null;
+            if($accessType!=='all' && $accessType!==(string)User::MEMBER && $accessType!==(string)User::CLIENT && $accessType!==(string)User::CONSULTANT && $accessType!==(string)User::MANAGER && $accessType!==(string)User::ADMINISTRATOR)
+                $accessType='all';
+            $state=isset($_GET['state']) ? $_GET['state'] : null;
+            if($state!=='all' && $state!=='active' && $state!=='inactive')
+                $state='all';
+
+            // criteria
             $criteria=new CDbCriteria;
             if($jqGrid['searchField']!==null && $jqGrid['searchString']!==null && $jqGrid['searchOper']!==null)
             {
@@ -659,14 +907,55 @@ class UserController extends _CController
                     $criteria->params=array(':keyword'=>str_replace('keyword',$jqGrid['searchString'],$keywordFormula[$jqGrid['searchOper']]));
                 }
             }
+            if($accessType===(string)User::MEMBER)
+            {
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:member";
+                $criteria->params=array_merge($criteria->params,array(':member'=>User::MEMBER));
+            }
+            else if($accessType===(string)User::CLIENT)
+            {
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:client";
+                $criteria->params=array_merge($criteria->params,array(':client'=>User::CLIENT));
+            }
+            else if($accessType===(string)User::CONSULTANT)
+            {
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:consultant";
+                $criteria->params=array_merge($criteria->params,array(':consultant'=>User::CONSULTANT));
+            }
+            else if($accessType===(string)User::MANAGER)
+            {
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:manager";
+                $criteria->params=array_merge($criteria->params,array(':manager'=>User::MANAGER));
+            }
+            else if($accessType===(string)User::ADMINISTRATOR)
+            {
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:administrator";
+                $criteria->params=array_merge($criteria->params,array(':administrator'=>User::ADMINISTRATOR));
+            }
+            if($state==='active')
+            {
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."(`".User::model()->tableName()."`.`isActive` IS NULL OR `".User::model()->tableName()."`.`isActive`!=:isNotActive)";
+                $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
+            }
+            else if($state==='inactive')
+            {
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`isActive`=:isNotActive";
+                $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
+            }
 
-            if($jqGrid['searchField']==='deactivationTime' || $jqGrid['searchField']==='occupation')
-                $pages=new CPagination(User::model()->with('details')->count($criteria));
+            // pagination
+            $with=array();
+            //if($jqGrid['searchField']==='deactivationTime' || $jqGrid['searchField']==='occupation')
+            if(strpos($criteria->condition,'UserUserDetails')!==false)
+                $with[]='details';
+            if(count($with)>=1)
+                $pages=new CPagination(User::model()->with($with)->count($criteria));
             else
                 $pages=new CPagination(User::model()->count($criteria));
             $pages->pageSize=$jqGrid['pageSize']!==null ? $jqGrid['pageSize'] : self::GRID_PAGE_SIZE;
             $pages->applyLimit($criteria);
-    
+
+            // sort
             $sort=new CSort('User');
             $sort->attributes=array(
                 User::model()->tableName().'.accessLevel'=>'accessType',
@@ -679,6 +968,7 @@ class UserController extends _CController
             $sort->defaultOrder="`".User::model()->tableName()."`.`screenName` ASC";
             $sort->applyOrder($criteria);
 
+            // find all
             $models=User::model()->with('details')->findAll($criteria);
     
             // create resulting data array

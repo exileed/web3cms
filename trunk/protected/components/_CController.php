@@ -53,28 +53,90 @@ class _CController extends CController
         $controller=$this->id;
         $action=$this->action->id;
         $defaultUrl=array('user/show');
+        $controllerUrl=array($controller.'/');
         // return url based on the current controller and the action being executed
         if($controller==='site' && $action==='index')
             $retval=Yii::app()->user->isGuest ? Yii::app()->user->loginUrl : $defaultUrl;
+        else if($controller==='company' && $action==='grid')
+            $retval=$this->_getGotoUrl($defaultUrl);
+        else if($controller==='company' && $action==='show')
+        {
+            if(!Yii::app()->user->isGuest)
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
+        else if($controller==='companyPayment' && $action==='show')
+        {
+            if(!Yii::app()->user->isGuest)
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
         else if($controller==='expense' && $action==='delete')
-            $retval=array($controller.'/');
+            $retval=$controllerUrl;
+        else if($controller==='expense' && $action==='show')
+        {
+            if(!Yii::app()->user->isGuest)
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
         else if($controller==='expense' && $action==='update')
-            $retval=array($controller.'/');
+            $retval=$controllerUrl;
         else if($controller==='invoice' && $action==='create')
-            $retval=array($controller.'/');
+            $retval=$controllerUrl;
+        else if($controller==='invoice' && $action==='show')
+        {
+            if(!Yii::app()->user->isGuest)
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
         else if($controller==='invoice' && $action==='update')
-            $retval=array($controller.'/');
+            $retval=$controllerUrl;
+        else if($controller==='project' && $action==='grid')
+            $retval=$this->_getGotoUrl($defaultUrl);
+        else if($controller==='project' && $action==='show')
+        {
+            if(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator())
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
         else if($controller==='task' && $action==='grid')
-            $retval=$defaultUrl;
+            $retval=$this->_getGotoUrl($defaultUrl);
+        else if($controller==='task' && $action==='show')
+        {
+            if(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator())
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
         else if($controller==='time' && $action==='delete')
-            $retval=array($controller.'/');
+            $retval=$controllerUrl;
+        else if($controller==='time' && $action==='grid')
+            $retval=$this->_getGotoUrl($defaultUrl);
+        else if($controller==='time' && $action==='show')
+        {
+            if(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator())
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
         else if($controller==='time' && $action==='update')
-            $retval=array($controller.'/');
+            $retval=$controllerUrl;
         else if($controller==='user' && $action==='create')
-            $retval=array($controller.'/');
+            $retval=$controllerUrl;
+        else if($controller==='user' && $action==='grid')
+            $retval=$this->_getGotoUrl($defaultUrl);
         else if($controller==='user' && $action==='login')
         {
-            if(Yii::app()->user->returnUrl!==null)
+            if(Yii::app()->user->returnUrl!==null &&
+                // hmm... {@link CWebUser::getReturnUrl} returns scriptUrl if returnUrl is not set
+                // hopefully this will be changed in the Yii 1.1 branch
+                Yii::app()->user->returnUrl!==Yii::app()->request->scriptUrl
+            )
                 // got here via {@link CWebUser::loginRequired} - go to the previous url
                 $retval=Yii::app()->user->returnUrl;
             else if(User::isConsultant() || User::isManager() || User::isAdministrator())
@@ -90,7 +152,46 @@ class _CController extends CController
             $retval=Yii::app()->user->loginUrl;
         else if($controller==='user' && $action==='register')
             $retval=Yii::app()->user->loginUrl;
+        else if($controller==='user' && $action==='show')
+        {
+            if(User::isManager() || User::isAdministrator())
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
+        else if($controller==='user' && $action==='update')
+        {
+            if(User::isManager() || User::isAdministrator())
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
+        else if($controller==='user' && $action==='updateInterface')
+        {
+            if(User::isManager() || User::isAdministrator())
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
         return isset($retval) ? $retval : Yii::app()->homeUrl;
+    }
+
+    /**
+     * Return the default URL if user is logged in.
+     * Otherwise, set user return url via {@link CWebUser::setReturnUrl} and return login URL.
+     * @param string default URL
+     * @return string goto URL
+     */
+    protected function _getGotoUrl($defaultUrl)
+    {
+        if(Yii::app()->user->isGuest)
+        {
+            Yii::app()->user->setReturnUrl(Yii::app()->request->url);
+            $retval=Yii::app()->user->loginUrl;
+        }
+        else
+            $retval=$defaultUrl;
+        return $retval;
     }
 
     /**

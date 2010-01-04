@@ -46,6 +46,12 @@ class WItemsGrid extends CWidget
     public $displaySGrid;
 
     /**
+     * @var boolean whether display the static grid pager,
+     * should be displayed in the most cases, default is true.
+     */
+    public $displaySGridPager;
+
+    /**
      * @var boolean whether display the static grid titlebar,
      * default is true.
      */
@@ -244,10 +250,14 @@ class WItemsGrid extends CWidget
         // static grid
         if($this->displaySGrid)
         {
+            if(!is_array($this->rows))
+                $this->rows=array();
             if($this->controllerId===null)
                 $this->controllerId=Yii::app()->controller->id;
             if($this->displayButtonClose===null)
                 $this->displayButtonClose=false;
+            if($this->displaySGridPager===null)
+                $this->displaySGridPager=true;
             if($this->displaySTitlebar===null)
                 $this->displaySTitlebar=true;
             if($this->hasLinkIcon===null)
@@ -255,7 +265,10 @@ class WItemsGrid extends CWidget
             if(!is_array($this->importantRowsBottom))
                 $this->importantRowsBottom=array();
             if($this->maxRow===null && $this->pages instanceof CPagination)
-                $this->maxRow=($this->pages->getCurrentPage()+1)*$this->pages->getPageSize() > $this->pages->getItemCount() ? $this->pages->getItemCount() : ($this->pages->getCurrentPage()+1)*$this->pages->getPageSize();
+            {
+                $maxRow=$this->pages->getCurrentPage()*$this->pages->getPageSize()+count($this->rows); // ($this->pages->getCurrentPage()+1)*$this->pages->getPageSize()
+                $this->maxRow=$maxRow > $this->pages->getItemCount() ? $this->pages->getItemCount() : $maxRow;
+            }
             else
                 $this->maxRow=(int)$this->maxRow;
             if($this->minRow===null && $this->pages instanceof CPagination)
@@ -264,8 +277,6 @@ class WItemsGrid extends CWidget
                 $this->minRow=(int)$this->minRow;
             if($this->registerGridLinkIcon===null)
                 $this->registerGridLinkIcon=true;
-            if(!is_array($this->rows))
-                $this->rows=array();
             if(!is_array($this->sColumns))
                 $this->sColumns=array();
             if($this->sGridId===null)
@@ -288,6 +299,7 @@ class WItemsGrid extends CWidget
             'displayButtonClose'=>$this->displayButtonClose,
             'displayGrid'=>$this->displayGrid,
             'displaySGrid'=>$this->displaySGrid,
+            'displaySGridPager'=>$this->displaySGridPager,
             'displayTitlebar'=>$this->displayTitlebar,
             'displaySTitlebar'=>$this->displaySTitlebar,
             'gridId'=>$this->gridId,

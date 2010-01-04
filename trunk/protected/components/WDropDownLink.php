@@ -12,9 +12,19 @@ class WDropDownLink extends CWidget
     public $links;
 
     /**
+     * @var integer maximum height of the drop down menu.
+     */
+    public $maxHeight;
+
+    /**
      * @var array of the link html options.
      */
     public $options;
+
+    /**
+     * @var array of (possibly) all parameters.
+     */
+    public $parameters;
 
     /**
      * @var string the link body.
@@ -27,11 +37,25 @@ class WDropDownLink extends CWidget
     public $url;
 
     /**
+     * @var integer width of the drop down menu.
+     */
+    public $width;
+
+    /**
      * When widget is called, following function is run.
      */
     public function run()
     {
         // set the default values and validate the data
+        if(is_array($this->parameters))
+        {
+            if(isset($this->parameters['links']))
+                $this->links=$this->parameters['links'];
+            if(isset($this->parameters['maxHeight']))
+                $this->maxHeight=$this->parameters['maxHeight'];
+            if(isset($this->parameters['width']))
+                $this->width=$this->parameters['width'];
+        }
         if(!is_array($this->options))
             $this->options=array();
         $this->text=(string)$this->text;
@@ -57,10 +81,12 @@ class WDropDownLink extends CWidget
         // data for the renderer
         $data=array(
             'c'=>count($links),
-            'options'=>$this->options,
             'links'=>$links,
+            'maxHeight'=>$this->maxHeight,
+            'options'=>$this->options,
             'text'=>$this->text,
             'url'=>$this->url,
+            'width'=>$this->width,
         );
         // render the view file
         $this->render('wDropDownLink',$data);

@@ -11,10 +11,10 @@
 <?php endif; ?>
 <?php if(isset($link['dropDown'])): ?>
     <li class="<?php echo $class; ?>ui-state-default ui-corner-all"><?php $this->widget('application.components.WDropDownLink',array(
+    'parameters'=>$link['dropDown'],
+    'options'=>$link['options'],
     'text'=>$link['text'],
     'url'=>$link['url'],
-    'options'=>$link['options'],
-    'links'=>$link['dropDown'],
 )); ?>
     </li>
 <?php else: ?>

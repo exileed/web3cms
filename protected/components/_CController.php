@@ -139,10 +139,10 @@ class _CController extends CController
             )
                 // got here via {@link CWebUser::loginRequired} - go to the previous url
                 $retval=Yii::app()->user->returnUrl;
-            else if(User::isConsultant() || User::isManager() || User::isAdministrator())
+            else if((User::isConsultant() || User::isManager() || User::isAdministrator()) && file_exists(dirname(__FILE__).'/../controllers/TaskController.php'))
                 // consultant, manager and administrator - go to the task page
                 $retval=array('task/');
-            else if(User::isClient())
+            else if(User::isClient() && file_exists(dirname(__FILE__).'/../controllers/CompanyController.php'))
                 // client - go to view my company page
                 $retval=array('company/show/my');
             else

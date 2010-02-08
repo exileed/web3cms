@@ -122,8 +122,8 @@
 <div class="w3-footer">
 <?php echo Yii::t('t','{copyrightBy}. All Rights Reserved.',array('{copyrightBy}'=>MParams::getCopyrightBy()))."\n"; ?>
 <?php echo Yii::t('t','Developed by {developedBy} based on {basedOn}.',array(
-    '{developedBy}'=>_CHtml::link('Web3CMS','http://www.web3cms.com/',array('rel'=>'external')),
-    '{basedOn}'=>_CHtml::link('Yii Framework','http://www.yiiframework.com/',array('rel'=>'external'))))."\n"; ?>
+    '{developedBy}'=>CHtml::link('Web3CMS','http://www.web3cms.com/',array('rel'=>'external')),
+    '{basedOn}'=>CHtml::link('Yii Framework','http://www.yiiframework.com/',array('rel'=>'external'))))."\n"; ?>
 </div><!-- w3-footer -->
 </div><!-- w3-footer-wrapper -->
 </div>

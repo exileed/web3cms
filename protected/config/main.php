@@ -22,7 +22,7 @@ return array(
     'layout'=>'main',
     // alternate layoutPath
     'layoutPath'=>dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'_layouts'.DIRECTORY_SEPARATOR,
-    
+
     // application-level parameters that can be accessed
     // using Yii::app()->params['paramName'] and MParams class
     'params'=>require(dirname(__FILE__).'/params.php'),

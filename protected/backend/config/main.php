@@ -9,12 +9,12 @@ Yii::setPathOfAlias('backend', $backend);
 return CMap::mergeArray(
     require($frontend.'/config/main.php'),
     array(
-        'basePath' => $frontend,
-    
-        'controllerPath' => $backend.'/controllers',
-        'viewPath' => $backend.'/views',
-        'runtimePath' => $backend.'/runtime',
-    
+        'basePath'=>$frontend,
+
+        'controllerPath'=>$backend.'/controllers',
+        'viewPath'=>$backend.'/views',
+        'runtimePath'=>$backend.'/runtime',
+
         // autoloading model and component classes
         'import'=>array(
             'backend.models.*',
@@ -23,16 +23,16 @@ return CMap::mergeArray(
             'application.components.*',
             'application.extensions.*',
         ),
-    
+
         // main is the default layout
         'layout'=>'main',
         // alternate layoutPath
         'layoutPath'=>dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'_layouts'.DIRECTORY_SEPARATOR,
-        
+
         // application-level parameters that can be accessed
         // using Yii::app()->params['paramName'] and MParams class
         'params'=>require(dirname(__FILE__).'/params.php'),
-    
+
         // application components
         'components'=>array(
             'urlManager'=>array(

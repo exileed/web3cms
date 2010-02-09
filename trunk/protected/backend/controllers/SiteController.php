@@ -23,8 +23,8 @@ class SiteController extends _CController
      */
     public function actionIndex()
     {
-        // renders the view file 'protected/views/site/index.php'
-        // using the default layout 'protected/views/_layouts/main.php'
+        // renders the view file 'protected/backend/views/site/index.php'
+        // using the default layout 'protected/backend/views/_layouts/main.php'
         $this->render('index');
     }
 

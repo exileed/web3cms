@@ -35,7 +35,7 @@ class UserLoginForm extends CFormModel
             // password needs to be authenticated
             array('password', 'authenticate'),
             // rememberMe needs to be a boolean
-            array('rememberMe', 'boolean'),
+            //array('rememberMe', 'boolean'), i think boolean is only since yii-1.1
         );
     }
 

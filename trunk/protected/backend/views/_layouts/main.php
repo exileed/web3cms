@@ -58,9 +58,11 @@
 <?php if(MLayout::hasSidebar1()): ?>
 
 <div class="<?php echo MLayout::getGridCssClassSidebar1(); ?>">
-<div class="w3-sidebar1">
+<div class="w3-sidebar w3-sidebar1">
 <?php $this->widget('application.components.WUserFlash',array('type'=>'sidebarSummary','in'=>'sidebar1')); ?>
 <?php $this->widget('application.components.WUserFlash',array('type'=>'sidebar1Summary')); ?>
+<?php $this->widget('application.components.WListOfLinks',array('id'=>'sidebar','area'=>'sidebar1')); ?>
+<?php $this->widget('application.components.WListOfLinks',array('id'=>'sidebar1')); ?>
 <?php if(!MLayout::getNumberOfItemsSidebar1()): ?>
 &nbsp;
 <?php endif; ?>
@@ -87,9 +89,11 @@
 <?php if(MLayout::hasSidebar2()): ?>
 
 <div class="<?php echo MLayout::getGridCssClassSidebar2(); ?>">
-<div class="w3-sidebar2">
+<div class="w3-sidebar w3-sidebar2">
 <?php $this->widget('application.components.WUserFlash',array('type'=>'sidebarSummary','in'=>'sidebar2')); ?>
 <?php $this->widget('application.components.WUserFlash',array('type'=>'sidebar2Summary')); ?>
+<?php $this->widget('application.components.WListOfLinks',array('id'=>'sidebar','area'=>'sidebar2')); ?>
+<?php $this->widget('application.components.WListOfLinks',array('id'=>'sidebar2')); ?>
 <?php if(!MLayout::getNumberOfItemsSidebar2()): ?>
 &nbsp;
 <?php endif; ?>

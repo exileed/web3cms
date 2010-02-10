@@ -651,29 +651,4 @@ class User extends _CActiveRecord
                 break;
         }
     }
-
-    /**
-     * Set whether is action $action.
-     * @param string $action
-     * @param boolean $value
-     */
-    /*public static function setIsAction($action,$value)
-    {
-        self::$_isAction[$action]=(bool)$value;
-    }*/
-
-    /**
-     * Get whether is action $action.
-     * @param string $action
-     * @return boolean
-     */
-    /*public static function getIsAction($action)
-    {
-        if(is_null(self::$_isAction[$action]))
-        {
-            return Yii::app()->controller->getId()==='user' && Yii::app()->controller->getAction()->getId()===$action;
-        }
-        else
-            return (bool)self::$_isAction[$action];
-    }*/
 }

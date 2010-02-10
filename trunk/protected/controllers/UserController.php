@@ -953,7 +953,6 @@ class UserController extends _CController
 
             // pagination
             $with=array();
-            //if($jqGrid['searchField']==='deactivationTime' || $jqGrid['searchField']==='occupation')
             if(strpos($criteria->condition,'UserUserDetails')!==false)
                 $with[]='details';
             if(count($with)>=1)
@@ -978,7 +977,7 @@ class UserController extends _CController
 
             // find all
             $models=User::model()->with('details')->findAll($criteria);
-    
+
             // create resulting data array
             $data=array(
                 'page'=>$pages->getCurrentPage()+1,

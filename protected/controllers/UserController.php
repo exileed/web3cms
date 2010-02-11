@@ -486,9 +486,9 @@ class UserController extends _CController
                         // set attributes outside of the form
                         $model->details->$attribute=$value;
                     // validate with $on = 'update'
-                    if($model->details->validate('update'))
+                    if(($validated=$model->details->validate($this->action->id))!==false)
                     {
-                        if($model->details->save())
+                        if(($saved=$model->details->save())!==false)
                         {
                             // set success message
                             MUserFlash::setTopSuccess(Yii::t('hint',

@@ -50,7 +50,7 @@
             'url'=>array('show','id'=>$model->id),
         ),
         array(
-            'url'=>array($this->action->id),
+            'url'=>($me&&!$idIsSpecified) ? array($this->action->id) : array($this->action->id,'id'=>$model->id),
             'active'=>true
         ),
     ),

@@ -62,9 +62,9 @@ class WListOfLinks extends CWidget
         // set the default values and validate the data
         $area=$this->area===null ? $this->id : $this->area;
         if($this->displayTitlebar===null)
-            $this->displayTitlebar=true;
+            $this->displayTitlebar=isset($data['displayTitlebar']) ? (bool)$data['displayTitlebar'] : true;
         if($this->title===null)
-            $this->title=Yii::t('t','Related links');
+            $this->title=isset($data['title']) ? (string)$data['title'] : Yii::t('t','Related links');
         else
             $this->title=(string)$this->title;
         // data for the renderer

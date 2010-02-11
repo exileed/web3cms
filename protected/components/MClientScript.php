@@ -36,7 +36,7 @@ class MClientScript
 "jQuery(\"".$selector."\").attr({'autocomplete': 'off'});";
                 break;
             case 'datepicker':
-                $scriptId=$id;
+                $scriptId=$id.'['.$selector.']';
                 $script=
 "jQuery(\"".$selector."\").datepicker({
     dateFormat: 'yy-mm-dd'

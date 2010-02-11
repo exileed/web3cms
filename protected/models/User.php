@@ -418,7 +418,7 @@ class User extends _CActiveRecord
         switch($attribute)
         {
             case 'accessType':
-                switch($this->accessType)
+                switch($this->$attribute)
                 {
                     case self::MEMBER:
                         return Yii::t('t',self::MEMBER_T);
@@ -431,15 +431,15 @@ class User extends _CActiveRecord
                     case self::ADMINISTRATOR:
                         return Yii::t('t',self::ADMINISTRATOR_T);
                     default:
-                        return $this->accessType;
+                        return $this->$attribute;
                 }
             case 'interface':
                 $availableInterfaces=MParams::getAvailableInterfaces();
-                if((is_string($this->interface) || is_int($this->interface)) && array_key_exists($this->interface,$availableInterfaces))
-                    return Yii::t('ui',$availableInterfaces[$this->interface]);
-                return $this->interface;
+                if((is_string($this->$attribute) || is_int($this->$attribute)) && array_key_exists($this->$attribute,$availableInterfaces))
+                    return Yii::t('ui',$availableInterfaces[$this->$attribute]);
+                return $this->$attribute;
             case 'isActive':
-                switch($this->isActive)
+                switch($this->$attribute)
                 {
                     case self::IS_ACTIVE:
                         return Yii::t('attr','Yes (Member account is On)');
@@ -448,13 +448,13 @@ class User extends _CActiveRecord
                     case null:
                         return Yii::t('attr','By default (Member account is On)');
                     default:
-                        return $this->isActive;
+                        return $this->$attribute;
                 }
             case 'language':
                 $availableLanguages=MParams::getAvailableLanguages();
-                if((is_string($this->language) || is_int($this->language)) && array_key_exists($this->language,$availableLanguages))
-                    return Yii::t('t',$availableLanguages[$this->language]);
-                return $this->language;
+                if((is_string($this->$attribute) || is_int($this->$attribute)) && array_key_exists($this->$attribute,$availableLanguages))
+                    return Yii::t('t',$availableLanguages[$this->$attribute]);
+                return $this->$attribute;
             default:
                 return $this->$attribute;
         }

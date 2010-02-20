@@ -39,6 +39,8 @@ class W3
 
     /**
      * Translates a message to the specified language.
+     * Usually used to translate system messages, because system language
+     * does not necessary have to be the same as current site (UI) language.
      * See {@link YiiBase::t()} for details.
      */
     public static function t($category,$message,$params=array(),$source=null,$language=null)

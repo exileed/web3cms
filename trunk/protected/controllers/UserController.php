@@ -8,11 +8,6 @@ class UserController extends _CController
     public $defaultAction='grid';
 
     /**
-     * @var CActiveRecord the currently loaded data model instance.
-     */
-    private $_model;
-
-    /**
      * @return array action filters
      */
     public function filters()
@@ -411,7 +406,7 @@ class UserController extends _CController
     {
         $me=(isset($_GET['id']) && (Yii::app()->user->isGuest || $_GET['id']!==Yii::app()->user->id)) ? false : true;
         $id=$me ? Yii::app()->user->id : $_GET['id'];
-        $model=$this->loadUser(array('id'=>$id,'with'=>array('details')),false);
+        $model=$this->loadModel(array('id'=>$id,'with'=>array('details')),false);
         if($model!==null)
         {
             // loaded user is me?
@@ -455,7 +450,7 @@ class UserController extends _CController
         $me=($idIsSpecified && $_GET['id']!==Yii::app()->user->id) ? false : true;
         $id=$me ? Yii::app()->user->id : $_GET['id'];
         // load model. if model doesn't exist, throw an http exception
-        $model=$this->loadUser(array('id'=>$id,'with'=>array('details')));
+        $model=$this->loadModel(array('id'=>$id,'with'=>array('details')));
         // loaded user is me?
         $myModel=!Yii::app()->user->isGuest && Yii::app()->user->id===$model->id;
         if(!$myModel && !User::isAdministrator())
@@ -570,7 +565,7 @@ class UserController extends _CController
         $me=($idIsSpecified && $_GET['id']!==Yii::app()->user->id) ? false : true;
         $id=$me ? Yii::app()->user->id : $_GET['id'];
         // load model. if model doesn't exist, throw an http exception
-        $model=$this->loadUser(array('id'=>$id,'with'=>array('details')));
+        $model=$this->loadModel(array('id'=>$id,'with'=>array('details')));
         // loaded user is me?
         $myModel=!Yii::app()->user->isGuest && Yii::app()->user->id===$model->id;
         if(!$myModel && !User::isAdministrator())
@@ -1023,39 +1018,5 @@ class UserController extends _CController
         }
         else
             throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
-    }
-
-    /**
-     * Returns the data model based on the primary key given in the GET variable.
-     * If the data model is not found, an HTTP exception will be raised.
-     * @param array of parameters
-     */
-    public function loadUser($parameters=array(),$throwException=true)
-    {
-        if($this->_model===null)
-        {
-            // processing parameters
-            if(ctype_digit($parameters))
-                $id=$parameters;
-            else if(isset($parameters['id']))
-                $id=$parameters['id'];
-            else if(isset($_GET['id']))
-                $id=$_GET['id'];
-            else
-                $id=null;
-            $with=isset($parameters['with']) ? $parameters['with'] : null;
-            // load the model
-            if($id!==null)
-            {
-                if($with===null)
-                    $this->_model=User::model()->findByPk($id);
-                else
-                    $this->_model=User::model()->with($with)->findByPk($id);
-            }
-            if($throwException && $this->_model===null)
-                // if model is not found - throw 404
-                throw new CHttpException(404,'The requested page does not exist.');
-        }
-        return $this->_model;
     }
 }

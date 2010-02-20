@@ -411,17 +411,32 @@ class UserController extends _CController
     {
         $me=(isset($_GET['id']) && (Yii::app()->user->isGuest || $_GET['id']!==Yii::app()->user->id)) ? false : true;
         $id=$me ? Yii::app()->user->id : $_GET['id'];
-        $model=$this->loadUser(array('id'=>$id,'with'=>array('details')));
-        // loaded user is me?
-        $myModel=!Yii::app()->user->isGuest && Yii::app()->user->id===$model->id;
-        if(!$myModel && !User::isManager() && !User::isAdministrator())
+        $model=$this->loadUser(array('id'=>$id,'with'=>array('details')),false);
+        if($model!==null)
         {
-            // not enough rights
-            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse members.'));
-            $this->redirect($this->getGotoUrl());
+            // loaded user is me?
+            $myModel=!Yii::app()->user->isGuest && Yii::app()->user->id===$model->id;
+            if(!$myModel && !User::isManager() && !User::isAdministrator())
+            {
+                // not enough rights
+                MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse members.'));
+                $this->redirect($this->getGotoUrl());
+            }
+            // render the view file
+            $this->render('show',array('model'=>$model,'me'=>$me));
         }
-        // render the view file
-        $this->render('show',array('model'=>$model,'me'=>$me));
+        else
+        {
+            if(!isset($_GET['id']) && Yii::app()->user->isGuest)
+            {
+                // visitor requested his member page, but he is not logged in
+                MUserFlash::setTopError(Yii::t('hint','Please, authorize.'));
+                Yii::app()->user->loginRequired();
+            }
+            else
+                // just show a message if model is not found
+                $this->render('showNone');
+        }
     }
 
     /**
@@ -1015,7 +1030,7 @@ class UserController extends _CController
      * If the data model is not found, an HTTP exception will be raised.
      * @param array of parameters
      */
-    public function loadUser($parameters=array())
+    public function loadUser($parameters=array(),$throwException=true)
     {
         if($this->_model===null)
         {
@@ -1037,8 +1052,8 @@ class UserController extends _CController
                 else
                     $this->_model=User::model()->with($with)->findByPk($id);
             }
-            // check whether is success
-            if($this->_model===null)
+            if($throwException && $this->_model===null)
+                // if model is not found - throw 404
                 throw new CHttpException(404,'The requested page does not exist.');
         }
         return $this->_model;

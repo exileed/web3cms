@@ -52,6 +52,7 @@ array(
     'List of tasks' => 'List of tasks',
     'List of time records' => 'List of time records',
     'Login' => 'Login',
+    'Member not found' => 'Member not found',
     'Register a member account' => 'Register a member account',
     'Time report' => 'Time report',
     'View company payment number "{paymentNumber}"' => 'View company payment number "{paymentNumber}"',

@@ -60,6 +60,8 @@ array(
     'The new "{title}" project record has been successfully created.' => 'The new "{title}" project record has been successfully created.',
     'The new "{title}" task record has been successfully created.' => 'The new "{title}" task record has been successfully created.',
     'The new "{title}" time record has been successfully created.' => 'The new "{title}" time record has been successfully created.',
+    'The requested member does not exist.' => 'The requested member does not exist.',
+    'The requested member was deleted, inactivated or did not exist. Try to browse or search among all members.' => 'The requested member was deleted, inactivated or did not exist. Try to browse or search among all members.',
     'The time record number {id} has been successfully deleted.' => 'The time record number {id} has been successfully deleted.',
     'The "{title}" company record has been updated.' => 'The "{title}" company record has been updated.',
     'The "{title}" location record has been updated.' => 'The "{title}" location record has been updated.',

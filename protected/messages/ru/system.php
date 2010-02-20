@@ -10,6 +10,7 @@ array(
 array(
     'Available interfaces: {availableInterfaces}.' => 'Доступные внешние виды: {availableInterfaces}.', /*'Р”РѕСЃС‚СѓРїРЅС‹Рµ РІРЅРµС€РЅРёРµ РІРёРґС‹: {availableInterfaces}.'*/
     'Available languages: {availableLanguages}.' => 'Доступные языки: {availableLanguages}.', /*'Р”РѕСЃС‚СѓРїРЅС‹Рµ СЏР·С‹РєРё: {availableLanguages}.'*/
+    'Class {class} does not exist. Method called: {method}.' => 'Класса {class} не существует. Вызывался метод: {method}.', /*'РљР»Р°СЃСЃР° {class} РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚. Р’С‹Р·С‹РІР°Р»СЃСЏ РјРµС‚РѕРґ: {method}.'*/
     'Could not delete the {model} model. Model ID: {modelId}. Method called: {method}.' => 'Не удалось удалить модель {model}. ID модели: {modelId}. Вызываемый метод: {method}.', /*'РќРµ СѓРґР°Р»РѕСЃСЊ СѓРґР°Р»РёС‚СЊ РјРѕРґРµР»СЊ {model}. ID РјРѕРґРµР»Рё: {modelId}. Р’С‹Р·С‹РІР°РµРјС‹Р№ РјРµС‚РѕРґ: {method}.'*/
     'Could not load {model} model. Model ID: {modelId}. Method called: {method}.' => 'Не удалось загрузить модель {model}. ID модели: {modelId}. Вызываемый метод: {method}.', /*'РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ РјРѕРґРµР»СЊ {model}. ID РјРѕРґРµР»Рё: {modelId}. Р’С‹Р·С‹РІР°РµРјС‹Р№ РјРµС‚РѕРґ: {method}.'*/
     'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.' => 'Не удалось сохранить атрибуты модели {model}. ID модели: {modelId}. Вызываемый метод: {method}.', /*'РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ Р°С‚СЂРёР±СѓС‚С‹ РјРѕРґРµР»Рё {model}. ID РјРѕРґРµР»Рё: {modelId}. Р’С‹Р·С‹РІР°РµРјС‹Р№ РјРµС‚РѕРґ: {method}.'*/

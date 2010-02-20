@@ -14,6 +14,11 @@ class _CController extends CController
     public $var;
 
     /**
+     * @var CActiveRecord the currently loaded data model instance.
+     */
+    private $_model;
+
+    /**
      * @var int default page sizes
      */
     const LIST_PAGE_SIZE=10;
@@ -245,6 +250,54 @@ class _CController extends CController
             'cn'=>'LIKE',
             'nc'=>'NOT LIKE',
         );
+    }
+
+    /**
+     * Returns the data model based on the primary key given in the GET variable.
+     * If the data model is not found, an HTTP exception will be raised.
+     * @param array of parameters
+     * @param boolean whether throw exception if model is not found
+     */
+    public function loadModel($parameters=array(),$throwException=true)
+    {
+        if($this->_model===null)
+        {
+            // processing parameters
+            if(ctype_digit($parameters))
+                $id=$parameters;
+            else if(isset($parameters['id']))
+                $id=$parameters['id'];
+            else if(isset($_GET['id']))
+                $id=$_GET['id'];
+            else
+                $id=null;
+            $with=isset($parameters['with']) ? $parameters['with'] : null;
+            // load the model
+            if($id!==null)
+            {
+                $modelName=isset($this->modelName)?$this->modelName:str_replace('Controller','',get_class($this));
+                if(class_exists($modelName))
+                {
+                    $ar=call_user_func(array($modelName,'model'));
+                    if($with===null)
+                        $this->_model=$ar->findByPk($id);
+                    else
+                        $this->_model=$ar->with($with)->findByPk($id);
+                }
+                else
+                    Yii::log(W3::t('system',
+                        'Class {class} does not exist. Method called: {method}.',
+                        array(
+                            '{class}'=>$modelName,
+                            '{method}'=>get_class($this).'->'.__FUNCTION__.'()'
+                        )
+                    ),'warning','w3');
+            }
+            if($throwException && $this->_model===null)
+                // if model is not found - throw 404
+                throw new CHttpException(404,'The requested page does not exist.');
+        }
+        return $this->_model;
     }
 
     /**

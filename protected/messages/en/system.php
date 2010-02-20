@@ -10,6 +10,7 @@ array(
 array(
     'Available interfaces: {availableInterfaces}.' => 'Available interfaces: {availableInterfaces}.',
     'Available languages: {availableLanguages}.' => 'Available languages: {availableLanguages}.',
+    'Class {class} does not exist. Method called: {method}.' => 'Class {class} does not exist. Method called: {method}.',
     'Could not delete the {model} model. Model ID: {modelId}. Method called: {method}.' => 'Could not delete the {model} model. Model ID: {modelId}. Method called: {method}.',
     'Could not load {model} model. Model ID: {modelId}. Method called: {method}.' => 'Could not load {model} model. Model ID: {modelId}. Method called: {method}.',
     'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.' => 'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.',

@@ -5,15 +5,16 @@
 )); ?>
 <?php MListOfLinks::set('sidebar',array(
     'links'=>array(
-        /*array(
+        array(
             'text'=>Yii::t('link','List of members'),
             'url'=>array('list'),
-            'icon'=>'grip-solid-horizontal'
-        ),*/
+            'icon'=>'grip-solid-horizontal',
+            'visible'=>false,
+        ),
         array(
             'text'=>Yii::t('link','Grid of members'),
             'url'=>array('grid'),
-            'icon'=>'calculator'
+            'icon'=>'calculator',
         ),
     ),
 )); ?>
@@ -22,11 +23,11 @@
         array(
             'text'=>Yii::t('link','Members'),
             'url'=>array($this->id.'/'),
-            'active'=>false
+            'active'=>false,
         ),
         array(
             'url'=>array($this->action->id),
-            'active'=>true
+            'active'=>true,
         ),
     ),
 )); ?>

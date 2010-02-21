@@ -41,6 +41,8 @@ class WListOfLinks extends CWidget
         {
             foreach($data['links'] as $link)
             {
+                if(isset($link['visible']) && !$link['visible'])
+                    continue;
                 if(is_array($link) && (isset($link['text']) || isset($link['url']) || isset($link['icon']) || isset($link['options'])))
                 {
                     $links[]=array(

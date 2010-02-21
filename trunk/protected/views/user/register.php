@@ -6,11 +6,11 @@
         array(
             'text'=>Yii::t('link','Members'),
             'url'=>array($this->id.'/'),
-            'active'=>false
+            'active'=>false,
         ),
         array(
             'url'=>array($this->action->id),
-            'active'=>true
+            'active'=>true,
         ),
     ),
 )); ?>

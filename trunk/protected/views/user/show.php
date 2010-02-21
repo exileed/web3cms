@@ -1,66 +1,62 @@
 <?php MParams::setPageLabel($me ? Yii::t('page','View my profile') : Yii::t('page','View "{screenName}" member',array('{screenName}'=>$model->screenName))); ?>
-<?php $this->var->links=array(); ?>
-<?php if($me): ?>
-<?php $this->var->links=array(
-    array(
-        'text'=>Yii::t('link','Edit my profile'),
-        'url'=>array('update'),
-        'icon'=>'pencil'
+<?php MListOfLinks::set('sidebar',array(
+    'links'=>array(
+        array(
+            'text'=>Yii::t('link','Edit my profile'),
+            'url'=>array('update'),
+            'icon'=>'pencil',
+            'visible'=>$me,
+        ),
+        array(
+            'text'=>Yii::t('link','Change interface'),
+            'url'=>array('updateInterface'),
+            'visible'=>$me,
+        ),
+        array(
+            'text'=>Yii::t('link','Edit member\'s profile'),
+            'url'=>array('update','id'=>$model->id),
+            'icon'=>'pencil',
+            'visible'=>!$me && User::isAdministrator(),
+        ),
+        array(
+            'text'=>Yii::t('link','Change interface'),
+            'url'=>array('updateInterface','id'=>$model->id),
+            'visible'=>!$me && User::isAdministrator(),
+        ),
+        array(
+            'text'=>Yii::t('link','List of members'),
+            'url'=>array('list'),
+            'icon'=>'grip-solid-horizontal',
+            'visible'=>false,
+        ),
+        array(
+            'text'=>Yii::t('link','Grid of members'),
+            'url'=>array('grid'),
+            'icon'=>'calculator',
+            'visible'=>User::isAdministrator(),
+        ),
+        array(
+            'text'=>Yii::t('link','Create a new member'),
+            'url'=>array('create'),
+            'icon'=>'plus',
+            'visible'=>User::isAdministrator(),
+        ),
     ),
-    array(
-        'text'=>Yii::t('link','Change interface'),
-        'url'=>array('updateInterface'),
-    )
-); ?>
-<?php elseif(User::isAdministrator()): ?>
-<?php $this->var->links=array(
-    array(
-        'text'=>Yii::t('link','Edit member\'s profile'),
-        'url'=>array('update','id'=>$model->id),
-        'icon'=>'pencil'
-    ),
-    array(
-        'text'=>Yii::t('link','Change interface'),
-        'url'=>array('updateInterface','id'=>$model->id),
-    )
-); ?>
-<?php endif; ?>
-<?php if(User::isAdministrator()): ?>
-<?php /*$this->var->links=array_merge($this->var->links,array(array(
-    'text'=>Yii::t('link','List of members'),
-    'url'=>array('list'),
-    'icon'=>'grip-solid-horizontal'
-)));*/ ?>
-<?php $this->var->links=array_merge($this->var->links,array(array(
-    'text'=>Yii::t('link','Grid of members'),
-    'url'=>array('grid'),
-    'icon'=>'calculator'
-))); ?>
-<?php $this->var->links=array_merge($this->var->links,array(array(
-    'text'=>Yii::t('link','Create a new member'),
-    'url'=>array('create'),
-    'icon'=>'plus'
-))); ?>
-<?php endif; ?>
-<?php if(count($this->var->links)): ?>
-<?php MListOfLinks::set('sidebar',array('links'=>$this->var->links)); ?>
-<?php else: ?>
-<?php MUserFlash::setSidebarInfo(Yii::t('hint','Some useful links will be added here soon.')); ?>
-<?php endif; ?>
+)); ?>
 <?php $this->widget('application.components.WContentHeader',array(
     'breadcrumbs'=>array(
         array(
             'text'=>Yii::t('link','Members'),
             'url'=>array($this->id.'/'),
-            'active'=>false
+            'active'=>false,
         ),
         array(
             'url'=>$me ?
                 array($this->action->id) :
                 array($this->action->id,'id'=>$model->id)
             ,
-            'active'=>true
-        )
+            'active'=>true,
+        ),
     ),
 )); ?>
 <div class="w3-show-item-grid ui-widget-content ui-corner-all">

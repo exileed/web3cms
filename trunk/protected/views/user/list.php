@@ -4,22 +4,22 @@
         array(
             'text'=>Yii::t('link','View as grid'),
             'url'=>array('grid'),
-            'icon'=>'calculator'
+            'icon'=>'calculator',
         ),
-        User::isAdministrator() ?
         array(
             'text'=>Yii::t('link','Add a member'),
             'url'=>array('create'),
-            'icon'=>'plus'
-        ) : null,
+            'icon'=>'plus',
+            'visible'=>User::isAdministrator(),
+        ),
     ),
 )); ?>
 <?php $this->widget('application.components.WContentHeader',array(
     'breadcrumbs'=>array(
         array(
             'url'=>array($this->action->id),
-            'active'=>true
-        )
+            'active'=>true,
+        ),
     ),
 )); ?>
 <?php if($pages->getPageCount()>=2): ?>

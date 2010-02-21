@@ -4,17 +4,18 @@
 )); ?>
 <?php MListOfLinks::set('sidebar',array(
     'links'=>array(
-        /*array(
+        array(
             'text'=>Yii::t('link','View as list'),
             'url'=>array('list'),
-            'icon'=>'grip-solid-horizontal'
-        ),*/
-        User::isAdministrator() ?
+            'icon'=>'grip-solid-horizontal',
+            'visible'=>false,
+        ),
         array(
             'text'=>Yii::t('link','Add a member'),
             'url'=>array('create'),
-            'icon'=>'plus'
-        ) : null,
+            'icon'=>'plus',
+            'visible'=>User::isAdministrator(),
+        ),
     ),
 )); ?>
 <?php $this->widget('application.components.WContentHeader',array(
@@ -22,8 +23,8 @@
     'breadcrumbs'=>array(
         array(
             'url'=>array($this->action->id),
-            'active'=>true
-        )
+            'active'=>true,
+        ),
     ),
 )); ?>
 <?php $this->widget('application.components.WPreItemActionBar',array(
@@ -31,7 +32,7 @@
         array(
             'dropDown'=>array('links'=>$allAccessType),
             'text'=>CHtml::encode($accessTypeLinkText),
-            'options'=>array('title'=>Yii::t('t','Access type')),
+            'options'=>array('title'=>Yii::t('t','Access type'))
         ),
         array(
             'dropDown'=>array('links'=>$allState),

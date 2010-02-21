@@ -10,7 +10,7 @@
         array(
             'text'=>$me ? Yii::t('link','Show my profile') : Yii::t('link','Show member'),
             'url'=>($me && !$idIsSpecified) ? array('show') : array('show','id'=>$model->id),
-            'icon'=>'person'
+            'icon'=>'person',
         ),
     ),
 )); ?>
@@ -19,20 +19,21 @@
         array(
             'text'=>Yii::t('link','Members'),
             'url'=>array($this->id.'/'),
-            'active'=>false
+            'active'=>false,
         ),
-        $me ?
         array(
             'text'=>Yii::t('link','My profile'),
             'url'=>$idIsSpecified ? array('show','id'=>$model->id) : array('show'),
-        ) :
+            'visible'=>$me,
+        ),
         array(
             'text'=>Yii::t('link','"{screenName}" member',array('{screenName}'=>$model->screenName)),
             'url'=>array('show','id'=>$model->id),
+            'visible'=>!$me,
         ),
         array(
             'url'=>array($this->action->id),
-            'active'=>true
+            'active'=>true,
         ),
     ),
 )); ?>

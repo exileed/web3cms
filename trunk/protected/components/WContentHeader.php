@@ -75,6 +75,8 @@ class WContentHeader extends CWidget
             $breadcrumbs=array();
             foreach($this->breadcrumbs as $breadcrumb)
             {
+                if(isset($breadcrumb['visible']) && !$breadcrumb['visible'])
+                    continue;
                 if(is_array($breadcrumb) && (isset($breadcrumb['text']) || isset($breadcrumb['url']) || isset($breadcrumb['active']) || isset($breadcrumb['options'])))
                 {
                     $breadcrumbs[]=array(

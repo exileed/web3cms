@@ -5,7 +5,7 @@
     'breadcrumbs'=>array(
         array(
             'url'=>array($this->action->id),
-            'active'=>true
+            'active'=>true,
         ),
     ),
 )); ?>

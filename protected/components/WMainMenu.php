@@ -45,11 +45,7 @@ class WMainMenu extends CWidget
             $item2['options']=isset($item['options'])?$item['options']:'';
             $items[]=$item2;
         }
-        Yii::app()->getClientScript()->registerScript('mainmenu',
-"jQuery('.w3-header .w3-main-menu ul li a').hover( 
-    function(){ jQuery(this).parent().removeClass('ui-state-default').addClass('ui-state-hover'); }, 
-    function(){ jQuery(this).parent().removeClass('ui-state-hover').addClass('ui-state-default'); } 
-);"     );
+        MClientScript::registerScript('mainMenu');
         $this->render('wMainMenu',array('items'=>$items));
     }
 

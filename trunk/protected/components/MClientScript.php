@@ -82,22 +82,6 @@ jQuery(\".w3-content form.w3-main-form .ui-state-error:first\").focus();";
     }
 );";
                 break;
-            case 'hide':
-                $scriptId=$id.'['.$selector.']';
-                $script=
-"jQuery(\"".$selector."\").hide();";
-                break;
-            case 'linkIcon':
-                $box=$parameters['box'];
-                $scriptId=$id.'['.$box.']';
-                $script=
-"jQuery(\"a.".$box.".w3-link-icon\").hover(
-    function(){ jQuery(this).addClass('ui-state-hover').removeClass('ui-state-active').removeClass('w3-border-1px-transparent'); },
-    function(){ jQuery(this).addClass('w3-border-1px-transparent').removeClass('ui-state-hover').removeClass('ui-state-active'); }
-)
-.mousedown(function(){ jQuery(this).addClass('ui-state-active').removeClass('ui-state-hover'); })
-.mouseup(function(){ jQuery(this).removeClass('ui-state-active').removeClass('ui-state-hover'); });";
-                break;
             case 'gridLinkIcon':
                 $controllerId=$parameters['controllerId'];
                 $gridId=$parameters['gridId'];
@@ -167,6 +151,22 @@ jQuery(\".w3-content form.w3-main-form .ui-state-error:first\").focus();";
     }
 );";
                 break;
+            case 'hide':
+                $scriptId=$id.'['.$selector.']';
+                $script=
+"jQuery(\"".$selector."\").hide();";
+                break;
+            case 'linkIcon':
+                $box=$parameters['box'];
+                $scriptId=$id.'['.$box.']';
+                $script=
+"jQuery(\"a.".$box.".w3-link-icon\").hover(
+    function(){ jQuery(this).addClass('ui-state-hover').removeClass('ui-state-active').removeClass('w3-border-1px-transparent'); },
+    function(){ jQuery(this).addClass('w3-border-1px-transparent').removeClass('ui-state-hover').removeClass('ui-state-active'); }
+)
+.mousedown(function(){ jQuery(this).addClass('w3-border-1px-transparent').addClass('ui-state-active').removeClass('ui-state-hover'); })
+.mouseup(function(){ jQuery(this).removeClass('ui-state-active').removeClass('ui-state-hover'); });";
+                break;
             case 'listOfLinksClose':
                 $scriptId=$id;
                 $script=
@@ -198,6 +198,14 @@ jQuery(\".w3-content form.w3-main-form .ui-state-error:first\").focus();";
 )
 .mousedown(function(){ jQuery(this).addClass('ui-state-active'); })
 .mouseup(function(){ jQuery(this).removeClass('ui-state-active'); });";
+                break;
+            case 'mainMenu':
+                $scriptId=$id;
+                $script=
+"jQuery('.w3-header .w3-main-menu ul li a').hover( 
+    function(){ jQuery(this).parent().removeClass('ui-state-default').addClass('ui-state-hover'); }, 
+    function(){ jQuery(this).parent().removeClass('ui-state-hover').addClass('ui-state-default'); } 
+);";
                 break;
             case 'screenNameSame':
                 $scriptId=$id;

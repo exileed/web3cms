@@ -1,15 +1,21 @@
 <?php /* inspired from http://jqueryui.com/demos/tabs/  'Theming' */ ?>
+<?php if(MParams::getMainMenuFullWidth()): ?>
 <div class="w3-main-menu-wrapper ui-widget ui-widget-header ui-corner-all">
 <div class="<?php echo MLayout::getContainerCssClass(); ?>">
 <div class="<?php echo MLayout::getGridCssClass(); ?>">
-<div class="w3-main-menu">
-  <ul>
-<?php foreach($items as $n=>$item): ?>
-    <li class="ui-state-default ui-corner-all<?php echo ($item['active']?' ui-state-active':'') . ($n?'':' w3-first') . ($n===count($items)-1?' w3-last':''); ?>"><?php echo CHtml::link($item['label'],$item['url'],$item['options']); ?></li>
-<?php endforeach; ?>
-  </ul>
-</div><!-- w3-main-menu -->
+<?php echo $this->render('wMainMenuContent',array('items'=>$items)); ?>
 </div>
 <div class="clear">&nbsp;</div>
 </div>
 </div><!-- w3-main-menu-wrapper -->
+<?php else: ?>
+<div class="<?php echo MLayout::getContainerCssClass(); ?>">
+<div class="<?php echo MLayout::getGridCssClass(); ?>">
+<div class="w3-main-menu-wrapper ui-widget ui-widget-header">
+<?php echo $this->render('wMainMenuContent',array('items'=>$items)); ?>
+<div class="clear">&nbsp;</div>
+</div><!-- w3-main-menu-wrapper -->
+</div>
+</div>
+<div class="clear">&nbsp;</div>
+<?php endif; ?>

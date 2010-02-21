@@ -78,6 +78,9 @@ return array(
     // if false, page will get 20px wider, from 940px to 960px.
     // see _layouts/main.php for an example
     'layoutWrapInGridCssClass'=>true, //true
+    // whether or not main menu box should be 100% of the page width (not just 960px). possible values: true/false
+    // reset this on any page with MParams::setMainMenuFullWidth(true);
+    'mainMenuFullWidth'=>true, //true
     // html > head > meta[description]
     // reset this on any page with MParams::setMetaDescription($description);
     // or MParams::addMetaDescription($description,$delimiter=' ');

@@ -55,11 +55,11 @@ class MParams
         // initialize core default parameters
         self::$coreDefaultData=array(
             /**
-              * From: "adminEmailName" <adminEmailAddress>
+             * From: "adminEmailName" <adminEmailAddress>
              */
             'adminEmailAddress'=>'phpdevmd@web3cms.com',
             /**
-              * From: "adminEmailName" <adminEmailAddress>
+             * From: "adminEmailName" <adminEmailAddress>
              */
             'adminEmailName'=>'Web3CMS Staff',
             /**
@@ -120,15 +120,19 @@ class MParams
              */
             'interface'=>'start',
             /**
-              * Site language.
+             * Site language.
              */
             'language'=>'en',
             /**
-              * html > head > meta[description]
+             * Whether or not main menu box should be 100% of the page width (not just 960px).
+             */
+            'mainMenuFullWidth'=>true,
+            /**
+             * html > head > meta[description]
              */
             'metaDescription'=>'Web3CMS - Web 2.0 Content Management System based on Yii Framework.',
             /**
-              * html > head > meta[keywords]
+             * html > head > meta[keywords]
              */
             'metaKeywords'=>array('web3cms','yii'),
             /**
@@ -148,7 +152,7 @@ class MParams
              */
             'pathToFiles'=>dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR,
             /**
-              * Whether or not register jquery-ui css in {@link W3Init::css}.
+             * Whether or not register jquery-ui css in {@link W3Init::css}.
              */
             'registerJqueryUI'=>true,
             /**
@@ -157,7 +161,7 @@ class MParams
              */
             'siteTitle'=>MArea::isBackend() ? 'Web3CMS Administrator' : 'Web3CMS',
             /**
-              * System language - language for system messages (mostly in logs).
+             * System language - language for system messages (mostly in logs).
              */
             'systemLanguage'=>'en',
             /**
@@ -199,6 +203,7 @@ class MParams
             'headerTitle',
             'htmlDoctype',
             'interface',
+            'mainMenuFullWidth',
             'metaDescription',
             'metaKeywords',
             'modelAttributes',
@@ -311,7 +316,7 @@ class MParams
         // validate value
         if((in_array($parameter,array('adminEmailAddress','adminEmailName','copyrightBy','headerTitle','metaDescription','pageLabel','pageTitleFormula','siteTitle','systemLanguage','tablePrefix'))
             && !is_string($value) && !is_numeric($value))
-        || (in_array($parameter,array('registerJqueryUI'))
+        || (in_array($parameter,array('mainMenuFullWidth','registerJqueryUI'))
             && !is_bool($value))
         || (in_array($parameter,array('availableInterfaces','availableLanguages','metaKeywords'))
             && !is_array($value))
@@ -360,6 +365,10 @@ class MParams
     public static function getHtmlDoctype()
     {
         return self::_getCore('htmlDoctype');
+    }
+    public static function getMainMenuFullWidth()
+    {
+        return self::_getCore('mainMenuFullWidth');
     }
     public static function getMetaDescription()
     {
@@ -431,7 +440,7 @@ class MParams
         // validate value
         if((in_array($parameter,array('adminEmailAddress','adminEmailName','copyrightBy','headerTitle','metaDescription','pageLabel','pageTitleFormula','siteTitle','systemLanguage','tablePrefix'))
             && !is_string($value) && !is_numeric($value))
-        || (in_array($parameter,array('registerJqueryUI'))
+        || (in_array($parameter,array('mainMenuFullWidth','registerJqueryUI'))
             && !is_bool($value))
         || (in_array($parameter,array('availableInterfaces','availableLanguages','metaKeywords'))
             && !is_array($value))
@@ -487,6 +496,10 @@ class MParams
     public static function setHtmlDoctype($value)
     {
         self::_setCore('htmlDoctype',$value);
+    }
+    public static function setMainMenuFullWidth($value)
+    {
+        self::_setCore('mainMenuFullWidth',$value);
     }
     public static function setMetaDescription($value)
     {

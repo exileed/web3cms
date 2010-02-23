@@ -1,13 +1,7 @@
 <?php
 
 // i18n - English Language Pack (Attributes)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'By default (Do not bill to company)' => 'By default (Do not bill to company)',
     'By default (Email is not visible by other members)' => 'By default (Email is not visible by other members)',
     'By default (Member account is On)' => 'By default (Member account is On)',
@@ -26,3 +20,5 @@ array(
     'Yes (The record is confirmed by the project manager)' => 'Yes (The record is confirmed by the project manager)',
     'Yes (The record will be shown in search results)' => 'Yes (The record will be shown in search results)',
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

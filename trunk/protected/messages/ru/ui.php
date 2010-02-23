@@ -1,13 +1,7 @@
 <?php
 
 // i18n - Russian Language Pack (CSS Themes)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'Black tie' => 'Р’РµС‡РµСЂРЅРёР№ РєРѕСЃС‚СЋРј', /*'Вечерний костюм'*/
     'Blitzer' => 'Р‘Р»РёС‚С†РµСЂ', /*'Блитцер'*/
     'Cupertino' => 'РљСѓРїРµСЂС‚РёРЅРѕ', /*'Купертино'*/
@@ -33,3 +27,5 @@ array(
     'UI Lightness' => 'Р’Р’ РЎРІРµС‚Р»С‹Р№', /*'ВВ Светлый'*/
     'Vader' => 'Р’РµР№РґРµСЂ', /*'Вейдер'*/
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

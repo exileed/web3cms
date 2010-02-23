@@ -2,18 +2,18 @@
 
 $backend=dirname(dirname(__FILE__));
 $frontend=dirname($backend);
-Yii::setPathOfAlias('backend', $backend);
+Yii::setPathOfAlias('backend',$backend);
 
 // This is the main Web application backend configuration. Any writable
 // CWebApplication properties can be configured here.
-return CMap::mergeArray(
-    require($frontend.'/config/main.php'),
+$retval=CMap::mergeArray(
+    require($frontend.DIRECTORY_SEPARATOR.'config/main.php'),
     array(
         'basePath'=>$frontend,
 
-        'controllerPath'=>$backend.'/controllers',
-        'viewPath'=>$backend.'/views',
-        'runtimePath'=>$backend.'/runtime',
+        'controllerPath'=>$backend.DIRECTORY_SEPARATOR.'controllers',
+        'viewPath'=>$backend.DIRECTORY_SEPARATOR.'views',
+        'runtimePath'=>$backend.DIRECTORY_SEPARATOR.'runtime',
 
         // autoloading model and component classes
         'import'=>array(
@@ -31,13 +31,15 @@ return CMap::mergeArray(
 
         // application-level parameters that can be accessed
         // using Yii::app()->params['paramName'] and MParams class
-        'params'=>require(dirname(__FILE__).'/params.php'),
+        'params'=>require(dirname(__FILE__).DIRECTORY_SEPARATOR.'params.php'),
 
         // application components
         'components'=>array(
             'urlManager'=>array(
-                'rules'=>require(dirname(__FILE__).'/routes.php'),
+                'rules'=>require(dirname(__FILE__).DIRECTORY_SEPARATOR.'routes.php'),
             ),
         ),
     )
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

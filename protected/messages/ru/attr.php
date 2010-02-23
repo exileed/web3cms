@@ -1,13 +1,7 @@
 <?php
 
 // i18n - Russian Language Pack (Attributes)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'By default (Do not bill to company)' => 'РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ (РќРµ РІС‹СЃС‚Р°РІР»СЏС‚СЊ СЃС‡С‘С‚ РєРѕРјРїР°РЅРёРё)', /*'По умолчанию (Не выставлять счёт компании)'*/
     'By default (Email is not visible by other members)' => 'РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ (Р•РјР°Р№Р» РЅРµ РІРёРґРµРЅ РґСЂСѓРіРёРјРё СѓС‡Р°СЃС‚РЅРёРєР°РјРё)', /*'По умолчанию (Емайл не виден другими участниками)'*/
     'By default (Member account is On)' => 'РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ (РЈС‡С‘С‚РЅР°СЏ Р·Р°РїРёСЃСЊ РІРєР»СЋС‡РµРЅР°)', /*'По умолчанию (Учётная запись включена)'*/
@@ -26,3 +20,5 @@ array(
     'Yes (The record is confirmed by the project manager)' => 'Р”Р° (Р—Р°РїРёСЃСЊ РїРѕРґС‚РІРµСЂР¶РґРµРЅР° СЂСѓРєРѕРІРѕРґРёС‚РµР»РµРј РїСЂРѕРµРєС‚Р°)', /*'Да (Запись подтверждена руководителем проекта)'*/
     'Yes (The record will be shown in search results)' => 'Р”Р° (Р—Р°РїРёСЃСЊ Р±СѓРґРµС‚ РїРѕРєР°Р·Р°РЅР° РІ СЂРµР·СѓР»СЊС‚Р°С‚Р°С… РїРѕРёСЃРєР°)', /*'Да (Запись будет показана в результатах поиска)'*/
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

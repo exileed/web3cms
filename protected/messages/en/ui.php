@@ -1,13 +1,7 @@
 <?php
 
 // i18n - English Language Pack (CSS Themes)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'Black tie' => 'Black tie',
     'Blitzer' => 'Blitzer',
     'Cupertino' => 'Cupertino',
@@ -33,3 +27,5 @@ array(
     'UI Lightness' => 'UI Lightness',
     'Vader' => 'Vader',
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

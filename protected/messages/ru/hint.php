@@ -1,13 +1,7 @@
 <?php
 
 // i18n - Russian Language Pack (Hints)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'A member account with email address {email} could not be found.' => 'РЈС‡С‘С‚РЅР°СЏ Р·Р°РїРёСЃСЊ СЃ РµРјР°Р№Р» Р°РґСЂРµСЃРѕРј {email} РЅРµ РјРѕРіР»Р° Р±С‹С‚СЊ РЅР°Р№РґРµРЅР°.', /*'Учётная запись с емайл адресом {email} не могла быть найдена.'*/
     'An error has occured while deleting the record number {id}.' => '1#РџСЂРё СѓРґР°Р»РµРЅРёРё Р·Р°РїРёСЃРё РЅРѕРјРµСЂ |2# РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°.', /*'1#При удалении записи номер |2# произошла ошибка.'*/
     'Are you sure you want to delete the record number {id}? Deleted records may not be restored!' => '1#РЈРІРµСЂРµРЅС‹ Р»Рё РІС‹ С‡С‚Рѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ Р·Р°РїРёСЃСЊ РЅРѕРјРµСЂ |2#? РЈРґР°Р»С‘РЅРЅС‹Рµ Р·Р°РїРёСЃРё РЅРµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅС‹!', /*'1#Уверены ли вы что хотите удалить запись номер |2#? Удалённые записи не могут быть восстановлены!'*/
@@ -103,3 +97,5 @@ array(
     'We are sorry, but your access type is {accessType}. Required access type: {requiredAccessType}.' => 'РЎРѕР¶Р°Р»РµРµРј, РЅРѕ РІР°С€ С‚РёРї РґРѕСЃС‚СѓРїР° - {accessType}. РќРµРѕР±С…РѕРґРёРјС‹Р№ С‚РёРї РґРѕСЃС‚СѓРїР°: {requiredAccessType}.', /*'Сожалеем, но ваш тип доступа - {accessType}. Необходимый тип доступа: {requiredAccessType}.'*/
     'We are sorry, but your member account is marked as "inactive". Inactive member accounts are temporarely inaccessible. {contactLink}.' => 'РЎРѕР¶Р°Р»РµРµРј, РЅРѕ РІР°С€Р° СѓС‡С‘С‚РЅР°СЏ Р·Р°РїРёСЃСЊ РїРѕРјРµС‡РµРЅР° РєР°Рє "РЅРµР°РєС‚РёРІРЅР°СЏ". РќРµР°РєС‚РёРІРЅС‹Рµ СѓС‡РµС‚РЅС‹Рµ Р·Р°РїРёСЃРё РІСЂРµРјРµРЅРЅРѕ СЏРІР»СЏСЋС‚СЃСЏ РЅРµРґРѕСЃС‚СѓРїРЅС‹РјРё. {contactLink}.', /*'Сожалеем, но ваша учётная запись помечена как "неактивная". Неактивные учетные записи временно являются недоступными. {contactLink}.'*/
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

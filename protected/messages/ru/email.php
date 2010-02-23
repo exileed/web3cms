@@ -1,13 +1,7 @@
 <?php
 
 // i18n - Russian Language Pack (Emails)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'New member account' => 'РќРѕРІР°СЏ СѓС‡С‘С‚РЅР°СЏ Р·Р°РїРёСЃСЊ', /*'Новая учётная запись'*/
     'Content(New member account)' => 'Р”РѕР±СЂРѕ РїРѕР¶Р°Р»РѕРІР°С‚СЊ Рє {siteTitle}
 
@@ -29,3 +23,5 @@ array(
 Чтобы подтвердить ваш емайл адрес, пожалуйста посетите следующую ссылку
 {emailConfirmationLink}'*/
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

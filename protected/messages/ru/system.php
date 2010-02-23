@@ -1,13 +1,7 @@
 <?php
 
 // i18n - Russian Language Pack (System Messages)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'Available interfaces: {availableInterfaces}.' => 'Доступные внешние виды: {availableInterfaces}.', /*'Р”РѕСЃС‚СѓРїРЅС‹Рµ РІРЅРµС€РЅРёРµ РІРёРґС‹: {availableInterfaces}.'*/
     'Available languages: {availableLanguages}.' => 'Доступные языки: {availableLanguages}.', /*'Р”РѕСЃС‚СѓРїРЅС‹Рµ СЏР·С‹РєРё: {availableLanguages}.'*/
     'Class {class} does not exist. Method called: {method}.' => 'Класса {class} не существует. Вызывался метод: {method}.', /*'РљР»Р°СЃСЃР° {class} РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚. Р’С‹Р·С‹РІР°Р»СЃСЏ РјРµС‚РѕРґ: {method}.'*/
@@ -23,3 +17,5 @@ array(
     'Unacceptable values of layout parameters... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.' => 'Недопустимые значения параметров расположения... содержание: {content}, колонка1: {sidebar1}, колонка2: {sidebar2}, всего: {total}. Вызывался метод: {method}.', /*'РќРµРґРѕРїСѓСЃС‚РёРјС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ... СЃРѕРґРµСЂР¶Р°РЅРёРµ: {content}, РєРѕР»РѕРЅРєР°1: {sidebar1}, РєРѕР»РѕРЅРєР°2: {sidebar2}, РІСЃРµРіРѕ: {total}. Р’С‹Р·С‹РІР°Р»СЃСЏ РјРµС‚РѕРґ: {method}.'*/
     'Uncommon parameter in method call: {method}.' => 'Необычный параметер в вызове метода: {method}.', /*'РќРµРѕР±С‹С‡РЅС‹Р№ РїР°СЂР°РјРµС‚РµСЂ РІ РІС‹Р·РѕРІРµ РјРµС‚РѕРґР°: {method}.'*/
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

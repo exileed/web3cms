@@ -1,7 +1,7 @@
 <?php
 
 // this contains the application parameters that can be maintained via GUI
-return array(
+$retval=array(
     // this is your primary email address
     // reset this on any page with MParams::setAdminEmailAddress($email);
     'adminEmailAddress'=>'phpdevmd@web3cms.com', //'webmaster@example.com',
@@ -131,3 +131,5 @@ return array(
     // reset this on any page with MParams::setUserLoginWithField('username');
     'userLoginWithField'=>'username', //'username'
 );
+$myfile=dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

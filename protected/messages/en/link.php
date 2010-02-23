@@ -1,15 +1,7 @@
 <?php
 
 // i18n - English Language Pack (Links)
-return
-// your custom translation
-array(
-    'Member' => 'Person',
-    'Members' => 'Persons',
-)
-+
-// official translation
-array(
+$retval=array(
     'Add a company' => 'Add a company',
     'Add a company payment' => 'Add a company payment',
     'Add an expense' => 'Add an expense',
@@ -132,3 +124,5 @@ array(
     'View my company' => 'View my company',
     'View my profile' => 'View my profile',
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

@@ -1,13 +1,7 @@
 <?php
 
 // i18n - English Language Pack (System Messages)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'Available interfaces: {availableInterfaces}.' => 'Available interfaces: {availableInterfaces}.',
     'Available languages: {availableLanguages}.' => 'Available languages: {availableLanguages}.',
     'Class {class} does not exist. Method called: {method}.' => 'Class {class} does not exist. Method called: {method}.',
@@ -23,3 +17,5 @@ array(
     'Unacceptable values of layout parameters... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.' => 'Unacceptable values of layout parameters... content: {content}, sidebar1: {sidebar1}, sidebar2: {sidebar2}, total: {total}. Method called: {method}.',
     'Uncommon parameter in method call: {method}.' => 'Uncommon parameter in method call: {method}.',
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

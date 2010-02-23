@@ -1,13 +1,7 @@
 <?php
 
 // i18n - English Language Pack (Hints)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'A member account with email address {email} could not be found.' => 'A member account with email address {email} could not be found.',
     'An error has occured while deleting the record number {id}.' => '1#An error has occured while deleting the record number |2#.',
     'Are you sure you want to delete the record number {id}? Deleted records may not be restored!' => '1#Are you sure you want to delete the record number |2#? Deleted records may not be restored!',
@@ -103,3 +97,5 @@ array(
     'We are sorry, but your access type is {accessType}. Required access type: {requiredAccessType}.' => 'We are sorry, but your access type is {accessType}. Required access type: {requiredAccessType}.',
     'We are sorry, but your member account is marked as "inactive". Inactive member accounts are temporarely inaccessible. {contactLink}.' => 'We are sorry, but your member account is marked as "inactive". Inactive member accounts are temporarely inaccessible. {contactLink}.',
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

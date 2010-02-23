@@ -1,13 +1,7 @@
 <?php
 
 // i18n - Russian Language Pack (Links)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'Add a company' => 'Р”РѕР±Р°РІРёС‚СЊ РєРѕРјРїР°РЅРёСЋ', /*'Добавить компанию'*/
     'Add a company payment' => 'Р”РѕР±Р°РІРёС‚СЊ РїР»Р°С‚С‘Р¶ РєРѕРјРїР°РЅРёРё', /*'Добавить платёж компании'*/
     'Add an expense' => 'Р”РѕР±Р°РІРёС‚СЊ СЂР°СЃС…РѕРґ', /*'Добавить расход'*/
@@ -131,3 +125,5 @@ array(
     'View my company' => 'РџСЂРѕСЃРјРѕС‚СЂРµС‚СЊ РјРѕСЋ РєРѕРјРїР°РЅРёСЋ', /*'Просмотреть мою компанию'*/
     'View my profile' => 'РџСЂРѕСЃРјРѕС‚СЂРµС‚СЊ РјРѕР№ РїСЂРѕС„РёР»СЊ', /*'Просмотреть мой профиль'*/
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

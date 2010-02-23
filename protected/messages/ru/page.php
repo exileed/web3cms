@@ -1,13 +1,7 @@
 <?php
 
 // i18n - Russian Language Pack (Pages)
-return
-// your custom translation
-array(
-)
-+
-// official translation
-array(
+$retval=array(
     'Change interface' => 'РЎРјРµРЅРёС‚СЊ РІРЅРµС€РЅРёР№ РІРёРґ', /*'Сменить внешний вид'*/
     'Confirm email address' => 'РџРѕРґС‚РІРµСЂРґРёС‚СЊ РµРјР°Р№Р» Р°РґСЂРµСЃ', /*'Подтвердить емайл адрес'*/
     'Contact us' => 'РЎРІСЏР·Р°С‚СЊСЃСЏ СЃ РЅР°РјРё', /*'Связаться с нами'*/
@@ -66,3 +60,5 @@ array(
     'View "{title}" task' => 'РџСЂРѕСЃРјРѕС‚СЂ Р·Р°РґР°С‡Рё "{title}"', /*'Просмотр задачи "{title}"'*/
     'View "{title}" time record' => 'РџСЂРѕСЃРјРѕС‚СЂ Р·Р°РїРёСЃРё РІСЂРµРјРµРЅРё "{title}"', /*'Просмотр записи времени "{title}"'*/
 );
+$myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

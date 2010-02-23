@@ -5,11 +5,11 @@
 
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
-return array(
+$retval=array(
     'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 
     // preloading 'log' component, session - to track down problems with specific users
-    'preload'=>array('log', 'session'),
+    'preload'=>array('log','session'),
 
     // autoloading model and component classes
     'import'=>array(
@@ -25,7 +25,7 @@ return array(
 
     // application-level parameters that can be accessed
     // using Yii::app()->params['paramName'] and MParams class
-    'params'=>require(dirname(__FILE__).'/params.php'),
+    'params'=>require(dirname(__FILE__).DIRECTORY_SEPARATOR.'params.php'),
 
     // 'en_us' is the sourceLanguage used by default
     'sourceLanguage'=>'en_us',
@@ -96,7 +96,7 @@ return array(
             //'caseSensitive'=>false,
             //'showScriptName'=>true,
             //'urlSuffix'=>'.html',
-            'rules'=>require(dirname(__FILE__).'/routes.php'),
+            'rules'=>require(dirname(__FILE__).DIRECTORY_SEPARATOR.'routes.php'),
         ),
         'user'=>array(
             // override CWebUser class
@@ -108,3 +108,5 @@ return array(
         ),
     ),
 );
+$myfile=dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
+return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

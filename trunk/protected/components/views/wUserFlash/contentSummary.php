@@ -1,4 +1,4 @@
-<div class="w3-user-flash-content-summary-wrapper">
+<div class="w3-user-flash-content-summary-box">
 <?php foreach($success as $userFlash): ?>
   <div class="w3-content-item<?php echo MLayout::getNumberOfItemsContent()?'':' w3-first'; ?>">
     <div class="w3-user-flash-content-summary ui-widget ui-state-highlight ui-corner-all">
@@ -26,4 +26,4 @@
   </div><!-- w3-content-item -->
 <?php MLayout::incrementNumberOfItemsContent(); ?>
 <?php endforeach; ?>
-</div><!-- w3-user-flash-content-summary-wrapper -->
+</div><!-- w3-user-flash-content-summary-box -->

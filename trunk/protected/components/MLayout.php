@@ -133,27 +133,31 @@ class MLayout
      */
     public static function getBodytagCssClass()
     {
-        $column=$details='';
+        $c=array();
+        if(MParams::getHtmlDoctype()==='transitional')
+            $c['doctype']='w3-doctype-transitional';
+        else if(MParams::getHtmlDoctype()==='strict')
+            $c['doctype']='w3-doctype-strict';
         if(!self::hasContent() && !self::hasSidebar1() && !self::hasSidebar2())
-            ($column='w3-layout-zero-column') && ($details='w3-layout');
+            ($c['column']='w3-layout-zero-column') && ($c['columnD']='w3-layout');
         else if(self::hasContent() && !self::hasSidebar1() && !self::hasSidebar2())
-            ($column='w3-layout-one-column') && ($details='w3-layout-content');
+            ($c['column']='w3-layout-one-column') && ($c['columnD']='w3-layout-content');
         else if(!self::hasContent() && self::hasSidebar1() && !self::hasSidebar2())
-            ($column='w3-layout-one-column') && ($details='w3-layout-sidebar1');
+            ($c['column']='w3-layout-one-column') && ($c['columnD']='w3-layout-sidebar1');
         else if(!self::hasContent() && !self::hasSidebar1() && self::hasSidebar2())
-            ($column='w3-layout-one-column') && ($details='w3-layout-sidebar2');
+            ($c['column']='w3-layout-one-column') && ($c['columnD']='w3-layout-sidebar2');
         else if(self::hasContent() && self::hasSidebar1() && !self::hasSidebar2())
-            ($column='w3-layout-two-column') && ($details='w3-layout-sidebar1-content');
+            ($c['column']='w3-layout-two-column') && ($c['columnD']='w3-layout-sidebar1-content');
         else if(!self::hasContent() && self::hasSidebar1() && self::hasSidebar2())
-            ($column='w3-layout-two-column') && ($details='w3-layout-sidebar1-sidebar2');
+            ($c['column']='w3-layout-two-column') && ($c['columnD']='w3-layout-sidebar1-sidebar2');
         else if(self::hasContent() && !self::hasSidebar1() && self::hasSidebar2())
-            ($column='w3-layout-two-column') && ($details='w3-layout-content-sidebar2');
+            ($c['column']='w3-layout-two-column') && ($c['columnD']='w3-layout-content-sidebar2');
         else if(self::hasContent() && self::hasSidebar1() && self::hasSidebar2())
-            ($column='w3-layout-three-column') && ($details='w3-layout-sidebar1-content-sidebar2');
-        $controller='w3-controller-'.Yii::app()->controller->getId();
-        $controllerAction=$controller.'-'.Yii::app()->controller->getAction()->getId();
-        $interface='w3-interface-'.MParams::getInterface();
-        return $column.' '.$details.' '.$controller.' '.$controllerAction.' '.$interface;
+            ($c['column']='w3-layout-three-column') && ($c['columnD']='w3-layout-sidebar1-content-sidebar2');
+        $c['controller']='w3-controller-'.Yii::app()->controller->id;
+        $c['controllerAction']=$c['controller'].'-'.Yii::app()->controller->action->id;
+        $c['interface']='w3-interface-'.MParams::getInterface();
+        return implode(' ',$c);
     }
 
     /**

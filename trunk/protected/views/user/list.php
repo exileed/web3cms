@@ -1,5 +1,5 @@
 <?php MParams::setPageLabel(Yii::t('page','List of members')); ?>
-<?php MListOfLinks::set('sidebar',array(
+<?php MLinkList::set('sidebar',array(
     'links'=>array(
         array(
             'text'=>Yii::t('link','View as grid'),
@@ -28,7 +28,7 @@
 </div>
 
 <?php endif; ?>
-<div class="w3-items-list">
+<div class="w3-list">
 <?php foreach($models as $n=>$model): ?>
 
 <div class="w3-item<?php echo $n ? '' : ' w3-first'; ?> ui-widget-content ui-corner-all">

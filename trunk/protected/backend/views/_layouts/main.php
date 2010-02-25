@@ -20,7 +20,7 @@
 </head>
 
 <body class="<?php echo MLayout::getBodytagCssClass(); ?>">
-<div class="w3-wrapper">
+<div class="w3-document-container">
 
 <div class="w3-header">
 <div class="<?php echo MLayout::getContainerCssClass(); ?>">
@@ -54,15 +54,15 @@
 
 <div class="<?php echo MLayout::getContainerCssClass(); ?>">
 <div class="<?php echo MLayout::getGridCssClass(); ?>">
-<div class="w3-main-wrapper">
+<div class="w3-center-container">
 <?php if(MLayout::hasSidebar1()): ?>
 
 <div class="<?php echo MLayout::getGridCssClassSidebar1(); ?>">
 <div class="w3-sidebar w3-sidebar1">
 <?php $this->widget('application.components.WUserFlash',array('type'=>'sidebarSummary','in'=>'sidebar1')); ?>
 <?php $this->widget('application.components.WUserFlash',array('type'=>'sidebar1Summary')); ?>
-<?php $this->widget('application.components.WListOfLinks',array('id'=>'sidebar','area'=>'sidebar1')); ?>
-<?php $this->widget('application.components.WListOfLinks',array('id'=>'sidebar1')); ?>
+<?php $this->widget('application.components.WLinkList',array('id'=>'sidebar','area'=>'sidebar1')); ?>
+<?php $this->widget('application.components.WLinkList',array('id'=>'sidebar1')); ?>
 <?php if(!MLayout::getNumberOfItemsSidebar1()): ?>
 &nbsp;
 <?php endif; ?>
@@ -92,8 +92,8 @@
 <div class="w3-sidebar w3-sidebar2">
 <?php $this->widget('application.components.WUserFlash',array('type'=>'sidebarSummary','in'=>'sidebar2')); ?>
 <?php $this->widget('application.components.WUserFlash',array('type'=>'sidebar2Summary')); ?>
-<?php $this->widget('application.components.WListOfLinks',array('id'=>'sidebar','area'=>'sidebar2')); ?>
-<?php $this->widget('application.components.WListOfLinks',array('id'=>'sidebar2')); ?>
+<?php $this->widget('application.components.WLinkList',array('id'=>'sidebar','area'=>'sidebar2')); ?>
+<?php $this->widget('application.components.WLinkList',array('id'=>'sidebar2')); ?>
 <?php if(!MLayout::getNumberOfItemsSidebar2()): ?>
 &nbsp;
 <?php endif; ?>
@@ -103,7 +103,7 @@
 
 <div class="clear">&nbsp;</div>
 
-</div><!-- w3-body-wrapper -->
+</div><!-- w3-center-container -->
 </div>
 </div>
 
@@ -122,19 +122,19 @@
 
 <div class="<?php echo MLayout::getContainerCssClass(); ?>">
 <div class="<?php echo MLayout::getGridCssClass(); ?>">
-<div class="w3-footer-wrapper">
+<div class="w3-footer-box">
 <div class="w3-footer">
 <?php echo Yii::t('t','{copyrightBy}. All Rights Reserved.',array('{copyrightBy}'=>MParams::getCopyrightBy()))."\n"; ?>
 <?php echo Yii::t('t','Developed by {developedBy} based on {basedOn}.',array(
     '{developedBy}'=>CHtml::link('Web3CMS','http://www.web3cms.com/',array('rel'=>'external')),
     '{basedOn}'=>CHtml::link('Yii Framework','http://www.yiiframework.com/',array('rel'=>'external'))))."\n"; ?>
 </div><!-- w3-footer -->
-</div><!-- w3-footer-wrapper -->
+</div><!-- w3-footer-box -->
 </div>
 <div class="clear">&nbsp;</div>
 </div>
 
-</div><!-- w3-wrapper -->
+</div><!-- w3-document-container -->
 </body>
 
 </html>

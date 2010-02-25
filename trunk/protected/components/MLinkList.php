@@ -1,9 +1,9 @@
 <?php
 /**
- * MListOfLinks class file.
- * Manage list of links for the {@link WListOfLinks} widget.
+ * MLinkList class file.
+ * Manage list of links for the {@link WLinkList} widget.
  */
-class MListOfLinks
+class MLinkList
 {
     /**
      * @var multi-dimensional array of links.

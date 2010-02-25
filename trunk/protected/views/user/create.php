@@ -3,7 +3,7 @@
 <?php MUserFlash::setSidebarInfo(Yii::t('hint','Required: {authRoles}.',
     array(1,'{authRoles}'=>implode(', ',array(Yii::t('t',User::ADMINISTRATOR_T))))
 )); ?>
-<?php MListOfLinks::set('sidebar',array(
+<?php MLinkList::set('sidebar',array(
     'links'=>array(
         array(
             'text'=>Yii::t('link','List of members'),
@@ -31,7 +31,7 @@
         ),
     ),
 )); ?>
-<div class="w3-main-form-wrapper ui-widget-content ui-corner-all">
+<div class="w3-main-form-box ui-widget-content ui-corner-all">
 
 <?php echo _CHtml::beginForm('','post',array('class'=>'w3-main-form'))."\n"; ?>
 
@@ -134,7 +134,7 @@
 
 <?php echo _CHtml::endForm(); ?>
 
-</div><!-- w3-main-form-wrapper -->
+</div><!-- w3-main-form-box -->
 
 <?php MClientScript::registerScript('autocompleteOff',array('selector'=>'.w3-content form.w3-main-form')); ?>
 <?php MClientScript::registerScript('focusOnFormFirstItem'); ?>

@@ -1,9 +1,9 @@
 <?php
 /**
- * WListOfLinks class file.
- * WListOfLinks is a widget displaying a list of the links.
+ * WLinkList class file.
+ * WLinkList is a widget displaying a list of the links.
  */
-class WListOfLinks extends CWidget
+class WLinkList extends CWidget
 {
     /**
      * @var string area where this widget
@@ -34,7 +34,7 @@ class WListOfLinks extends CWidget
     public function run()
     {
         // retrieve data from the global storage
-        $data=MListOfLinks::get($this->id);
+        $data=MLinkList::get($this->id);
         // the new array of the links is a validated one
         $links=array();
         if(isset($data['links']) && is_array($data['links']))
@@ -79,7 +79,7 @@ class WListOfLinks extends CWidget
             'class','n'
         );
         // render the view file
-        $this->render('wListOfLinks',$data);
+        $this->render('wLinkList',$data);
         // update the layout statistics
         if($area==='sidebar1')
             MLayout::incrementNumberOfItemsSidebar1();

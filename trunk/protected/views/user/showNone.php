@@ -1,6 +1,6 @@
 <?php MParams::setPageLabel(Yii::t('page','Member not found')); ?>
 <?php MUserFlash::setTopError(Yii::t('hint','The requested member does not exist.')); ?>
-<?php MListOfLinks::set('sidebar',array(
+<?php MLinkList::set('sidebar',array(
     'links'=>array(
         array(
             'text'=>Yii::t('link','List of members'),

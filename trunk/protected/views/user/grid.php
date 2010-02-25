@@ -2,7 +2,7 @@
 <?php MUserFlash::setSidebarInfo(Yii::t('hint','Required: {authRoles}.',
     array(2,'{authRoles}'=>implode(', ',array(Yii::t('t',User::MANAGER_T),Yii::t('t',User::ADMINISTRATOR_T))))
 )); ?>
-<?php MListOfLinks::set('sidebar',array(
+<?php MLinkList::set('sidebar',array(
     'links'=>array(
         array(
             'text'=>Yii::t('link','View as list'),
@@ -40,7 +40,7 @@
         ),
     ),
 )); ?>
-<?php $this->widget('application.components.WItemsGrid',array(
+<?php $this->widget('application.components.WGrid',array(
     'columns'=>array(
         array('title'=>CHtml::encode(User::model()->getAttributeLabel('screenName'))),
         array('title'=>CHtml::encode(UserDetails::model()->getAttributeLabel('occupation'))),

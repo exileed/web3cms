@@ -9,7 +9,7 @@
         ),
     ),
 )); ?>
-<div class="w3-main-form-wrapper ui-widget-content ui-corner-all">
+<div class="w3-main-form-box ui-widget-content ui-corner-all">
 
 <?php echo _CHtml::beginForm('','post',array('class'=>'w3-main-form'))."\n"; ?>
 <?php echo _CHtml::activeHiddenField($form,'loginWithField')."\n"; ?>
@@ -50,7 +50,7 @@
 
 <?php echo _CHtml::endForm(); ?>
 
-</div><!-- w3-main-form-wrapper -->
+</div><!-- w3-main-form-box -->
 
 <?php MClientScript::registerScript('focusOnFormFirstItem'); ?>
 <?php MClientScript::registerScript('formButton'); ?>

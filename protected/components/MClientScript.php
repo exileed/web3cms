@@ -72,12 +72,12 @@ jQuery(\".w3-content form.w3-main-form .ui-state-error:first\").focus();";
         if(jQuery(this).find('span.ui-icon').hasClass('ui-icon-circle-triangle-s')){
             jQuery(\"".$selector."\").slideDown('normal');
             jQuery(this).find('span.ui-icon').removeClass('ui-icon-circle-triangle-s').addClass('ui-icon-circle-triangle-n');
-            jQuery(this).closest('.w3-items-grid-titlebar').removeClass('ui-corner-all');
+            jQuery(this).closest('.w3-grid-titlebar').removeClass('ui-corner-all');
         }
         else{
             jQuery(\"".$selector."\").slideUp('normal');
             jQuery(this).find('span.ui-icon').removeClass('ui-icon-circle-triangle-n').addClass('ui-icon-circle-triangle-s');
-            jQuery(this).closest('.w3-items-grid-titlebar').removeClass('ui-corner-all').addClass('ui-corner-all');
+            jQuery(this).closest('.w3-grid-titlebar').removeClass('ui-corner-all').addClass('ui-corner-all');
         }
     }
 );";
@@ -167,10 +167,10 @@ jQuery(\".w3-content form.w3-main-form .ui-state-error:first\").focus();";
 .mousedown(function(){ jQuery(this).addClass('w3-border-1px-transparent').addClass('ui-state-active').removeClass('ui-state-hover'); })
 .mouseup(function(){ jQuery(this).removeClass('ui-state-active').removeClass('ui-state-hover'); });";
                 break;
-            case 'listOfLinksClose':
+            case 'linkListClose':
                 $scriptId=$id;
                 $script=
-"jQuery(\".w3-list-of-links-box a.w3-ll.w3-titlebar-close\").hover(
+"jQuery(\".w3-link-list-box a.w3-link-list.w3-titlebar-close\").hover(
     function(){ jQuery(this).addClass('ui-state-hover').addClass('ui-corner-all'); },
     function(){ jQuery(this).removeClass('ui-state-hover').removeClass('ui-corner-all'); }
 )
@@ -179,20 +179,20 @@ jQuery(\".w3-content form.w3-main-form .ui-state-error:first\").focus();";
 .click(
     function(){
         if(jQuery(this).find('span.ui-icon').hasClass('ui-icon-circle-triangle-s')){
-            jQuery(this).closest('.w3-ll.w3-titlebar').next('.w3-list-of-links').slideDown('normal');
+            jQuery(this).closest('.w3-link-list.w3-titlebar').next('.w3-link-list').slideDown('normal');
             jQuery(this).find('span.ui-icon').removeClass('ui-icon-circle-triangle-s').addClass('ui-icon-circle-triangle-n');
         }
         else{
-            jQuery(this).closest('.w3-ll.w3-titlebar').next('.w3-list-of-links').slideUp('normal');
+            jQuery(this).closest('.w3-link-list.w3-titlebar').next('.w3-link-list').slideUp('normal');
             jQuery(this).find('span.ui-icon').removeClass('ui-icon-circle-triangle-n').addClass('ui-icon-circle-triangle-s');
         }
     }
 );";
                 break;
-            case 'listOfLinksHover':
+            case 'linkListHover':
                 $scriptId=$id;
                 $script=
-"jQuery(\".w3-list-of-links.w3-effects-on ul li a\").hover(
+"jQuery(\".w3-link-list.w3-effects-on ul li a\").hover(
     function(){ jQuery(this).addClass('ui-state-hover').addClass('ui-corner-all'); }, 
     function(){ jQuery(this).removeClass('ui-state-hover').removeClass('ui-corner-all'); } 
 )

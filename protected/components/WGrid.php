@@ -1,9 +1,9 @@
 <?php
 /**
- * WItemsGrid class file.
- * WItemsGrid is a widget displaying jqGrid or a static grid.
+ * WGrid class file.
+ * WGrid is a widget displaying jqGrid or a static grid.
  */
-class WItemsGrid extends CWidget
+class WGrid extends CWidget
 {
     /**
      * @var array of the jqGrid columns
@@ -327,6 +327,6 @@ class WItemsGrid extends CWidget
             'colModel','colNames','i','n'
         );
         // render the view file
-        $this->render('wItemsGrid',$data);
+        $this->render('wGrid',$data);
     }
 }

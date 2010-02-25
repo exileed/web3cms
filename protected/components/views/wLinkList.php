@@ -3,21 +3,21 @@
 <?php $class='w3-sidebar-item'.(MLayout::getNumberOfItemsSidebar($area)?'':' w3-first'); ?>
 <?php endif; ?>
 <div<?php echo $class===''?'':' class="'.$class.'"'; ?>>
-  <div class="w3-list-of-links-box">
+  <div class="w3-link-list-box">
     <div class="ui-widget ui-widget-content ui-corner-all">
 <?php if($displayTitlebar): ?>
-      <div class="w3-ll w3-titlebar ui-widget-header ui-corner-all">
-        <div class="w3-ll w3-titlebar-button-box">
-          <div class="w3-ll w3-titlebar-button">
-            <a class="w3-ll w3-titlebar-close" href="javascript:void(0)">
+      <div class="w3-link-list w3-titlebar ui-widget-header ui-corner-all">
+        <div class="w3-link-list w3-titlebar-button-box">
+          <div class="w3-link-list w3-titlebar-button">
+            <a class="w3-link-list w3-titlebar-close" href="javascript:void(0)">
               <span class="ui-icon ui-icon-circle-triangle-n"></span>
             </a>
           </div><!-- w3-titlebar-button -->
         </div><!-- w3-titlebar-button-box -->
-        <div class="w3-ll w3-title"><?php echo $title; ?></div>
+        <div class="w3-link-list w3-title"><?php echo $title; ?></div>
       </div><!-- w3-titlebar -->
 <?php endif; ?>
-      <div class="w3-list-of-links w3-effects-on">
+      <div class="w3-link-list w3-effects-on">
         <ul>
 <?php $n=0; ?>
 <?php foreach($links as $link): ?>
@@ -34,11 +34,11 @@
 <?php $n++; ?>
 <?php endforeach; ?>
         </ul>
-      </div><!-- w3-list-of-links -->
+      </div><!-- w3-link-list -->
     </div><!-- ui-widget -->
-  </div><!-- w3-list-of-links-box -->
+  </div><!-- w3-link-list-box -->
 </div>
 <?php if($displayTitlebar): ?>
-<?php MClientScript::registerScript('listOfLinksClose'); ?>
+<?php MClientScript::registerScript('linkListClose'); ?>
 <?php endif; ?>
-<?php MClientScript::registerScript('listOfLinksHover'); ?>
+<?php MClientScript::registerScript('linkListHover'); ?>

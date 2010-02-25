@@ -3,19 +3,19 @@
 <div id="<?php echo $gridPagerId; ?>" class="w3-hidden"></div>
 <?php endif; /*end if displayGrid*/ ?>
 <?php if($displaySGrid===true): ?>
-<div id="<?php echo $sGridWrapperId; ?>" class="w3-items-grid-wrapper ui-widget ui-widget-content <?php echo $displaySGridPager===true?'ui-corner-all':'ui-corner-tl ui-corner-tr'; ?>">
+<div id="<?php echo $sGridWrapperId; ?>" class="w3-grid-box ui-widget ui-widget-content <?php echo $displaySGridPager===true?'ui-corner-all':'ui-corner-tl ui-corner-tr'; ?>">
 <?php if($displaySTitlebar===true): ?>
-  <div class="w3-items-grid-titlebar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix">
+  <div class="w3-grid-titlebar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix">
     <div class="w3-grid-title"><?php echo $sTitle; ?></div>
 <?php if($displayButtonClose===true): ?>
     <div class="w3-grid-titlebar-buttons">
       <a href="javascript:void(0)" class="w3-grid-titlebar-close"><span class="ui-icon ui-icon-circle-triangle-n"></span></a>
     </div>
 <?php endif; /*end if displayButtonClose*/ ?>
-  </div><!-- w3-items-grid-titlebar -->
+  </div><!-- w3-grid-titlebar -->
 <?php endif; /*end if displaySTitlebar*/ ?>
   <div id="<?php echo $sGridId; ?>">
-    <table class="w3-items-grid" cellspacing="0" cellpadding="0" border="0" width="100%">
+    <table class="w3-grid" cellspacing="0" cellpadding="0" border="0" width="100%">
       <thead>
       <tr class="w3-grid-columns-row ui-state-default">
 <?php if(count($sColumns)): ?>
@@ -47,19 +47,19 @@
       </tr>
 <?php endforeach; ?>
       </tbody>
-    </table><!-- w3-items-grid -->
+    </table><!-- w3-grid -->
 <?php if($displaySGridPager===true): ?>
-    <div class="w3-items-grid-pager ui-state-default ui-corner-bl ui-corner-br">
+    <div class="w3-grid-pager ui-state-default ui-corner-bl ui-corner-br">
       <div class="w3-right-column">
         <?php echo ($totalRecords>=1 ? Yii::t('hint','View {minRow} - {maxRow} of {totalRecords}',array(
             '{minRow}'=>$minRow,'{maxRow}'=>$maxRow,'{totalRecords}'=>$totalRecords)) :
             Yii::t('hint','No records to view')
         )."\n"; ?>
       </div>
-    </div><!-- w3-items-grid-pager -->
+    </div><!-- w3-grid-pager -->
 <?php endif; /*end if displaySGridPager*/ ?>
   </div><!-- <?php echo $sGridId; ?> -->
-</div><!-- w3-items-grid-wrapper -->
+</div><!-- w3-grid-box -->
 <?php if($displayButtonClose===true): ?>
 <?php MClientScript::registerScript('gridClose',array('selector'=>'#'.$sGridId)); ?>
 <?php endif; ?>

@@ -29,6 +29,8 @@ a:hover {
 }
 
 
+body.w3-doctype-transitional {}
+body.w3-doctype-strict {}
 body.w3-layout-zero-column {}
 body.w3-layout-one-column {}
 body.w3-layout-two-column {}
@@ -43,7 +45,7 @@ body.w3-layout-content-sidebar2 {}
 body.w3-layout-sidebar1-content-sidebar2 {}
 
 
-.w3-wrapper {}
+.w3-document-container {}
 
 
 .w3-header {}
@@ -59,7 +61,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
     text-decoration: none;
 }
 
-.w3-header .w3-main-menu-wrapper {}
+.w3-header .w3-main-menu-box {}
 .w3-header .w3-main-menu {}
 .w3-header .w3-main-menu ul {
     list-style: none;
@@ -91,7 +93,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 .w3-top .w3-top-item.w3-first {
     margin-top: 1.5em;
 }
-.w3-user-flash-top-summary-wrapper {}
+.w3-user-flash-top-summary-box {}
 .w3-user-flash-top-summary {
     margin: 0 4.5em;
     padding: .7em .6em;
@@ -106,7 +108,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 }
 
 
-.w3-main-wrapper {
+.w3-center-container {
     margin-top: 1.6em;
 }
 
@@ -120,7 +122,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 .w3-sidebar .w3-sidebar-item.w3-first {
     margin-top: 0;
 }
-.w3-user-flash-sidebar-summary-wrapper {}
+.w3-user-flash-sidebar-summary-box {}
 .w3-user-flash-sidebar-summary {
     padding: .7em .6em;
 }
@@ -133,7 +135,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 .w3-content .w3-content-item.w3-first {
     margin-top: 0;
 }
-.w3-user-flash-content-summary-wrapper {}
+.w3-user-flash-content-summary-box {}
 .w3-user-flash-content-summary {
     padding: .7em .6em;
 }
@@ -225,19 +227,19 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 }
 
 
-.w3-content .w3-show-item-grid {
+.w3-content .w3-detail-box {
     padding: 1em 1.4em; /*just like ui-tabs-panel*/
 }
 
-.w3-content .w3-show-item-grid .w3-grid-row {
+.w3-content .w3-detail-box .w3-detail-row {
     margin-top: .8em;
 }
-.w3-content .w3-show-item-grid .w3-grid-row.w3-first {
+.w3-content .w3-detail-box .w3-detail-row.w3-first {
     margin-top: 0;
 }
 
 /* left cell */
-.w3-show-item-grid .w3-grid-row .w3-grid-row-label {
+.w3-detail-box .w3-detail-row .w3-detail-row-label {
     /*color: #222222 is from ui-widget-content*/
     float: left;
     font-family: sans-serif; /*is default in most browsers*/
@@ -248,36 +250,36 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 }
 
 /* right cell */
-.w3-show-item-grid .w3-grid-row .w3-grid-row-value {
+.w3-detail-box .w3-detail-row .w3-detail-row-value {
     float: left;
     font-size: 1.2em;
     margin-left: 1em;
 }
 
 
-.w3-content .w3-items-list .w3-item {
-    padding: .8em 1.1em; /*almost show-item-grid*/
+.w3-content .w3-list .w3-item {
+    padding: .8em 1.1em; /*almost detail-box*/
 }
 
-.w3-content .w3-items-list .w3-item {
+.w3-content .w3-list .w3-item {
     font-size: 1.2em;
     margin-top: .8em;
 }
-.w3-content .w3-items-list .w3-item.w3-first {
+.w3-content .w3-list .w3-item.w3-first {
     margin-top: 0;
 }
 
 
 /* form and main-form are looking the same... differentiate it for novices*/
-.w3-content .w3-main-form-wrapper {
+.w3-content .w3-main-form-box {
     padding: 1em 1.4em; /*just like ui-tabs-panel*/
 }
-.w3-content .w3-form-wrapper {
+.w3-content .w3-form-box {
     padding: 1em 1.4em;
 }
 
-.w3-main-form-wrapper .w3-main-form {}
-.w3-main-form-wrapper .w3-form {}
+.w3-main-form-box .w3-main-form {}
+.w3-main-form-box .w3-form {}
 
 .w3-main-form .w3-form-row, .w3-form .w3-form-row {
     margin-top: .8em;
@@ -372,35 +374,35 @@ body.w3-layout-sidebar1-content-sidebar2 {}
 
 
 /*space between 2 items of the content*/
-.w3-content .w3-between-items-big {
+.w3-content .w3-between-boxes-big {
     height: 3.2em;
 }
-.w3-content .w3-between-items {
+.w3-content .w3-between-boxes {
     height: 2em;
 }
-.w3-content .w3-between-items-small {
+.w3-content .w3-between-boxes-small {
     height: 1.2em;
 }
 
 
-.w3-content .w3-items-grid-wrapper .w3-items-grid-titlebar {
+.w3-content .w3-grid-box .w3-grid-titlebar {
     border-left: 0;
     border-right: 0;
     border-top: 0;
 }
-.w3-content .w3-items-grid-wrapper .w3-items-grid-titlebar .w3-grid-title {
+.w3-content .w3-grid-box .w3-grid-titlebar .w3-grid-title {
     float: left;
     padding: .4em .6em;
 }
-.w3-items-grid-wrapper .w3-items-grid-titlebar .w3-grid-titlebar-buttons {
+.w3-grid-box .w3-grid-titlebar .w3-grid-titlebar-buttons {
     float: right;
     padding: .2em;
 }
-.w3-items-grid-titlebar .w3-grid-titlebar-buttons a.w3-grid-titlebar-close {
+.w3-grid-titlebar .w3-grid-titlebar-buttons a.w3-grid-titlebar-close {
     display: block;
 }
-.w3-content .w3-items-grid-wrapper .w3-items-grid {}
-.w3-content .w3-items-grid-wrapper .w3-items-grid .w3-grid-columns-row th {
+.w3-content .w3-grid-box .w3-grid {}
+.w3-content .w3-grid-box .w3-grid .w3-grid-columns-row th {
     border-bottom-color: inherit;
     border-bottom-style: solid;
     border-bottom-width: 1px;
@@ -409,7 +411,7 @@ body.w3-layout-sidebar1-content-sidebar2 {}
     border-right-width: 1px;
     padding: .5em .4em;
 }
-.w3-content .w3-items-grid-wrapper .w3-items-grid .w3-grid-row td {
+.w3-content .w3-grid-box .w3-grid .w3-grid-row td {
     border-bottom-color: inherit;
     border-bottom-style: solid;
     border-bottom-width: 1px;
@@ -425,7 +427,7 @@ a.w3-ig.w3-link-icon {
     /*width: 16px;*/
 }
 
-.w3-content .w3-items-grid-wrapper .w3-items-grid-pager {
+.w3-content .w3-grid-box .w3-grid-pager {
     border-bottom: 0;
     border-left: 0;
     border-right: 0;
@@ -433,82 +435,82 @@ a.w3-ig.w3-link-icon {
     overflow: hidden;
     /*white-space: nowrap;*/
 }
-.w3-content .w3-items-grid-wrapper .w3-items-grid-pager .w3-left-column {
+.w3-content .w3-grid-box .w3-grid-pager .w3-left-column {
     float: left;
     font-weight: normal;
     padding-left: .1em;
     padding-top: .4em;
 }
-.w3-content .w3-items-grid-wrapper .w3-items-grid-pager .w3-right-column {
+.w3-content .w3-grid-box .w3-grid-pager .w3-right-column {
     float: right;
     font-weight: normal;
     padding-right: .5em;
     padding-top: .4em;
 }
 
-.w3-content .w3-items-grid-wrapper ul.w3-pager {
+.w3-content .w3-grid-box ul.w3-pager {
     margin: 0;
     padding: 0;
     display: inline;
 }
-.w3-content .w3-items-grid-wrapper ul.w3-pager li {
+.w3-content .w3-grid-box ul.w3-pager li {
     display: inline;
 }
-.w3-content .w3-items-grid-wrapper ul.w3-pager a:link,
-.w3-content .w3-items-grid-wrapper ul.w3-pager a:visited {
+.w3-content .w3-grid-box ul.w3-pager a:link,
+.w3-content .w3-grid-box ul.w3-pager a:visited {
     font-weight: bold;
     padding: .1em .5em;
     text-decoration: none;
 }
-.w3-content .w3-items-grid-wrapper ul.w3-pager .page a {
+.w3-content .w3-grid-box ul.w3-pager .page a {
     font-weight: normal;
 }
-.w3-content .w3-items-grid-wrapper ul.w3-pager .selected a {
+.w3-content .w3-grid-box ul.w3-pager .selected a {
     font-weight: bold;
 }
-.w3-content .w3-items-grid-wrapper ul.w3-pager .first,
-.w3-content .w3-items-grid-wrapper ul.w3-pager .last {
+.w3-content .w3-grid-box ul.w3-pager .first,
+.w3-content .w3-grid-box ul.w3-pager .last {
     display: none;
 }
 
 
-.w3-list-of-links-box {}
-.w3-ll.w3-titlebar {
+.w3-link-list-box {}
+.w3-link-list.w3-titlebar {
     height: 21px; /*1.9em*/
     overflow: hidden;
     white-space: nowrap;
 }
-.w3-ll.w3-title {
+.w3-link-list.w3-title {
     padding: .3em .5em;
 }
-.w3-ll.w3-titlebar-button-box {
+.w3-link-list.w3-titlebar-button-box {
     position: relative;
 }
-.w3-ll.w3-titlebar-button {
+.w3-link-list.w3-titlebar-button {
     position: absolute;
     right: .2em;
     top: .2em;
 }
-.w3-ll.w3-titlebar-close {
+.w3-link-list.w3-titlebar-close {
     display: block;
 }
-.w3-list-of-links ul {
+.w3-link-list ul {
     margin: 0.4em 0.5em;
     padding: 0;
 }
-.w3-list-of-links ul li {
+.w3-link-list ul li {
     list-style: none;
 }
-.w3-list-of-links ul a {
+.w3-link-list ul a {
     border: 1px dashed transparent;
     display: block;
     padding: .3em 0 .3em 2em;
 }
-.w3-list-of-links ul a:hover {
+.w3-link-list ul a:hover {
     font-weight: normal;
     text-decoration: none;
 }
-.w3-list-of-links ul a span.w3-inner-icon-left {
+.w3-link-list ul a span.w3-inner-icon-left {
     margin-top: -2px;
 }
 
@@ -516,7 +518,7 @@ a.w3-ig.w3-link-icon {
 .w3-bottom {}
 
 
-.w3-footer-wrapper {
+.w3-footer-box {
     margin: 2.2em 0 .4em 0;
 }
 .w3-footer {

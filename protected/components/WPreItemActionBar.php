@@ -2,7 +2,7 @@
 /**
  * WPreItemActionBar is a widget displaying list of related links before a block item.
  * 
- * The block item can be anything: items-list, items-grid, show-item
+ * The block item can be anything: list, grid, show-item
  * and other html blocks that are treated as full width widgets.
  * The list of related links is usually not more than 1-3 buttons,
  * placed horizontally right above the block item, aligned right and

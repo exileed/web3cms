@@ -12,6 +12,36 @@
             'url'=>($me && !$idIsSpecified) ? array('show') : array('show','id'=>$model->id),
             'icon'=>'person',
         ),
+        array(
+            'text'=>Yii::t('link','Edit my profile'),
+            'url'=>array('update'),
+            'icon'=>'pencil',
+            'visible'=>$me,
+        ),
+        array(
+            'text'=>Yii::t('link','Edit member\'s profile'),
+            'url'=>array('update','id'=>$model->id),
+            'icon'=>'pencil',
+            'visible'=>!$me && User::isAdministrator(),
+        ),
+        array(
+            'text'=>Yii::t('link','List of members'),
+            'url'=>array('list'),
+            'icon'=>'grip-solid-horizontal',
+            'visible'=>false,
+        ),
+        array(
+            'text'=>Yii::t('link','Grid of members'),
+            'url'=>array('grid'),
+            'icon'=>'calculator',
+            'visible'=>User::isAdministrator(),
+        ),
+        array(
+            'text'=>Yii::t('link','Create a new member'),
+            'url'=>array('create'),
+            'icon'=>'plus',
+            'visible'=>User::isAdministrator(),
+        ),
     ),
 )); ?>
 <?php $this->widget('application.components.WContentHeader',array(
@@ -66,7 +96,7 @@
         var uiSelected = new String(radioButton.attr('value'));
         if(uiSelected.length)
         {
-            var pathToCss = '".Yii::app()->request->baseUrl."/css/ui/'+uiSelected+'/jquery-ui-".MParams::jqueryUIVersion.".custom.css';
+            var pathToCss = '".Yii::app()->request->baseUrl."/static/css/ui/'+uiSelected+'/jquery-ui-".MParams::jqueryUIVersion.".custom.css';
             var dynamicUI = jQuery('head link#dynamicUIAppended');
             if(dynamicUI.length)
                 dynamicUI.attr({href: pathToCss});

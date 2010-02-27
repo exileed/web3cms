@@ -26,8 +26,8 @@
 <?php endforeach; ?>
       </ul>
       </div>
-<?php Yii::app()->getClientScript()->registerCssFile(Yii::app()->request->baseUrl.'/css/menu/fg.menu.css'); ?>
-<?php Yii::app()->getClientScript()->registerScriptFile(Yii::app()->request->baseUrl.'/js/menu/fg.menu.new.js'); ?>
+<?php Yii::app()->getClientScript()->registerCssFile(Yii::app()->request->baseUrl.'/static/css/menu/fg.menu.css'); ?>
+<?php Yii::app()->getClientScript()->registerScriptFile(Yii::app()->request->baseUrl.'/static/js/menu/fg.menu.new.js'); ?>
 <?php Yii::app()->getClientScript()->registerScript('dropDownLink['.$options['id'].']',"jQuery('#".$options['id']."').menu({ 
     content: jQuery('#".$options['id']."').next().html(),".($width!==null ? "
     width: ".$width."," : '').($maxHeight!==null ? "

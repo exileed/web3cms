@@ -21,7 +21,7 @@ class _CHtml extends CHtml
         $hasJqueryUIScreenshot=strpos($template,'{jqueryUIScreenshot}')!==false;///
         foreach($data as $value=>$label)
         {
-            $jqueryUIScreenshot=$hasJqueryUIScreenshot?self::image(Yii::app()->request->baseUrl.'/css/ui/'.$value.'/screenshot.png',$label,array('height'=>105,'title'=>$label)):'';///
+            $jqueryUIScreenshot=$hasJqueryUIScreenshot?self::image(Yii::app()->request->baseUrl.'/static/css/ui/'.$value.'/screenshot.png',$label,array('height'=>105,'title'=>$label)):'';///
             $checked=!strcmp($value,$select);
             $htmlOptions['value']=$value;
             $htmlOptions['id']=$baseID.'_'.$id++;

@@ -125,7 +125,7 @@ jQuery('#".$gridId."').jqGrid({
 jQuery('#".$gridId."').jqGrid('navGrid','#".$gridPagerId."',{edit:false,add:false,del:false});");
 /* gridComplete is called after most of the grid changes
  * loadComplete is called only after data is loaded*/ ?>
-<?php Yii::app()->getClientScript()->registerCssFile(Yii::app()->request->baseUrl.'/css/jqgrid/ui.jqgrid.css'); ?>
-<?php Yii::app()->getClientScript()->registerScriptFile(Yii::app()->request->baseUrl.'/js/jqgrid/i18n/grid.locale-'.(MPath::jqGridLocaleExists(Yii::app()->language)?Yii::app()->language:'en').'.js',CClientScript::POS_BEGIN); ?>
-<?php Yii::app()->getClientScript()->registerScriptFile(Yii::app()->request->baseUrl.'/js/jqgrid/jquery.jqGrid.min.js',CClientScript::POS_BEGIN); ?>
+<?php Yii::app()->getClientScript()->registerCssFile(Yii::app()->request->baseUrl.'/static/css/jqgrid/ui.jqgrid.css'); ?>
+<?php Yii::app()->getClientScript()->registerScriptFile(Yii::app()->request->baseUrl.'/static/js/jqgrid/i18n/grid.locale-'.(MPath::jqGridLocaleExists(Yii::app()->language)?Yii::app()->language:'en').'.js',CClientScript::POS_BEGIN); ?>
+<?php Yii::app()->getClientScript()->registerScriptFile(Yii::app()->request->baseUrl.'/static/js/jqgrid/jquery.jqGrid.min.js',CClientScript::POS_BEGIN); ?>
 <?php endif; /*end if displayGrid*/ ?>

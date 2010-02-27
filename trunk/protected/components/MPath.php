@@ -13,7 +13,7 @@ class MPath
     {
         if(empty($locale))
             return false;
-        return file_exists(dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'jqgrid'.DIRECTORY_SEPARATOR.'i18n'.DIRECTORY_SEPARATOR.'grid.locale-'.$locale.'.js');
+        return file_exists(dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'static'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'jqgrid'.DIRECTORY_SEPARATOR.'i18n'.DIRECTORY_SEPARATOR.'grid.locale-'.$locale.'.js');
     }
 
     /**
@@ -25,6 +25,6 @@ class MPath
     {
         if(empty($interface))
             return false;
-        return file_exists(dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'ui'.DIRECTORY_SEPARATOR.$interface.DIRECTORY_SEPARATOR.'jquery-ui-'.MParams::jqueryUIVersion.'.custom.css');
+        return file_exists(dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'static'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'ui'.DIRECTORY_SEPARATOR.$interface.DIRECTORY_SEPARATOR.'jquery-ui-'.MParams::jqueryUIVersion.'.custom.css');
     }
 }

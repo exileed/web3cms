@@ -10,7 +10,7 @@
 <meta name="robots" content="all" />
 <meta name="description" content="<?php echo MParams::getMetaDescription(); ?>" />
 <meta name="keywords" content="<?php echo MParams::getMetaKeywordsAsString(); ?>" />
-<link rel="shortcut icon" href="<?php echo Yii::app()->request->baseUrl; ?>/images/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="<?php echo Yii::app()->request->baseUrl; ?>/static/images/favicon.ico" type="image/x-icon" />
 <?php W3Init::jsCss(); ?>
 <?php /*MLayout::setWrapInGridCssClass(false);
       if(!MLayout::getWrapInGridCssClass()):
@@ -36,17 +36,7 @@
         array('label'=>Yii::t('link','Login'), 'url'=>Yii::app()->user->loginUrl, 'visible'=>Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Authenticate using my member account'))),
         array('label'=>Yii::t('link','Register'), 'url'=>array('user/register'), 'visible'=>Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Create a new member account'))),
         array('label'=>Yii::t('link','Member'), 'url'=>array('user/'), 'visible'=>User::isAdministrator(), 'options'=>array('title'=>Yii::t('link','Browse members'))),
-        //array('label'=>Yii::t('link','Company'), 'url'=>array('company/'), 'visible'=>(User::isManager() || User::isAdministrator()), 'options'=>array('title'=>Yii::t('link','Browse companies'))),
-        //array('label'=>Yii::t('link','My company'), 'url'=>array('company/show/my'), 'visible'=>User::isClient(), 'options'=>array('title'=>Yii::t('link','View my company')), 'pattern'=>array('company/show')),
-        //array('label'=>Yii::t('link','Project'), 'url'=>array('project/'), 'visible'=>(User::isClient() || User::isManager() || User::isAdministrator()), 'options'=>array('title'=>Yii::t('link','Browse projects'))),
-        //array('label'=>Yii::t('link','Tasks'), 'url'=>array('task/'), 'visible'=>(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator()), 'options'=>array('title'=>Yii::t('link','Browse tasks'))),
-        //array('label'=>Yii::t('link','Time'), 'url'=>array('time/'), 'visible'=>(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator()), 'options'=>array('title'=>Yii::t('link','Browse time'))),
-        //array('label'=>Yii::t('link','Project'), 'url'=>array('project/'), 'visible'=>User::isConsultant(), 'options'=>array('title'=>Yii::t('link','Browse projects'))),
-        //array('label'=>Yii::t('link','Company payment'), 'url'=>array('companyPayment/'), 'visible'=>(User::isClient() || User::isManager() || User::isAdministrator()), 'options'=>array('title'=>Yii::t('link','Browse company payments'))),
-        //array('label'=>Yii::t('link','Expense'), 'url'=>array('expense/'), 'visible'=>(User::isClient() || User::isManager() || User::isAdministrator()), 'options'=>array('title'=>Yii::t('link','Browse expenses'))),
-        //array('label'=>Yii::t('link','Invoice'), 'url'=>array('invoice/'), 'visible'=>(User::isClient() || User::isManager() || User::isAdministrator()), 'options'=>array('title'=>Yii::t('link','Browse invoices'))),
         array('label'=>Yii::t('link','My profile'), 'url'=>array('user/show'), 'visible'=>!Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','View my profile'))),
-        //array('label'=>Yii::t('link','Company'), 'url'=>array('company/'), 'visible'=>User::isClient(), 'options'=>array('title'=>Yii::t('link','Browse companies'))),
         array('label'=>Yii::t('link','Wiki'), 'url'=>array('site/wiki'), 'visible'=>(User::isManager() || User::isAdministrator()), 'options'=>array('title'=>Yii::t('link','Application wiki'))),
         array('label'=>Yii::t('link','Logout'), 'url'=>array('user/logout'), 'visible'=>!Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Leave my member account'))),
     ),

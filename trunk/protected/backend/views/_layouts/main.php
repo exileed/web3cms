@@ -6,11 +6,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="language" content="en" /> 
+<meta name="language" content="<?php echo MParams::getLanguage(); ?>" /> 
 <meta name="robots" content="all" />
 <meta name="description" content="<?php echo MParams::getMetaDescription(); ?>" />
 <meta name="keywords" content="<?php echo MParams::getMetaKeywordsAsString(); ?>" />
-<link rel="shortcut icon" href="<?php echo Yii::app()->request->baseUrl; ?>/images/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="<?php echo Yii::app()->request->baseUrl; ?>/static/images/favicon.ico" type="image/x-icon" />
 <?php W3Init::jsCss(); ?>
 <?php /*MLayout::setWrapInGridCssClass(false);
       if(!MLayout::getWrapInGridCssClass()):

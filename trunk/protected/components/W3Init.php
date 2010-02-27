@@ -36,20 +36,18 @@ class W3Init
     {
         $cs=Yii::app()->getClientScript();
         // main css
-        $cs->registerCssFile(Yii::app()->request->baseUrl.'/css/main.css');
+        $cs->registerCssFile(Yii::app()->request->baseUrl.'/static/css/main.css');
         // 960 css
-        $cs->registerCssFile(Yii::app()->request->baseUrl.'/css/960.css');
-        // yii css
-        //$cs->registerCssFile(Yii::app()->request->baseUrl.'/css/yii.css');
+        $cs->registerCssFile(Yii::app()->request->baseUrl.'/static/css/960.css');
         // all jquery plugins css
-        //$cs->registerCssFile(Yii::app()->request->baseUrl.'/css/jquery-1.3.x.plugins.css');
+        //$cs->registerCssFile(Yii::app()->request->baseUrl.'/static/css/jquery-1.3.x.plugins.css');
         // jquery-ui
         if(MParams::getRegisterJqueryUI() && MPath::interfaceExists(MParams::getInterface()))
-            $cs->registerCssFile(Yii::app()->request->baseUrl.'/css/ui/'.MParams::getInterface().'/jquery-ui-'.MParams::jqueryUIVersion.'.custom.css');
+            $cs->registerCssFile(Yii::app()->request->baseUrl.'/static/css/ui/'.MParams::getInterface().'/jquery-ui-'.MParams::jqueryUIVersion.'.custom.css');
         // use this css if you want to globally redefine jquery-ui css framework classes
-        $redefineJqueryUI=dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'ui.css';
-        if(file_exists($redefineJqueryUI) && filesize($redefineJqueryUI))
-            $cs->registerCssFile(Yii::app()->request->baseUrl.'/css/ui.css');
+        $redefineJqueryUI=dirname(Yii::app()->basePath).DIRECTORY_SEPARATOR.'static'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'ui.css';
+        if(file_exists($redefineJqueryUI) && filesize($redefineJqueryUI)!==0)
+            $cs->registerCssFile(Yii::app()->request->baseUrl.'/static/css/ui.css');
     }
 
     /**
@@ -71,9 +69,9 @@ class W3Init
         // jquery must be always loaded
         $cs->registerCoreScript('jquery');
         // all jquery plugins
-        //$cs->registerScriptFile(Yii::app()->request->baseUrl.'/js/jquery-1.3.x.plugins.js',CClientScript::POS_HEAD);
+        //$cs->registerScriptFile(Yii::app()->request->baseUrl.'/static/js/jquery-1.3.x.plugins.js',CClientScript::POS_HEAD);
         // jquery-ui
-        $cs->registerScriptFile(Yii::app()->request->baseUrl.'/js/jquery-ui-'.MParams::jqueryUIVersion.'.custom.min.js',CClientScript::POS_HEAD);
+        $cs->registerScriptFile(Yii::app()->request->baseUrl.'/static/js/jquery-ui-'.MParams::jqueryUIVersion.'.custom.min.js',CClientScript::POS_HEAD);
         // attribute 'target' is not allowed by xhtml strict doctype
         $cs->registerScript('targetBlank',"jQuery(\"a[rel^='external']\").attr({'target': '_blank'});",CClientScript::POS_READY);
         // call noConflict() function if prototype.js was included before jquery

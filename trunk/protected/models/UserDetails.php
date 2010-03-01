@@ -89,12 +89,10 @@ class UserDetails extends _CActiveRecord
      */
     public function relations()
     {
-        // NOTE: you may need to adjust the relation name and the related
-        // class name for the relations automatically generated below.
         return array(
             // user details belongs to an 'user' record associated
             'user' => array(self::BELONGS_TO,'User','userId',
-                'alias'=>'UserDetailsUser'
+                'alias'=>'UserDetails_User'
             ),
         );
     }

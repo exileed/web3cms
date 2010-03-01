@@ -706,7 +706,7 @@ class UserController extends _CController
 
         // pagination
         $with=array();
-        if(strpos($criteria->condition,'UserUserDetails')!==false)
+        if(strpos($criteria->condition,'User_UserDetails')!==false)
             $with[]='details';
         if(count($with)>=1)
             $pages=new CPagination(User::model()->with($with)->count($criteria));
@@ -721,8 +721,8 @@ class UserController extends _CController
             User::model()->tableName().'.accessLevel'=>'accessLevel',
             User::model()->tableName().'.email'=>'email',
             User::model()->tableName().'.screenName'=>'screenName',
-            'UserUserDetails.deactivationTime'=>'deactivationTime',
-            'UserUserDetails.occupation'=>'occupation',
+            'User_UserDetails.deactivationTime'=>'deactivationTime',
+            'User_UserDetails.occupation'=>'occupation',
         );
         $sort->defaultOrder="`".User::model()->tableName()."`.`screenName` ASC";
         $sort->applyOrder($criteria);
@@ -767,7 +767,7 @@ class UserController extends _CController
         switch($accessType)
         {
             case 'all':
-                $accessTypeLinkText=Yii::t('t','All');
+                $accessTypeLinkText=Yii::t('t','All access types');
                 break;
             case (string)User::MEMBER:
                 $accessTypeLinkText=Yii::t('t',User::MEMBER_T);
@@ -807,7 +807,7 @@ class UserController extends _CController
         switch($state)
         {
             case 'all':
-                $stateLinkText=Yii::t('t','All');
+                $stateLinkText=Yii::t('t','All states[member]');
                 break;
             case 'active':
                 $stateLinkText=Yii::t('t','Active[members]');
@@ -906,8 +906,8 @@ class UserController extends _CController
                     'createTime'=>"`".User::model()->tableName()."`.`createTime`",
                     'email'=>"`".User::model()->tableName()."`.`email`",
                     'screenName'=>"`".User::model()->tableName()."`.`screenName`",
-                    'deactivationTime'=>"UserUserDetails.`deactivationTime`",
-                    'occupation'=>"UserUserDetails.`occupation`",
+                    'deactivationTime'=>"User_UserDetails.`deactivationTime`",
+                    'occupation'=>"User_UserDetails.`occupation`",
                 );
                 $operation=$this->getJqGridOperationArray();
                 $keywordFormula=$this->getJqGridKeywordFormulaArray();
@@ -963,7 +963,7 @@ class UserController extends _CController
 
             // pagination
             $with=array();
-            if(strpos($criteria->condition,'UserUserDetails')!==false)
+            if(strpos($criteria->condition,'User_UserDetails')!==false)
                 $with[]='details';
             if(count($with)>=1)
                 $pages=new CPagination(User::model()->with($with)->count($criteria));
@@ -979,8 +979,8 @@ class UserController extends _CController
                 User::model()->tableName().'.createTime'=>'createTime',
                 User::model()->tableName().'.email'=>'email',
                 User::model()->tableName().'.screenName'=>'screenName',
-                'UserUserDetails.deactivationTime'=>'deactivationTime',
-                'UserUserDetails.occupation'=>'occupation',
+                'User_UserDetails.deactivationTime'=>'deactivationTime',
+                'User_UserDetails.occupation'=>'occupation',
             );
             $sort->defaultOrder="`".User::model()->tableName()."`.`screenName` ASC";
             $sort->applyOrder($criteria);

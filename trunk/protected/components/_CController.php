@@ -145,13 +145,14 @@ class _CController extends CController
                 // got here via {@link CWebUser::loginRequired} - go to the previous url
                 $retval=Yii::app()->user->returnUrl;
             else if((User::isConsultant() || User::isManager() || User::isAdministrator()) &&
-                class_exists('Task') && // models are loaded at this spot
-                file_exists(dirname(__FILE__).'/../controllers/TaskController.php')
+                file_exists(Yii::app()->basePath.'/models/Task.php') &&
+                file_exists(Yii::app()->basePath.'/controllers/TaskController.php')
             )
                 // consultant, manager and administrator - go to the task page
                 $retval=array('task/');
-            else if(User::isClient() && class_exists('Company') &&
-                file_exists(dirname(__FILE__).'/../controllers/CompanyController.php')
+            else if(User::isClient() &&
+                file_exists(Yii::app()->basePath.'/models/Company.php') &&
+                file_exists(Yii::app()->basePath.'/controllers/CompanyController.php')
             )
                 // client - go to view my company page
                 $retval=array('company/show/my');
@@ -276,7 +277,7 @@ class _CController extends CController
             if($id!==null)
             {
                 $modelName=isset($this->modelName)?$this->modelName:str_replace('Controller','',get_class($this));
-                if(class_exists($modelName))
+                if(file_exists(Yii::app()->basePath.'/models/'.$modelName.'.php'))
                 {
                     $ar=call_user_func(array($modelName,'model'));
                     if($with===null)

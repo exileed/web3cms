@@ -188,93 +188,93 @@ class User extends _CActiveRecord
         $relations=array(
             // each user has a 'details' record associated
             'details' => array(self::HAS_ONE,'UserDetails','userId',
-                'alias'=>'UserUserDetails'
+                'alias'=>'User_UserDetails'
             ),
         );
-        if(class_exists('Company') && class_exists('User2Company'))
+        if(file_exists(Yii::app()->basePath.'/models/Company.php') && file_exists(Yii::app()->basePath.'/models/User2Company.php'))
             // many user has many 'company' records associated
             $relations['allCompany']=array(self::MANY_MANY,'Company',
                 User2Company::model()->tableName().'(userId,companyId)',
-                'order'=>"allCompany_UserCompany.`companyPriority` ASC, allCompany_UserCompany.`id` ASC",
-                'alias'=>'UserCompany'
+                'order'=>"allCompany_User_Company.`companyPriority` ASC, allCompany_User_Company.`id` ASC",
+                'alias'=>'User_Company'
             );
-        if(class_exists('User2Company'))
+        if(file_exists(Yii::app()->basePath.'/models/User2Company.php'))
             // one user has many 'user2company' records associated
             $relations['allUser2Company']=array(self::HAS_MANY,'User2Company','userId',
                 'order'=>"??.`companyPriority` ASC, ??.`id` ASC",
-                'alias'=>'UserUser2Company'
+                'alias'=>'User_User2Company'
             );
-        if(class_exists('User2Project'))
+        if(file_exists(Yii::app()->basePath.'/models/User2Project.php'))
         {
             // one user has many 'consultant2project' records associated
             $relations['allConsultant2Project']=array(self::HAS_MANY,'User2Project','userId',
                 'on'=>"??.`role`='".User2Project::CONSULTANT."'",
                 'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
-                'alias'=>'UserConsultant2Project'
+                'alias'=>'User_Consultant2Project'
             );
             // one user has many 'manager2project' records associated
             $relations['allManager2Project']=array(self::HAS_MANY,'User2Project','userId',
                 'on'=>"??.`role`='".User2Project::MANAGER."'",
                 'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
-                'alias'=>'UserManager2Project'
+                'alias'=>'User_Manager2Project'
             );
             // one user has many 'user2project' records associated
             $relations['allUser2Project']=array(self::HAS_MANY,'User2Project','userId',
                 'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
-                'alias'=>'UserUser2Project'
+                'alias'=>'User_User2Project'
             );
         }
-        if(class_exists('Project') && class_exists('User2Project'))
+        if(file_exists(Yii::app()->basePath.'/models/Project.php') && file_exists(Yii::app()->basePath.'/models/User2Project.php'))
         {
             // many user has many 'consultant project' records associated
             $relations['allConsultantProject']=array(self::MANY_MANY,'Project',
                 User2Project::model()->tableName().'(userId,projectId)',
-                'on'=>"allConsultantProject_UserConsultantProject.`role`='".User2Project::CONSULTANT."'",
-                'order'=>"allConsultantProject_UserConsultantProject.`projectPriority` ASC, allConsultantProject_UserConsultantProject.`id` ASC",
-                'alias'=>'UserConsultantProject'
+                'on'=>"allConsultantProject_User_ConsultantProject.`role`='".User2Project::CONSULTANT."'",
+                'order'=>"allConsultantProject_User_ConsultantProject.`projectPriority` ASC, allConsultantProject_User_ConsultantProject.`id` ASC",
+                'alias'=>'User_ConsultantProject'
             );
             // many user has many 'manager project' records associated
             $relations['allManagerProject']=array(self::MANY_MANY,'Project',
                 User2Project::model()->tableName().'(userId,projectId)',
-                'on'=>"allManagerProject_UserManagerProject.`role`='".User2Project::MANAGER."'",
-                'order'=>"allManagerProject_UserManagerProject.`projectPriority` ASC, allManagerProject_UserManagerProject.`id` ASC",
-                'alias'=>'UserManagerProject'
+                'on'=>"allManagerProject_User_ManagerProject.`role`='".User2Project::MANAGER."'",
+                'order'=>"allManagerProject_User_ManagerProject.`projectPriority` ASC, allManagerProject_User_ManagerProject.`id` ASC",
+                'alias'=>'User_ManagerProject'
             );
             // many user has many 'project' records associated
             $relations['allProject']=array(self::MANY_MANY,'Project',
                 User2Project::model()->tableName().'(userId,projectId)',
-                'order'=>"allProject_UserProject.`projectPriority` ASC, allProject_UserProject.`id` ASC",
-                'alias'=>'UserProject'
+                'order'=>"allProject_User_Project.`projectPriority` ASC, allProject_User_Project.`id` ASC",
+                'alias'=>'User_Project'
             );
         }
-        if(class_exists('User2Task'))
+        if(file_exists(Yii::app()->basePath.'/models/User2Task.php'))
         {
             // one user has many 'consultant2task' records associated
             $relations['allConsultant2Task']=array(self::HAS_MANY,'User2Task','userId',
                 'on'=>"??.`role`='".User2Task::CONSULTANT."'",
                 'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
-                'alias'=>'UserConsultant2Task'
+                'alias'=>'User_Consultant2Task'
             );
             // one user has many 'manager2task' records associated
             $relations['allManager2Task']=array(self::HAS_MANY,'User2Task','userId',
                 'on'=>"??.`role`='".User2Task::MANAGER."'",
                 'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
-                'alias'=>'UserManager2Task'
+                'alias'=>'User_Manager2Task'
             );
             // one user has many 'user2task' records associated
             $relations['allUser2Task']=array(self::HAS_MANY,'User2Task','userId',
                 'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
-                'alias'=>'UserUser2Task'
+                'alias'=>'User_User2Task'
             );
         }
-        if(class_exists('Task') && class_exists('User2Task'))
+        if(file_exists(Yii::app()->basePath.'/models/Task.php') && file_exists(Yii::app()->basePath.'/models/User2Task.php'))
         {
             // many user has many 'consultant task' records associated
             $relations['allConsultantTask']=array(self::MANY_MANY,'Task',
                 User2Task::model()->tableName().'(userId,taskId)',
-                'on'=>"allConsultantTask_UserConsultantTask.`role`='".User2Project::CONSULTANT."'",
-                'order'=>"allConsultantTask_UserConsultantTask.`taskPriority` ASC, allConsultantTask_UserConsultantTask.`id` ASC",
-                'alias'=>'UserConsultantTask'
+                'on'=>"allConsultantTask_User_ConsultantTask.`role`='".User2Project::CONSULTANT."'",
+                'order'=>"allConsultantTask_User_ConsultantTask.`taskPriority` ASC, allConsultantTask_User_ConsultantTask.`id` ASC",
+                'alias'=>'User_ConsultantTask'
             );
             // one user has a number of 'consultant task' records associated
             $relations['consultantTaskCount']=array(self::STAT,'Task',
@@ -284,32 +284,32 @@ class User extends _CActiveRecord
             // many user has many 'manager task' records associated
             $relations['allManagerTask']=array(self::MANY_MANY,'Task',
                 User2Task::model()->tableName().'(userId,taskId)',
-                'on'=>"allManagerTask_UserManagerTask.`role`='".User2Task::MANAGER."'",
-                'order'=>"allManagerTask_UserManagerTask.`taskPriority` ASC, allManagerTask_UserManagerTask.`id` ASC",
-                'alias'=>'UserManagerTask'
+                'on'=>"allManagerTask_User_ManagerTask.`role`='".User2Task::MANAGER."'",
+                'order'=>"allManagerTask_User_ManagerTask.`taskPriority` ASC, allManagerTask_User_ManagerTask.`id` ASC",
+                'alias'=>'User_ManagerTask'
             );
         }
-        if(class_exists('Time'))
+        if(file_exists(Yii::app()->basePath.'/models/Time.php'))
         {
             // one user has many 'consultant time' records associated
             $relations['allConsultantTime']=array(self::HAS_MANY,'Time','consultantId',
                 'order'=>"??.`id` ASC",
-                'alias'=>'UserConsultantTime'
+                'alias'=>'User_ConsultantTime'
             );
             // one user has one of many 'consultant time' records associated
             //$relations['oneConsultantTime']=array(self::HAS_ONE,'Time','consultantId',
-                //'alias'=>'UserOneConsultantTime'
+                //'alias'=>'User_OneConsultantTime'
             //);
             // one user has a number of 'consultant time' records associated
             $relations['consultantTimeCount']=array(self::STAT,'Time','consultantId');
             // one user has many 'manager time' records associated
             $relations['allManagerTime']=array(self::HAS_MANY,'Time','managerId',
                 'order'=>"??.`id` ASC",
-                'alias'=>'UserManagerTime'
+                'alias'=>'User_ManagerTime'
             );
             // one user has one of many 'manager time' records associated
             //$relations['oneManagerTime']=array(self::HAS_ONE,'Time','managerId',
-                //'alias'=>'UserOneManagerTime'
+                //'alias'=>'User_OneManagerTime'
             //);
             // one user has a number of 'manager time' records associated
             $relations['managerTimeCount']=array(self::STAT,'Time','managerId');

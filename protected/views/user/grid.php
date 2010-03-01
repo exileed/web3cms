@@ -37,6 +37,7 @@
         array(
             'dropDown'=>array('links'=>$allState),
             'text'=>CHtml::encode($stateLinkText),
+            'options'=>array('title'=>Yii::t('t','State[member]'))
         ),
     ),
 )); ?>
@@ -64,10 +65,10 @@
     'rows'=>$gridRows,
     'sColumns'=>array(
         array('title'=>$sort->link(User::model()->tableName().'.screenName')),
-        array('title'=>$sort->link('UserUserDetails.occupation',$sort->resolveLabel('details.occupation'))),
+        array('title'=>$sort->link('User_UserDetails.occupation',$sort->resolveLabel('details.occupation'))),
         array('title'=>$sort->link(User::model()->tableName().'.email')),
         array('title'=>$sort->link(User::model()->tableName().'.createTime',$sort->resolveLabel('Registered'))),
-        array('title'=>$sort->link('UserUserDetails.deactivationTime',$sort->resolveLabel('details.Deact'))),
+        array('title'=>$sort->link('User_UserDetails.deactivationTime',$sort->resolveLabel('details.Deact'))),
         array('title'=>$sort->link(User::model()->tableName().'.accessLevel',$sort->resolveLabel('accessType'))),
         array('title'=>Yii::t('t','Actions')),
     ),

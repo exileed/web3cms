@@ -118,7 +118,7 @@ class UserController extends _CController
                 array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
             ));
         // display the login form
-        $this->render('login',array('form'=>$form));
+        $this->render($this->action->id,array('form'=>$form));
     }
 
     /**

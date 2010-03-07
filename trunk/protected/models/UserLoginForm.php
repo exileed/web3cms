@@ -14,9 +14,9 @@ class UserLoginForm extends CFormModel
     public $usernameOrEmail;
     public static $loginWithField;
 
-    public function __construct($attributes=array(),$scenario='')
+    public function __construct($scenario='')
     {
-        parent::__construct($attributes,$scenario);
+        parent::__construct($scenario);
         self::$loginWithField=$this->getLoginWithField();
     }
 
@@ -35,7 +35,9 @@ class UserLoginForm extends CFormModel
             // password needs to be authenticated
             array('password', 'authenticate'),
             // rememberMe needs to be a boolean
-            //array('rememberMe', 'boolean'), i think boolean is only since yii-1.1
+            array('rememberMe', 'boolean'),
+            // all attributes are safe
+            array('email, password, rememberMe, username, usernameOrEmail', 'safe'),
         );
     }
 

@@ -19,9 +19,9 @@ class _CWebUser extends CWebUser
         if($cookie && !empty($cookie->value) && ($data=$app->getSecurityManager()->validateData($cookie->value))!==false)
         {
             $data=unserialize($data);
-            if(isset($data[0],$data[1],$data[2]))
+            if(isset($data[0],$data[1],$data[2],$data[3]))
             {
-                list($id,$name,$states)=$data;
+                list($id,$name,$duration,$states)=$data;
                 // this code is being rewritten: $this->changeIdentity($id,$name,$states);
                 // below is the new code
                 $identity=new _CUserIdentity($id,'');
@@ -56,6 +56,11 @@ class _CWebUser extends CWebUser
                         // should we call logout() here?
                         //throw new CHttpException(401,Yii::t('yii','Unknown Identity'));
                         break;
+                }
+                if($this->autoRenewCookie)
+                {
+                    $cookie->expire=time()+$duration;
+                    $app->getRequest()->getCookies()->add($cookie->name,$cookie);
                 }
             }
         }

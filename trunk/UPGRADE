@@ -1,5 +1,5 @@
 
-         Upgrading Instructions for Web3CMS v1.0.X.rY
+         Upgrading Instructions for Web3CMS v1.1.X.rY
          ============================================
 
 !!!IMPORTANT!!!
@@ -9,7 +9,7 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
-Upgrading from v1.0.X.rY
+Upgrading from v1.1.X.rY
 ------------------------
 - We are still far from the finished environment.
   Need to replace all files.
@@ -29,8 +29,8 @@ Upgrading from one version of Yii Framework to another on your own
   compare framework/web/CFormModel.php of both Yii versions,
   if parameters of __construct() in CFormModel were changed, then
   change it accordingly in UserLoginForm. Currently it is
-  __construct($attributes=array(),$scenario='')
-  parent::__construct($attributes,$scenario);
+  __construct($scenario='')
+  parent::__construct($scenario);
   95% that you won't need to do anything here.
 
 - Open web3cms/protected/components/_CWebUser.php, check restoreFromCookie() method,
@@ -47,8 +47,10 @@ Upgrading from one version of Yii Framework to another on your own
   const ERROR_IS_NOT_ADMINISTRATOR=12;
   to
   const ERROR_IS_NOT_ADMINISTRATOR=23;
-  99% that you won't need to do anything here.
+  Optionally: compare /demos/blog/protected/components/UserIdentity.php of both Yii versions
+  98% that you won't need to do anything here.
 
 - Do the same with web3cms/protected/components/W3.php t() and
   framework/YiiBase.php t() - make sure that parameters in both functions
   are the same, and if necessary - update W3::t().
+  99% that you won't need to do anything here.

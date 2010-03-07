@@ -64,27 +64,35 @@ class UserController extends _CController
     public function actionConfirmEmail()
     {
         $done=false;
-        // use power of models
-        $model=new User;
-        // collect user input data
-        if(isset($_POST['User']))
-            // collect user input data
-            $model->attributes=$_POST['User'];
+        if(isset($_GET['email'],$_GET['key']) && !isset($_POST['User']))
+        {
+            // scenario 1: confirm using url
+            $model=new User('confirmEmailUrl');
+            // parse url parameters (from the link in the 'welcome' email)
+            if(isset($_GET['email']))
+                $model->email=$_GET['email'];
+            if(isset($_GET['key']))
+                $model->emailConfirmationKey=$_GET['key'];
+        }
         else
         {
-            // parse url parameters (from the link in the 'welcome' email)
-            isset($_GET['email']) && ($model->email=$_GET['email']);
-            isset($_GET['key']) && ($model->emailConfirmationKey=$_GET['key']);
+            // scenario 2: confirm using form
+            $model=new User($this->action->id);
+            if(isset($_POST['User']))
+                // collect user input data
+                $model->attributes=$_POST['User'];
         }
         // attempt to confirm email
-        if((isset($_POST['User']) && $model->validate('confirmEmail')) || (!isset($_POST['User']) && isset($_GET['email'],$_GET['key']) && $model->validate('confirmEmailUrl')))
+        if((isset($_POST['User']) || isset($_GET['email'],$_GET['key'])) && $model->validate())
         {
             // find user by email
             if(($user=User::model()->with('details')->findByAttributes(array('email'=>$model->email)))!==null)
             {
                 if(is_object($user->details))
                 {
-                    if($user->details->isEmailConfirmed==='1')
+                    // explicitly set model scenario to be current action
+                    $user->details->setScenario($this->action->id);
+                    if($user->details->isEmailConfirmed===UserDetails::EMAIL_IS_CONFIRMED)
                         // was confirmed earlier
                         MUserFlash::setTopInfo(Yii::t('hint',
                             'Email address {email} was confirmed earlier.',
@@ -104,7 +112,7 @@ class UserController extends _CController
                         else
                         {
                             // confirm email
-                            if($user->details->saveAttributes(array('isEmailConfirmed'=>'1')))
+                            if($user->details->saveAttributes(array('isEmailConfirmed'=>UserDetails::EMAIL_IS_CONFIRMED)))
                             {
                                 // set success message
                                 MUserFlash::setTopSuccess(Yii::t('hint',
@@ -112,9 +120,9 @@ class UserController extends _CController
                                     array('{email}'=>'<strong>'.$user->email.'</strong>')
                                 ));
                                 // renew key in db
-                                $user->details->saveAttributes(array('emailConfirmationKey'=>md5(uniqid(rand(),true))));
+                                $user->details->saveAttributes(array('emailConfirmationKey'=>$user->details->generateConfirmationKey()));
                                 // clear form values
-                                $model=new User;
+                                $model=new User($this->action->id);
                                 // variable for view
                                 $done=true;
                             }
@@ -158,7 +166,7 @@ class UserController extends _CController
             }
         }
         // display the confirm email form
-        $this->render('confirmEmail',array('model'=>$model,'done'=>$done));
+        $this->render($this->action->id,array('model'=>$model,'done'=>$done));
     }
 
     /**
@@ -173,28 +181,22 @@ class UserController extends _CController
             MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to create a new member.'));
             $this->redirect($this->getGotoUrl());
         }
-        $model=new User;
+        $model=new User($this->action->id);
         if(isset($_POST['User']))
         {
             // collect user input data
             $model->attributes=$_POST['User'];
-            // email and username are not in safeAttributes
-            if(isset($_POST['User']['email']))
-                $model->email=$_POST['User']['email'];
-            if(isset($_POST['User']['username']))
-                $model->username=$_POST['User']['username'];
             // instantiate a new user details object
-            $model->details=new UserDetails(array(
-                'emailConfirmationKey'=>md5(uniqid(rand(),true)),
-            ));
+            $model->details=new UserDetails($this->action->id);
+            $model->details->emailConfirmationKey=$model->details->generateConfirmationKey();
             if(isset($_POST['UserDetails']))
                 $model->details->attributes=$_POST['UserDetails'];
-            // validate with $on = 'create' and save without validation
-            if(($validated=$model->validate($this->action->id))!==false && ($saved=$model->save(false))!==false)
+            // validate with the current action as scenario and save without validation
+            if(($validated=$model->validate())!==false && ($saved=$model->save(false))!==false)
             {
                 // save user details record
                 $model->details->userId=$model->id;
-                if($model->details->save()===false)
+                if($model->details->save(false)===false)
                     // hmmm, what could be the problem?
                     Yii::log(W3::t('system',
                         'Failed creating UserDetails record. Member ID: {userId}. Method called: {method}.',
@@ -221,9 +223,9 @@ class UserController extends _CController
         }
         if(!isset($model->details))
             // new associated user details
-            $model->details=new UserDetails;
+            $model->details=new UserDetails($this->action->id);
         // display the create form
-        $this->render('create',array('model'=>$model));
+        $this->render($this->action->id,array('model'=>$model));
     }
 
     /**
@@ -279,7 +281,7 @@ class UserController extends _CController
                 array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
             ));
         // display the login form
-        $this->render('login',array('form'=>$form));
+        $this->render($this->action->id,array('form'=>$form));
     }
 
     /**
@@ -313,25 +315,19 @@ class UserController extends _CController
      */
     public function actionRegister()
     {
-        $model=new User;
+        $model=new User($this->action->id);
         // collect user input data
         if(isset($_POST['User']))
         {
             // collect user input data
             $model->attributes=$_POST['User'];
-            // email and username are not in safeAttributes
-            if(isset($_POST['User']['email']))
-                $model->email=$_POST['User']['email'];
-            if(isset($_POST['User']['username']))
-                $model->username=$_POST['User']['username'];
             // instantiate a new user details object
-            $model->details=new UserDetails(array(
-                'emailConfirmationKey'=>md5(uniqid(rand(),true)),
-            ));
+            $model->details=new UserDetails($this->action->id);
+            $model->details->emailConfirmationKey=$model->details->generateConfirmationKey();
             if(isset($_POST['UserDetails']))
                 $model->details->attributes=$_POST['UserDetails'];
-            // validate with $on = 'register'
-            if($model->validate('register'))
+            // validate with the current action as scenario
+            if(($validated=$model->validate())!==false)
             {
                 // if user is logged in
                 if(!Yii::app()->user->isGuest)
@@ -344,11 +340,11 @@ class UserController extends _CController
                         Yii::app()->getSession()->open();
                 }
                 // create user record (without validation)
-                if($model->save(false))
+                if(($saved=$model->save(false))!==false)
                 {
                     // save user details record
                     $model->details->userId=$model->id;
-                    if($model->details->save()===false)
+                    if($model->details->save(false)===false)
                         // hmmm, what could be the problem?
                         Yii::log(W3::t('system',
                             'Failed creating UserDetails record. Member ID: {userId}. Method called: {method}.',
@@ -373,7 +369,10 @@ class UserController extends _CController
                             '{emailConfirmationLink}'=>Yii::app()->createAbsoluteUrl($this->id.'/confirmEmail',array('email'=>$model->email,'key'=>$model->details->emailConfirmationKey)),
                         )
                     );
-                    @mail($model->email,Yii::t('email','New member account'),$content,$headers);
+                    $sent=@mail($model->email,Yii::t('email','New member account'),$content,$headers);
+                    // log email
+                    Yii::log($model->email.' '."\t".'New member account',$sent?'sent':'not-sent','email');
+                    Yii::log($model->email."\n".'Subject: New member account'."\n".'Content: '.$content."\n".'Headers: '.$headers,$sent?'sent':'not-sent','email-details');
                     // go to login page
                     $this->redirect($this->getGotoUrl());
                 }
@@ -394,9 +393,9 @@ class UserController extends _CController
             ));
         if(!isset($model->details))
             // new associated user details
-            $model->details=new UserDetails;
+            $model->details=new UserDetails($this->action->id);
         // render the view file
-        $this->render('register',array('model'=>$model));
+        $this->render($this->action->id,array('model'=>$model));
     }
 
     /**
@@ -418,7 +417,7 @@ class UserController extends _CController
                 $this->redirect($this->getGotoUrl());
             }
             // render the view file
-            $this->render('show',array('model'=>$model,'me'=>$me));
+            $this->render($this->action->id,array('model'=>$model,'me'=>$me));
         }
         else
         {
@@ -441,10 +440,6 @@ class UserController extends _CController
      */
     public function actionUpdate()
     {
-        /*// if not admin
-        if(isset($_GET['id']) && !User::isAdministrator())
-            // redirect from user/update/id/2 to user/update
-            $this->redirect(array($this->action->id));*/
         $idIsSpecified=isset($_GET['id']);
         // whether it's me. alternative: admin update member's account.
         $me=($idIsSpecified && $_GET['id']!==Yii::app()->user->id) ? false : true;
@@ -459,14 +454,19 @@ class UserController extends _CController
             MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to edit a member account.'));
             $this->redirect($this->getGotoUrl());
         }
+        // explicitly set model scenario to be current action
+        //$model->setScenario($this->action->id);
+        //if(is_object($model->details))
+            //$model->details->setScenario($this->action->id);
         // whether data is passed
         if(isset($_POST['User']))
         {
             // collect user input data
             $model->attributes=$_POST['User'];
+            $detailsCopy=$model->details;
             // email is assigned in {@link User::beforeValidate}
-            // validate with $on = 'update' and save without validation
-            if(($validated=$model->validate($this->action->id))!==false && ($saved=$model->save(false))!==false)
+            // validate with the current action as scenario and save without validation
+            if(($validated=$model->validate())!==false && ($saved=$model->save(false))!==false)
             {
                 // update variables first defined in {@link _CUserIdentity} class
                 if($me)
@@ -487,7 +487,7 @@ class UserController extends _CController
                     $details['deactivationTime']=null;
                 else if(($model->isActive===User::IS_NOT_ACTIVE || $model->isActive===null) && empty($model->details->deactivationTime))
                     $details['deactivationTime']=time();
-                if(isset($_POST['UserDetails']) || count($details)>=1)
+                if(isset($_POST['UserDetails']) || count($details)>=1 || $model->details!=$detailsCopy)
                 {
                     if(isset($_POST['UserDetails']))
                         // collect user input data
@@ -495,8 +495,8 @@ class UserController extends _CController
                     foreach($details as $attribute=>$value)
                         // set attributes outside of the form
                         $model->details->$attribute=$value;
-                    // validate with $on = 'update'
-                    if(($validated=$model->details->validate($this->action->id))!==false)
+                    // validate with the current action as scenario
+                    if(($validated=$model->details->validate())!==false)
                     {
                         if(($saved=$model->details->save())!==false)
                         {
@@ -546,7 +546,7 @@ class UserController extends _CController
             }
         }
         // display the update form
-        $this->render('update',array('model'=>$model,'me'=>$me,'idIsSpecified'=>$idIsSpecified));
+        $this->render($this->action->id,array('model'=>$model,'me'=>$me,'idIsSpecified'=>$idIsSpecified));
     }
 
     /**
@@ -556,10 +556,6 @@ class UserController extends _CController
      */
     public function actionUpdateInterface()
     {
-        /*// if not admin
-        if(isset($_GET['id']) && !User::isAdministrator())
-            // redirect from user/updateInterface/id/2 to user/updateInterface
-            $this->redirect(array($this->action->id));*/
         $idIsSpecified=isset($_GET['id']);
         // whether it's me. alternative: admin update member's account.
         $me=($idIsSpecified && $_GET['id']!==Yii::app()->user->id) ? false : true;
@@ -574,13 +570,17 @@ class UserController extends _CController
             MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to change the user interface for a member account.'));
             $this->redirect($this->getGotoUrl());
         }
+        // explicitly set model scenario to be current action
+        $model->setScenario($this->action->id);
+        if(is_object($model->details))
+            $model->details->setScenario($this->action->id);
         // whether data is passed
         if(isset($_POST['User']))
         {
             // collect user input data
             $model->attributes=$_POST['User'];
-            // validate with $on = 'updateInterface' and save without validation
-            if(($validated=$model->validate($this->action->id))!==false && ($saved=$model->save(false))!==false)
+            // validate with the current action as scenario and save without validation
+            if(($validated=$model->validate())!==false && ($saved=$model->save(false))!==false)
             {
                 // take care of updateTime (this is not critical)
                 $model->details->saveAttributes(array('updateTime'=>time()));
@@ -623,7 +623,7 @@ class UserController extends _CController
             }
         }
         // display the update form
-        $this->render('updateInterface',array('model'=>$model,'me'=>$me,'idIsSpecified'=>$idIsSpecified));
+        $this->render($this->action->id,array('model'=>$model,'me'=>$me,'idIsSpecified'=>$idIsSpecified));
     }
 
     /**
@@ -632,7 +632,7 @@ class UserController extends _CController
     public function actionList()
     {
         $criteria=new CDbCriteria;
-        $criteria->order="`".User::model()->tableName()."`.`screenName` ASC";
+        $criteria->order='t.screenName';
 
         $pages=new CPagination(User::model()->count($criteria));
         $pages->pageSize=self::LIST_PAGE_SIZE;
@@ -640,7 +640,7 @@ class UserController extends _CController
 
         $models=User::model()->with('details')->findAll($criteria);
 
-        $this->render('list',array(
+        $this->render($this->action->id,array(
             'models'=>$models,
             'pages'=>$pages,
         ));
@@ -670,37 +670,37 @@ class UserController extends _CController
         $criteria=new CDbCriteria;
         if($accessType===(string)User::MEMBER)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:member";
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:member';
             $criteria->params=array_merge($criteria->params,array(':member'=>User::MEMBER));
         }
         else if($accessType===(string)User::CLIENT)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:client";
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:client';
             $criteria->params=array_merge($criteria->params,array(':client'=>User::CLIENT));
         }
         else if($accessType===(string)User::CONSULTANT)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:consultant";
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:consultant';
             $criteria->params=array_merge($criteria->params,array(':consultant'=>User::CONSULTANT));
         }
         else if($accessType===(string)User::MANAGER)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:manager";
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:manager';
             $criteria->params=array_merge($criteria->params,array(':manager'=>User::MANAGER));
         }
         else if($accessType===(string)User::ADMINISTRATOR)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:administrator";
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:administrator';
             $criteria->params=array_merge($criteria->params,array(':administrator'=>User::ADMINISTRATOR));
         }
         if($state==='active')
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."(`".User::model()->tableName()."`.`isActive` IS NULL OR `".User::model()->tableName()."`.`isActive`!=:isNotActive)";
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'(t.isActive IS NULL OR t.isActive!=:isNotActive)';
             $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
         }
         else if($state==='inactive')
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`isActive`=:isNotActive";
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.isActive=:isNotActive';
             $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
         }
 
@@ -718,13 +718,14 @@ class UserController extends _CController
         // sort
         $sort=new CSort('User');
         $sort->attributes=array(
-            User::model()->tableName().'.accessLevel'=>'accessLevel',
-            User::model()->tableName().'.email'=>'email',
-            User::model()->tableName().'.screenName'=>'screenName',
-            'User_UserDetails.deactivationTime'=>'deactivationTime',
-            'User_UserDetails.occupation'=>'occupation',
+            'accessType'=>array('asc'=>'t.accessLevel','desc'=>'t.accessLevel desc','label'=>User::model()->getAttributeLabel('accessType')),
+            'createTime'=>array('asc'=>'t.createTime','desc'=>'t.createTime desc','label'=>User::model()->getAttributeLabel('Registered')),
+            'email'=>array('asc'=>'t.email','desc'=>'t.email desc','label'=>User::model()->getAttributeLabel('email')),
+            'screenName'=>array('asc'=>'t.screenName','desc'=>'t.screenName desc','label'=>User::model()->getAttributeLabel('screenName')),
+            'deactivationTime'=>array('asc'=>'User_UserDetails.deactivationTime','desc'=>'User_UserDetails.deactivationTime desc','label'=>UserDetails::model()->getAttributeLabel('Deact')),
+            'occupation'=>array('asc'=>'User_UserDetails.occupation','desc'=>'User_UserDetails.occupation desc','label'=>UserDetails::model()->getAttributeLabel('occupation')),
         );
-        $sort->defaultOrder="`".User::model()->tableName()."`.`screenName` ASC";
+        $sort->defaultOrder='t.screenName';
         $sort->applyOrder($criteria);
 
         // find all
@@ -861,7 +862,7 @@ class UserController extends _CController
         }
 
         // render the view file
-        $this->render('grid',array(
+        $this->render($this->action->id,array(
             'models'=>$models,
             'pages'=>$pages,
             'sort'=>$sort,
@@ -902,12 +903,12 @@ class UserController extends _CController
             if($jqGrid['searchField']!==null && $jqGrid['searchString']!==null && $jqGrid['searchOper']!==null)
             {
                 $field=array(
-                    'accessType'=>"`".User::model()->tableName()."`.`accessType`",
-                    'createTime'=>"`".User::model()->tableName()."`.`createTime`",
-                    'email'=>"`".User::model()->tableName()."`.`email`",
-                    'screenName'=>"`".User::model()->tableName()."`.`screenName`",
-                    'deactivationTime'=>"User_UserDetails.`deactivationTime`",
-                    'occupation'=>"User_UserDetails.`occupation`",
+                    'accessType'=>'t.accessType',
+                    'createTime'=>'t.createTime',
+                    'email'=>'t.email',
+                    'screenName'=>'t.screenName',
+                    'deactivationTime'=>'User_UserDetails.deactivationTime',
+                    'occupation'=>'User_UserDetails.occupation',
                 );
                 $operation=$this->getJqGridOperationArray();
                 $keywordFormula=$this->getJqGridKeywordFormulaArray();
@@ -927,37 +928,37 @@ class UserController extends _CController
             }
             if($accessType===(string)User::MEMBER)
             {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:member";
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:member';
                 $criteria->params=array_merge($criteria->params,array(':member'=>User::MEMBER));
             }
             else if($accessType===(string)User::CLIENT)
             {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:client";
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:client';
                 $criteria->params=array_merge($criteria->params,array(':client'=>User::CLIENT));
             }
             else if($accessType===(string)User::CONSULTANT)
             {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:consultant";
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:consultant';
                 $criteria->params=array_merge($criteria->params,array(':consultant'=>User::CONSULTANT));
             }
             else if($accessType===(string)User::MANAGER)
             {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:manager";
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:manager';
                 $criteria->params=array_merge($criteria->params,array(':manager'=>User::MANAGER));
             }
             else if($accessType===(string)User::ADMINISTRATOR)
             {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`accessType`=:administrator";
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:administrator';
                 $criteria->params=array_merge($criteria->params,array(':administrator'=>User::ADMINISTRATOR));
             }
             if($state==='active')
             {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."(`".User::model()->tableName()."`.`isActive` IS NULL OR `".User::model()->tableName()."`.`isActive`!=:isNotActive)";
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'(t.isActive IS NULL OR t.isActive!=:isNotActive)';
                 $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
             }
             else if($state==='inactive')
             {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`".User::model()->tableName()."`.`isActive`=:isNotActive";
+                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.isActive=:isNotActive';
                 $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
             }
 
@@ -975,14 +976,14 @@ class UserController extends _CController
             // sort
             $sort=new CSort('User');
             $sort->attributes=array(
-                User::model()->tableName().'.accessLevel'=>'accessType',
-                User::model()->tableName().'.createTime'=>'createTime',
-                User::model()->tableName().'.email'=>'email',
-                User::model()->tableName().'.screenName'=>'screenName',
-                'User_UserDetails.deactivationTime'=>'deactivationTime',
-                'User_UserDetails.occupation'=>'occupation',
+                'accessType'=>array('asc'=>'t.accessLevel','desc'=>'t.accessLevel desc','label'=>User::model()->getAttributeLabel('accessType')),
+                'createTime'=>array('asc'=>'t.createTime','desc'=>'t.createTime desc','label'=>User::model()->getAttributeLabel('Registered')),
+                'email'=>array('asc'=>'t.email','desc'=>'t.email desc','label'=>User::model()->getAttributeLabel('email')),
+                'screenName'=>array('asc'=>'t.screenName','desc'=>'t.screenName desc','label'=>User::model()->getAttributeLabel('screenName')),
+                'deactivationTime'=>array('asc'=>'User_UserDetails.deactivationTime','desc'=>'User_UserDetails.deactivationTime desc','label'=>UserDetails::model()->getAttributeLabel('Deact')),
+                'occupation'=>array('asc'=>'User_UserDetails.occupation','desc'=>'User_UserDetails.occupation desc','label'=>UserDetails::model()->getAttributeLabel('occupation')),
             );
-            $sort->defaultOrder="`".User::model()->tableName()."`.`screenName` ASC";
+            $sort->defaultOrder='t.screenName';
             $sort->applyOrder($criteria);
 
             // find all

@@ -44,8 +44,9 @@ class _CActiveRecord extends CActiveRecord
     /**
      * Prepares attributes before performing validation.
      */
-    protected function beforeValidate($on)
+    protected function beforeValidate()
     {
+        $scenario=$this->getScenario();
         if($this->isNewRecord)
         {
             if(isset($this->tableSchema->columns['createTime']) && ($this->createTime===null || $this->createTime===1234567890))

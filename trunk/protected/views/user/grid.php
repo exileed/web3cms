@@ -43,12 +43,12 @@
 )); ?>
 <?php $this->widget('application.components.WGrid',array(
     'columns'=>array(
-        array('title'=>CHtml::encode(User::model()->getAttributeLabel('screenName'))),
-        array('title'=>CHtml::encode(UserDetails::model()->getAttributeLabel('occupation'))),
-        array('title'=>CHtml::encode(User::model()->getAttributeLabel('email'))),
-        array('title'=>CHtml::encode(User::model()->getAttributeLabel('Registered'))),
-        array('title'=>CHtml::encode(UserDetails::model()->getAttributeLabel('Deact'))),
-        array('title'=>CHtml::encode(User::model()->getAttributeLabel('accessType'))),
+        array('title'=>CHtml::encode($sort->resolveLabel('screenName'))),
+        array('title'=>CHtml::encode($sort->resolveLabel('occupation'))),
+        array('title'=>CHtml::encode($sort->resolveLabel('email'))),
+        array('title'=>CHtml::encode($sort->resolveLabel('createTime'))),
+        array('title'=>CHtml::encode($sort->resolveLabel('deactivationTime'))),
+        array('title'=>CHtml::encode($sort->resolveLabel('accessType'))),
         array('title'=>CHtml::encode(Yii::t('t','Actions'))),
     ),
     'columnsModel'=>array(
@@ -64,12 +64,12 @@
     'rowNum'=>UserController::GRID_PAGE_SIZE,
     'rows'=>$gridRows,
     'sColumns'=>array(
-        array('title'=>$sort->link(User::model()->tableName().'.screenName')),
-        array('title'=>$sort->link('User_UserDetails.occupation',$sort->resolveLabel('details.occupation'))),
-        array('title'=>$sort->link(User::model()->tableName().'.email')),
-        array('title'=>$sort->link(User::model()->tableName().'.createTime',$sort->resolveLabel('Registered'))),
-        array('title'=>$sort->link('User_UserDetails.deactivationTime',$sort->resolveLabel('details.Deact'))),
-        array('title'=>$sort->link(User::model()->tableName().'.accessLevel',$sort->resolveLabel('accessType'))),
+        array('title'=>$sort->link('screenName')),
+        array('title'=>$sort->link('occupation')),
+        array('title'=>$sort->link('email')),
+        array('title'=>$sort->link('createTime')),
+        array('title'=>$sort->link('deactivationTime')),
+        array('title'=>$sort->link('accessType')),
         array('title'=>Yii::t('t','Actions')),
     ),
     'sortname'=>'screenName',

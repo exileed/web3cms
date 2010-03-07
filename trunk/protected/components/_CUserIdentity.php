@@ -26,15 +26,15 @@ class _CUserIdentity extends CUserIdentity
      */
     public function authenticate()
     {
-        if(UserLoginForm::getLoggingWithField()=='username')
+        if(UserLoginForm::getLoggingWithField()==='username')
             $user=User::model()->findByAttributes(array('username'=>$this->username));
-        else if(UserLoginForm::getLoggingWithField()=='email')
+        else if(UserLoginForm::getLoggingWithField()==='email')
             $user=User::model()->findByAttributes(array('email'=>$this->username));
-        else if(UserLoginForm::getLoggingWithField()=='usernameOrEmail')
+        else if(UserLoginForm::getLoggingWithField()==='usernameOrEmail')
             $user=User::model()->find("`username`=? OR `email`=?",array($this->username,$this->username));
         if($user===null)
             $this->errorCode=self::ERROR_USERNAME_INVALID;
-        else if(md5($this->password)!==$user->password)
+        else if(!$user->validatePassword($this->password))
             $this->errorCode=self::ERROR_PASSWORD_INVALID;
         else if($user->isActive===User::IS_NOT_ACTIVE)
             $this->errorCode=self::ERROR_ACCOUNT_IS_INACTIVE;
@@ -55,7 +55,7 @@ class _CUserIdentity extends CUserIdentity
             $this->setState('language', $user->language);
             $this->setState('screenName', $user->screenName);
         }
-        return !$this->errorCode;
+        return $this->errorCode==self::ERROR_NONE;
     }
 
     /**

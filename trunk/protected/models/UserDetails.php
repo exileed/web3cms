@@ -3,7 +3,7 @@
 class UserDetails extends _CActiveRecord
 {
     /**
-     * The followings are the available columns in table 'W3UserDetails':
+     * The followings are the available columns in table 'w3_user_details':
      * @var integer $userId
      * @var string $passwordHint
      * @var string $isEmailConfirmed
@@ -47,7 +47,7 @@ class UserDetails extends _CActiveRecord
      */
     protected function _tableName()
     {
-        return 'UserDetails';
+        return 'user_details';
     }
 
     /**
@@ -55,32 +55,45 @@ class UserDetails extends _CActiveRecord
      */
     public function rules()
     {
-        return array(
-            array('emailConfirmationKey','length','max'=>32),
-            array('firstName','length','max'=>128),
-            array('middleName','length','max'=>128),
-            array('lastName','length','max'=>128),
-            array('initials','length','max'=>16),
-            array('occupation','length','max'=>128),
-            array('secretAnswer','length','max'=>255),
-            array('totalTimeLoggedIn', 'numerical', 'integerOnly'=>true),
-        );
-    }
-
-    /**
-     * @return array attributes that can be massively assigned
-     * using something like $model->attributes=$_POST['Model'];
-     */
-    public function safeAttributes()
-    {
-        $retval=array(
-            'emailConfirmationKey',
-            'initials',
-            'isEmailVisible',
-            'occupation',
-        );
+        $retval=array();
         if(User::isAdministrator())
-            $retval=array_merge($retval,array('administratorNote','deactivationTime','isScreenNameEditable'));
+        {
+            // administratorNote is safe
+            $retval[]=array('administratorNote', 'safe', 'on'=>'not sure');
+            // deactivationTime has to be integer
+            $retval[]=array('deactivationTime', 'numerical', 'integerOnly'=>true, 'on'=>'not sure');
+            // deactivationTime has to be 10 characters length max
+            $retval[]=array('deactivationTime', 'length', 'max'=>10, 'on'=>'not sure');
+        }
+        // emailConfirmationKey has to be 32 characters length max
+        $retval[]=array('emailConfirmationKey', 'length', 'max'=>32, 'on'=>'not sure');
+        // firstName has to be 128 characters length max
+        $retval[]=array('firstName', 'length', 'max'=>128, 'on'=>'not sure');
+        // initials has to be 16 characters length max on update
+        $retval[]=array('initials', 'length', 'max'=>16, 'on'=>'update');
+        // isEmailConfirmed is in range
+        $retval[]=array('isEmailConfirmed', 'in', 'range'=>array(null,self::EMAIL_IS_CONFIRMED,self::EMAIL_IS_NOT_CONFIRMED), 'strict'=>true, 'allowEmpty'=>false, 'on'=>'not sure');
+        // isEmailVisible is in range
+        $retval[]=array('isEmailVisible', 'in', 'range'=>array(null,self::EMAIL_IS_VISIBLE,self::EMAIL_IS_NOT_VISIBLE), 'strict'=>true, 'allowEmpty'=>false, 'on'=>'not sure');
+        if(User::isAdministrator())
+            // isScreenNameEditable needs to be a boolean
+            $retval[]=array('isScreenNameEditable', 'boolean', 'on'=>'not sure');//in
+        // lastLoginTime has to be 10 characters length max
+        $retval[]=array('lastLoginTime', 'length', 'max'=>10, 'on'=>'not sure');
+        // lastVisitTime has to be 10 characters length max
+        $retval[]=array('lastVisitTime', 'length', 'max'=>10, 'on'=>'not sure');
+        // lastName has to be 128 characters length max
+        $retval[]=array('lastName', 'length', 'max'=>128, 'on'=>'not sure');
+        // middleName has to be 128 characters length max
+        $retval[]=array('middleName', 'length', 'max'=>128, 'on'=>'not sure');
+        // occupation has to be 128 characters length max on update
+        $retval[]=array('occupation', 'length', 'max'=>128, 'on'=>'update');
+        // secretAnswer has to be 255 characters length max
+        $retval[]=array('secretAnswer', 'length', 'max'=>255, 'on'=>'not sure');
+        // totalTimeLoggedIn has to be integer
+        $retval[]=array('totalTimeLoggedIn', 'numerical', 'integerOnly'=>true, 'on'=>'not sure');
+        // totalTimeLoggedIn has to be 9 characters length max
+        $retval[]=array('totalTimeLoggedIn', 'length', 'max'=>9, 'on'=>'not sure');
         return $retval;
     }
 
@@ -132,8 +145,9 @@ class UserDetails extends _CActiveRecord
     /**
      * Prepares attributes before performing validation.
      */
-    protected function beforeValidate($on)
+    protected function beforeValidate()
     {
+        $scenario=$this->getScenario();
         if(isset($_POST[__CLASS__]['isEmailConfirmed']) && $this->isEmailConfirmed!==self::EMAIL_IS_CONFIRMED && $this->isEmailConfirmed!==self::EMAIL_IS_NOT_CONFIRMED)
             // enum('0','1') null
             $this->isEmailConfirmed=null;
@@ -141,7 +155,7 @@ class UserDetails extends _CActiveRecord
             // enum('0','1') null
             $this->isEmailVisible=null;
         // parent does all common work
-        return parent::beforeValidate($on);
+        return parent::beforeValidate();
     }
 
     /**
@@ -211,6 +225,15 @@ class UserDetails extends _CActiveRecord
             default:
                 return $this->$attribute;
         }
+    }
+
+    /**
+     * Generates the email confirmation key.
+     * @return string key
+     */
+    public function generateConfirmationKey()
+    {
+        return md5(uniqid(rand(),true));
     }
 
     /**

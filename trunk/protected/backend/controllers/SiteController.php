@@ -25,7 +25,7 @@ class SiteController extends _CController
     {
         // renders the view file 'protected/backend/views/site/index.php'
         // using the default layout 'protected/backend/views/_layouts/main.php'
-        $this->render('index');
+        $this->render($this->action->id);
     }
 
     /**
@@ -40,7 +40,7 @@ class SiteController extends _CController
     {
         $error=Yii::app()->errorHandler->error;
         if($error)
-            $this->render('error',array('error'=>$error));
+            $this->render($this->action->id,array('error'=>$error));
         else
             throw new CHttpException(404,Yii::t('http','Page not found.'));
     }

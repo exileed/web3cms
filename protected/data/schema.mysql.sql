@@ -1,8 +1,9 @@
-CREATE TABLE W3User
+CREATE TABLE w3_user
 (
     `id` INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `username` VARCHAR(128) NOT NULL UNIQUE KEY,
     `password` VARCHAR(128) NOT NULL,
+    `salt` VARCHAR(128) NOT NULL DEFAULT '',
     `email` VARCHAR(255) NOT NULL UNIQUE KEY,
     `screenName` VARCHAR(128) NOT NULL,
     `language` VARCHAR(24) NOT NULL DEFAULT 'en',
@@ -13,7 +14,7 @@ CREATE TABLE W3User
     `createTime` INTEGER(10) NOT NULL DEFAULT '1234567890'
 ) CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE W3UserDetails
+CREATE TABLE w3_user_details
 (
     `userId` INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
     `passwordHint` TEXT NULL,
@@ -38,10 +39,10 @@ CREATE TABLE W3UserDetails
     `administratorNote` TEXT NULL,
     `updateTime` INTEGER(10) NULL,
     CONSTRAINT FK_user FOREIGN KEY (`userId`)
-        REFERENCES W3User (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+        REFERENCES w3_user (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-INSERT INTO W3User (`id`, `username`, `password`, `email`, `screenName`, `accessType`, `accessLevel`, `isActive`, `createTime`) VALUES ('1','admin','21232f297a57a5a743894a0e4a801fc3','admin@example.com','Administrator','administrator','5','1',UNIX_TIMESTAMP());
-INSERT INTO W3User (`id`, `username`, `password`, `email`, `screenName`, `accessType`, `accessLevel`, `isActive`, `createTime`) VALUES ('2','demo','fe01ce2a7fbac8fafaed7c982a04e229','demo@example.com','Demo Member','member','1','1',UNIX_TIMESTAMP());
-INSERT INTO W3UserDetails (`userId`, `emailConfirmationKey`) VALUES ('1','fbc07066a1a79166a9098664821869d1');
-INSERT INTO W3UserDetails (`userId`, `emailConfirmationKey`) VALUES ('2','fbc07066a1a79166a9098664821869d1');
+INSERT INTO w3_user (`id`, `username`, `password`, `email`, `screenName`, `accessType`, `accessLevel`, `isActive`, `createTime`) VALUES ('1','admin','21232f297a57a5a743894a0e4a801fc3','admin@example.com','Administrator','administrator','5','1',UNIX_TIMESTAMP());
+INSERT INTO w3_user (`id`, `username`, `password`, `email`, `screenName`, `accessType`, `accessLevel`, `isActive`, `createTime`) VALUES ('2','demo','fe01ce2a7fbac8fafaed7c982a04e229','demo@example.com','Demo Member','member','1','1',UNIX_TIMESTAMP());
+INSERT INTO w3_user_details (`userId`, `emailConfirmationKey`) VALUES ('1','fbc07066a1a79166a9098664821869d1');
+INSERT INTO w3_user_details (`userId`, `emailConfirmationKey`) VALUES ('2','fbc07066a1a79166a9098664821869d1');

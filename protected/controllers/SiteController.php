@@ -28,7 +28,7 @@ class SiteController extends _CController
      */
     public function actionIndex()
     {
-        //$this->render('index');
+        //$this->render($this->action->id);
         $this->redirect($this->getGotoUrl());
     }
 
@@ -49,7 +49,7 @@ class SiteController extends _CController
                 $this->refresh();
             }
         }
-        $this->render('contact',array('contact'=>$contact));
+        $this->render($this->action->id,array('contact'=>$contact));
     }
 
     /**
@@ -72,7 +72,7 @@ class SiteController extends _CController
             }
             else*/
                 // render the view file
-                $this->render('error',array('error'=>$error));
+                $this->render($this->action->id,array('error'=>$error));
         }
         else
             // following will cause the script to run the current action again
@@ -85,6 +85,6 @@ class SiteController extends _CController
      */
     public function actionWiki()
     {
-        $this->render('wiki');
+        $this->render($this->action->id);
     }
 }

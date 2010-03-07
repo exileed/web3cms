@@ -8,26 +8,29 @@ class _CHtml extends CHtml
 {
     public static $errorCss='ui-state-error';
 
-    /* parent with a replacement for {jqueryUIScreenshot}*/
+    /* parent with a replacement for {jqueryUIScreenshot}. +2 lines, 1 line updated */
     public static function radioButtonList($name,$select,$data,$htmlOptions=array())
     {
         $template=isset($htmlOptions['template'])?$htmlOptions['template']:'{input} {label}';
         $separator=isset($htmlOptions['separator'])?$htmlOptions['separator']:"<br/>\n";
         unset($htmlOptions['template'],$htmlOptions['separator']);
 
+        $labelOptions=isset($htmlOptions['labelOptions'])?$htmlOptions['labelOptions']:array();
+        unset($htmlOptions['labelOptions']);
+
         $items=array();
         $baseID=self::getIdByName($name);
         $id=0;
-        $hasJqueryUIScreenshot=strpos($template,'{jqueryUIScreenshot}')!==false;///
+        $hasJqueryUIScreenshot=strpos($template,'{jqueryUIScreenshot}')!==false;//+
         foreach($data as $value=>$label)
         {
-            $jqueryUIScreenshot=$hasJqueryUIScreenshot?self::image(Yii::app()->request->baseUrl.'/static/css/ui/'.$value.'/screenshot.png',$label,array('height'=>105,'title'=>$label)):'';///
+            $jqueryUIScreenshot=$hasJqueryUIScreenshot?self::image(Yii::app()->request->baseUrl.'/static/css/ui/'.$value.'/screenshot.png',$label,array('height'=>105,'title'=>$label)):'';//+
             $checked=!strcmp($value,$select);
             $htmlOptions['value']=$value;
             $htmlOptions['id']=$baseID.'_'.$id++;
             $option=self::radioButton($name,$checked,$htmlOptions);
-            $label=self::label($label,$htmlOptions['id']);
-            $items[]=strtr($template,array('{input}'=>$option,'{label}'=>$label,'{jqueryUIScreenshot}'=>$jqueryUIScreenshot));//
+            $label=self::label($label,$htmlOptions['id'],$labelOptions);
+            $items[]=strtr($template,array('{input}'=>$option,'{label}'=>$label,'{jqueryUIScreenshot}'=>$jqueryUIScreenshot));//!
         }
         return implode($separator,$items);
     }
@@ -44,7 +47,8 @@ class _CHtml extends CHtml
             $for=self::getIdByName(self::resolveName($model,$attribute));
         if(isset($htmlOptions['label']))
         {
-            $label=$htmlOptions['label'];
+            if(($label=$htmlOptions['label'])===false)
+                return '';
             unset($htmlOptions['label']);
         }
         else
@@ -59,7 +63,7 @@ class _CHtml extends CHtml
     {
         $realAttribute=$attribute;
         self::resolveName($model,$attribute); // strip off square brackets if any
-        $htmlOptions['required']=$model->isAttributeRequired($attribute,self::$scenario);
+        $htmlOptions['required']=$model->isAttributeRequired($attribute);
         return self::activeLabel($model,$realAttribute,$htmlOptions);
     }
     
@@ -86,7 +90,7 @@ class _CHtml extends CHtml
         self::clientChange('change',$htmlOptions);
         if($model->hasErrors($attribute))
             self::addErrorCss($htmlOptions);
-        return self::tag('textarea',$htmlOptions,self::encode($model->$attribute));
+        return self::tag('textarea',$htmlOptions,isset($htmlOptions['encode']) && !$htmlOptions['encode'] ? $model->$attribute : self::encode($model->$attribute));
     }
     
     /* 100% parent */

@@ -3,10 +3,11 @@
 class User extends _CActiveRecord
 {
     /**
-     * The followings are the available columns in table 'W3User':
+     * The followings are the available columns in table 'w3_user':
      * @var integer $id
      * @var string $username
      * @var string $password
+     * @var string $salt
      * @var string $email
      * @var string $screenName
      * @var string $language
@@ -82,7 +83,7 @@ class User extends _CActiveRecord
      */
     protected function _tableName()
     {
-        return 'User';
+        return 'user';
     }
 
     /**
@@ -90,93 +91,69 @@ class User extends _CActiveRecord
      */
     public function rules()
     {
-        $retval=array(
-            // accessLevel has to be integer
-            array('accessLevel', 'numerical', 'integerOnly'=>true),
-            // set max length
-            array('accessType', 'length', 'max'=>32),
-            array('email', 'length', 'max'=>255),
-            array('interface', 'length', 'max'=>64),
-            array('language', 'length', 'max'=>24),
-            // on confirmEmail
-            // email and emailConfirmationKey are required
-            array('email, emailConfirmationKey', 'required', 'on'=>'confirmEmail'),
-            // verifyCode needs to be entered correctly
-            array('verifyCode', 'captcha', 'on'=>'confirmEmail', 'allowEmpty'=>!extension_loaded('gd')),
-            // on confirmEmailUrl
-            // email and emailConfirmationKey are required
-            array('email, emailConfirmationKey', 'required', 'on'=>'confirmEmailUrl'),
-            // on create
-            // email, password and screenName are required
-            array('email, password, screenName', 'required', 'on'=>'create'),
-            // email and screenName have to be unique
-            array('email, screenName', 'unique', 'on'=>'create'),
-            // email has to be a valid email address
-            array('email', 'email', 'on'=>'create'),
-            // set min/max length
-            array('password', 'length', 'min'=>4, 'max'=>64, 'on'=>'create'),
-            array('screenName', 'length', 'min'=>3, 'max'=>32, 'on'=>'create'),
-            // on register
-            // email, password and screenName are required
-            array('email, password, screenName', 'required', 'on'=>'register'),
-            // email and screenName have to be unique
-            array('email, screenName', 'unique', 'on'=>'register'),
-            // email has to be a valid email address
-            array('email', 'email', 'on'=>'register'),
-            // password should be compared with password2
-            array('password', 'compare', 'compareAttribute'=>'password2', 'on'=>'register'),
-            // set min/max length
-            array('password', 'length', 'min'=>4, 'max'=>64, 'on'=>'register'),
-            array('screenName', 'length', 'min'=>3, 'max'=>32, 'on'=>'register'),
-            // verifyCode needs to be entered correctly
-            array('verifyCode', 'captcha', 'on'=>'register', 'allowEmpty'=>!extension_loaded('gd')),
-            // on update
-            // email has to be a valid email address
-            array('email', 'email', 'on'=>'update'),
-            // screenName is required
-            array('screenName', 'required', 'on'=>'update'),
-            // screenName has to be unique
-            array('screenName', 'unique', 'on'=>'update'),
-            // set min/max length
-            array('screenName', 'length', 'min'=>3, 'max'=>32, 'on'=>'update'),
-        );
-        if($this->hasVirtualAttribute('username'))
+        $retval=array();
+        if(User::isAdministrator())
         {
-            // username is allowed
-            $retval[]=array('username', 'required', 'on'=>'create');
-            $retval[]=array('username', 'unique', 'on'=>'create');
-            $retval[]=array('username', 'length', 'min'=>3, 'max'=>32, 'on'=>'create');
-            $retval[]=array('username', 'required', 'on'=>'register');
-            $retval[]=array('username', 'unique', 'on'=>'register');
-            $retval[]=array('username', 'length', 'min'=>3, 'max'=>32, 'on'=>'register');
+            // accessLevel has to be integer
+            $retval[]=array('accessLevel', 'numerical', 'integerOnly'=>true);
+            // accessLevel has to be 1 characters length max
+            $retval[]=array('accessLevel', 'length', 'max'=>1);
+            // accessType has to be 32 characters length max
+            $retval[]=array('accessType', 'length', 'max'=>32);
         }
         if($this->hasVirtualAttribute('email2'))
-            // email should be compared with email2
+            // email should be compared with email2 on register
             $retval[]=array('email', 'compare', 'compareAttribute'=>'email2', 'on'=>'register');
-        return $retval;
-    }
-
-    /**
-     * @return array attributes that can be massively assigned
-     * using something like $model->attributes=$_POST['Model'];
-     */
-    public function safeAttributes()
-    {
-        $retval=array(
-            //'email',
-            'email2',
-            'emailConfirmationKey',
-            'interface',
-            'language',
-            'password',
-            'password2',
-            'screenName',
-            'screenNameSame',
-            //'username',
-            'verifyCode',
-        );
+        // email has to be a valid email address on create, register and update
+        $retval[]=array('email', 'email', 'on'=>'create, register, update');
+        // email has to be 255 characters length max on create, register and update
+        $retval[]=array('email', 'length', 'max'=>255, 'on'=>'create, register, update');
+        // email is required on confirmEmail, confirmEmailUrl, create, register and update
+        $retval[]=array('email', 'required', 'on'=>'confirmEmail, confirmEmailUrl, create, register, update');
+        // email has to be unique on create, register and update
+        $retval[]=array('email', 'unique', 'on'=>'create, register, update');
+        // email2 is safe on register
+        $retval[]=array('email2', 'safe', 'on'=>'register');
+        // emailConfirmationKey is required on confirmEmail and confirmEmailUrl
+        $retval[]=array('emailConfirmationKey', 'required', 'on'=>'confirmEmail, confirmEmailUrl');
+        // interface has to be 64 characters length max on create, register and updateInterface
+        $retval[]=array('interface', 'length', 'max'=>64, 'on'=>'create, register, updateInterface');
         if(User::isAdministrator())
-            $retval=array_merge($retval,array('accessLevel','accessType','isActive'));
+            // isActive is in range
+            $retval[]=array('isActive', 'in', 'range'=>array(null,self::IS_ACTIVE,self::IS_NOT_ACTIVE), 'strict'=>true, 'allowEmpty'=>false);
+        // language has to be 24 characters length max on create, register and update
+        $retval[]=array('language', 'length', 'max'=>24, 'on'=>'create, register, update');
+        // password should be compared with password2 on register
+        $retval[]=array('password', 'compare', 'compareAttribute'=>'password2', 'on'=>'register');
+        // password has to be between 4 and 64 characters length on create and register
+        $retval[]=array('password', 'length', 'min'=>4, 'max'=>64, 'on'=>'create, register');
+        // password is required on create and register
+        $retval[]=array('password', 'required', 'on'=>'create, register');
+        // password2 is safe on register
+        $retval[]=array('password2', 'safe', 'on'=>'register');
+        // screenName has to be between 3 and 32 characters length
+        $retval[]=array('screenName', 'length', 'min'=>3, 'max'=>32, 'on'=>'create, register, update');
+        // screenName is required on create, register and update
+        $retval[]=array('screenName', 'required', 'on'=>'create, register, update');
+        // screenName has to be unique on create, register and update
+        $retval[]=array('screenName', 'unique', 'on'=>'create, register, update');
+        // screenNameSame needs to be a boolean on create and register
+        $retval[]=array('screenNameSame', 'boolean', 'on'=>'create, register');
+        // salt has to be 128 characters length max
+        $retval[]=array('salt', 'length', 'max'=>128);
+        // salt is unsafe
+        $retval[]=array('salt', 'unsafe');
+        if($this->hasVirtualAttribute('username'))
+        {
+            // username has to be between 3 and 32 characters length on create and register
+            $retval[]=array('username', 'length', 'min'=>3, 'max'=>32, 'on'=>'create, register');
+            // username is required on create and register
+            $retval[]=array('username', 'required', 'on'=>'create, register');
+            // username has to be unique on create and register
+            $retval[]=array('username', 'unique', 'on'=>'create, register');
+        }
+        // verifyCode needs to be entered correctly on confirmEmail and register
+        $retval[]=array('verifyCode', 'captcha', 'on'=>'confirmEmail, register', 'allowEmpty'=>!extension_loaded('gd'));
         return $retval;
     }
 
@@ -347,9 +324,10 @@ class User extends _CActiveRecord
     /**
      * Prepares attributes before performing validation.
      */
-    protected function beforeValidate($on)
+    protected function beforeValidate()
     {
-        if(($on==='create' || $on==='register') && $this->screenNameSame && $this->username!=='' && $this->username!==null)
+        $scenario=$this->getScenario();
+        if(($scenario==='create' || $scenario==='register') && $this->screenNameSame && $this->username!=='' && $this->username!==null)
             // make screenName same as username
             $this->screenName=$this->username;
         if($this->isNewRecord && !$this->hasVirtualAttribute('username') && ($this->username==='' || $this->username===null))
@@ -361,11 +339,11 @@ class User extends _CActiveRecord
                 // if username is already in use, generate an unique id
                 $this->username=md5(uniqid(rand(),true));
         }
-        if($on==='update' && isset($_POST[__CLASS__]['email']) && $this->email!==$_POST[__CLASS__]['email'])
+        if($scenario==='update' && isset($_POST[__CLASS__]['email']) && $this->email!==$_POST[__CLASS__]['email'])
         {
             // email is being updated
             $this->email=$_POST[__CLASS__]['email'];
-            $this->details->isEmailConfirmed='0';
+            $this->details->isEmailConfirmed=UserDetails::EMAIL_IS_NOT_CONFIRMED;
         }
         if(isset($_POST[__CLASS__]['isActive']) && $this->isActive!==self::IS_ACTIVE && $this->isActive!==self::IS_NOT_ACTIVE)
             // enum('0','1') null
@@ -382,7 +360,7 @@ class User extends _CActiveRecord
             $this->accessLevel=$accessLevel[$this->accessType];
         }
         // parent does all common work
-        return parent::beforeValidate($on);
+        return parent::beforeValidate();
     }
 
     /**
@@ -490,6 +468,36 @@ class User extends _CActiveRecord
             default:
                 return $this->$attribute;
         }
+    }
+
+    /**
+     * Checks if the given password is correct.
+     * @param string the password to be validated
+     * @return boolean whether the password is valid
+     */
+    public function validatePassword($password)
+    {
+        return $this->hashPassword($password,$this->salt)===$this->password;
+    }
+
+    /**
+     * Generates the password hash.
+     * @param string password
+     * @param string salt
+     * @return string hash
+     */
+    public function hashPassword($password,$salt)
+    {
+        return md5($salt.$password);
+    }
+
+    /**
+     * Generates a salt that can be used to generate a password hash.
+     * @return string the salt
+     */
+    protected function generateSalt()
+    {
+        return md5(microtime());
     }
 
     /**

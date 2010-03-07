@@ -167,7 +167,7 @@ class MParams
             /**
              * Database table prefix, used by {@link _CActiveRecord}.
              */
-            'tablePrefix'=>'W3',
+            'tablePrefix'=>'w3_',
             /**
              * Web-accessible url to files directory.
              * Supposed to begin with either http:// or / (slash). 

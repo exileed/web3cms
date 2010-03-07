@@ -122,7 +122,7 @@ $retval=array(
     // reset this on any page with MParams::setSystemLanguage('en');
     'systemLanguage'=>'en', //'en'
     // database tables prefix
-    'tablePrefix' => 'W3',
+    'tablePrefix' => 'w3_',
     // web-accessible url to files directory
     // supposed to begin with either http:// or / (slash). should contain trailing slash
     // reset this on any page with MParams::setUrlToFiles($url);

@@ -14,6 +14,16 @@
             'icon'=>'person',
         ),
         array(
+            'text'=>Yii::t('link','Change interface'),
+            'url'=>array('updateInterface'),
+            'visible'=>$me,
+        ),
+        array(
+            'text'=>Yii::t('link','Change interface'),
+            'url'=>array('updateInterface','id'=>$model->id),
+            'visible'=>!$me && User::isAdministrator(),
+        ),
+        array(
             'text'=>Yii::t('link','List of members'),
             'url'=>array('list'),
             'icon'=>'grip-solid-horizontal',

@@ -2,6 +2,12 @@
                    Web3CMS Change Log
                    ==================
 
+Version 1.1.0.r34 (update5) March 7, 2010
+-----------------------------------------
+- Upg: from Yii 1.0.9 to Yii 1.1.0
+- Mod: db table names switched to lower case
+- Add: log for emails
+
 Version 1.0.9.r33 (update4) March 1, 2010
 -----------------------------------------
 - Re-structuring, renaming, optimization and bug fixes.

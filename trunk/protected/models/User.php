@@ -509,10 +509,9 @@ class User extends _CActiveRecord
     {
         $id=(isset($conditions[0]) && ctype_digit($conditions[0]) && $conditions[0]>=1) ? $conditions[0] : null;
         $criteria=new CDbCriteria;
-        $t=self::model()->tableName();
-        $criteria->condition="`$t`.`isActive` IS NULL OR `$t`.`isActive` != '".self::IS_NOT_ACTIVE."'";
+        $criteria->condition="t.isActive IS NULL OR t.isActive != '".self::IS_NOT_ACTIVE."'";
         if($id)
-            $criteria->condition.=" OR `$t`.`id` = '$id'";
+            $criteria->condition.=" OR t.id = '$id'";
         return self::model()->findAll($criteria);
     }
 

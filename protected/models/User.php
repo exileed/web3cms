@@ -172,32 +172,32 @@ class User extends _CActiveRecord
             // many user has many 'company' records associated
             $relations['allCompany']=array(self::MANY_MANY,'Company',
                 User2Company::model()->tableName().'(userId,companyId)',
-                'order'=>"allCompany_User_Company.`companyPriority` ASC, allCompany_User_Company.`id` ASC",
+                'order'=>"`allCompany_User_Company`.`companyPriority` ASC, `allCompany_User_Company`.`id` ASC",
                 'alias'=>'User_Company'
             );
         if(file_exists(Yii::app()->basePath.'/models/User2Company.php'))
             // one user has many 'user2company' records associated
             $relations['allUser2Company']=array(self::HAS_MANY,'User2Company','userId',
-                'order'=>"??.`companyPriority` ASC, ??.`id` ASC",
+                'order'=>"`t`.`companyPriority` ASC, `t`.`id` ASC",
                 'alias'=>'User_User2Company'
             );
         if(file_exists(Yii::app()->basePath.'/models/User2Project.php'))
         {
             // one user has many 'consultant2project' records associated
             $relations['allConsultant2Project']=array(self::HAS_MANY,'User2Project','userId',
-                'on'=>"??.`role`='".User2Project::CONSULTANT."'",
-                'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
+                'on'=>"`t`.`role`='".User2Project::CONSULTANT."'",
+                'order'=>"`t`.`projectPriority` ASC, `t`.`id` ASC",
                 'alias'=>'User_Consultant2Project'
             );
             // one user has many 'manager2project' records associated
             $relations['allManager2Project']=array(self::HAS_MANY,'User2Project','userId',
-                'on'=>"??.`role`='".User2Project::MANAGER."'",
-                'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
+                'on'=>"`t`.`role`='".User2Project::MANAGER."'",
+                'order'=>"`t`.`projectPriority` ASC, `t`.`id` ASC",
                 'alias'=>'User_Manager2Project'
             );
             // one user has many 'user2project' records associated
             $relations['allUser2Project']=array(self::HAS_MANY,'User2Project','userId',
-                'order'=>"??.`projectPriority` ASC, ??.`id` ASC",
+                'order'=>"`t`.`projectPriority` ASC, `t`.`id` ASC",
                 'alias'=>'User_User2Project'
             );
         }
@@ -206,8 +206,8 @@ class User extends _CActiveRecord
             // many user has many 'consultant project' records associated
             $relations['allConsultantProject']=array(self::MANY_MANY,'Project',
                 User2Project::model()->tableName().'(userId,projectId)',
-                'on'=>"allConsultantProject_User_ConsultantProject.`role`='".User2Project::CONSULTANT."'",
-                'order'=>"allConsultantProject_User_ConsultantProject.`projectPriority` ASC, allConsultantProject_User_ConsultantProject.`id` ASC",
+                'on'=>"`allConsultantProject_User_ConsultantProject`.`role`='".User2Project::CONSULTANT."'",
+                'order'=>"`allConsultantProject_User_ConsultantProject`.`projectPriority` ASC, `allConsultantProject_User_ConsultantProject`.`id` ASC",
                 'alias'=>'User_ConsultantProject'
             );
             // many user has many 'manager project' records associated
@@ -220,7 +220,7 @@ class User extends _CActiveRecord
             // many user has many 'project' records associated
             $relations['allProject']=array(self::MANY_MANY,'Project',
                 User2Project::model()->tableName().'(userId,projectId)',
-                'order'=>"allProject_User_Project.`projectPriority` ASC, allProject_User_Project.`id` ASC",
+                'order'=>"`allProject_User_Project`.`projectPriority` ASC, `allProject_User_Project`.`id` ASC",
                 'alias'=>'User_Project'
             );
         }
@@ -228,19 +228,19 @@ class User extends _CActiveRecord
         {
             // one user has many 'consultant2task' records associated
             $relations['allConsultant2Task']=array(self::HAS_MANY,'User2Task','userId',
-                'on'=>"??.`role`='".User2Task::CONSULTANT."'",
-                'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
+                'on'=>"`t`.`role`='".User2Task::CONSULTANT."'",
+                'order'=>"`t`.`taskPriority` ASC, `t`.`id` ASC",
                 'alias'=>'User_Consultant2Task'
             );
             // one user has many 'manager2task' records associated
             $relations['allManager2Task']=array(self::HAS_MANY,'User2Task','userId',
-                'on'=>"??.`role`='".User2Task::MANAGER."'",
-                'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
+                'on'=>"`t`.`role`='".User2Task::MANAGER."'",
+                'order'=>"`t`.`taskPriority` ASC, `t`.`id` ASC",
                 'alias'=>'User_Manager2Task'
             );
             // one user has many 'user2task' records associated
             $relations['allUser2Task']=array(self::HAS_MANY,'User2Task','userId',
-                'order'=>"??.`taskPriority` ASC, ??.`id` ASC",
+                'order'=>"`t`.`taskPriority` ASC, `t`.`id` ASC",
                 'alias'=>'User_User2Task'
             );
         }
@@ -249,20 +249,20 @@ class User extends _CActiveRecord
             // many user has many 'consultant task' records associated
             $relations['allConsultantTask']=array(self::MANY_MANY,'Task',
                 User2Task::model()->tableName().'(userId,taskId)',
-                'on'=>"allConsultantTask_User_ConsultantTask.`role`='".User2Project::CONSULTANT."'",
-                'order'=>"allConsultantTask_User_ConsultantTask.`taskPriority` ASC, allConsultantTask_User_ConsultantTask.`id` ASC",
+                'on'=>"`allConsultantTask_User_ConsultantTask`.`role`='".User2Project::CONSULTANT."'",
+                'order'=>"`allConsultantTask_User_ConsultantTask`.`taskPriority` ASC, `allConsultantTask_User_ConsultantTask`.`id` ASC",
                 'alias'=>'User_ConsultantTask'
             );
             // one user has a number of 'consultant task' records associated
             $relations['consultantTaskCount']=array(self::STAT,'Task',
                 User2Task::model()->tableName().'(userId,taskId)',
-                //'on'=>"??.`role`='".User2Project::CONSULTANT."'",
+                //'on'=>"`t`.`role`='".User2Project::CONSULTANT."'",
             );
             // many user has many 'manager task' records associated
             $relations['allManagerTask']=array(self::MANY_MANY,'Task',
                 User2Task::model()->tableName().'(userId,taskId)',
-                'on'=>"allManagerTask_User_ManagerTask.`role`='".User2Task::MANAGER."'",
-                'order'=>"allManagerTask_User_ManagerTask.`taskPriority` ASC, allManagerTask_User_ManagerTask.`id` ASC",
+                'on'=>"`allManagerTask_User_ManagerTask`.`role`='".User2Task::MANAGER."'",
+                'order'=>"`allManagerTask_User_ManagerTask`.`taskPriority` ASC, `allManagerTask_User_ManagerTask`.`id` ASC",
                 'alias'=>'User_ManagerTask'
             );
         }
@@ -270,7 +270,7 @@ class User extends _CActiveRecord
         {
             // one user has many 'consultant time' records associated
             $relations['allConsultantTime']=array(self::HAS_MANY,'Time','consultantId',
-                'order'=>"??.`id` ASC",
+                'order'=>"`t`.`id` ASC",
                 'alias'=>'User_ConsultantTime'
             );
             // one user has one of many 'consultant time' records associated
@@ -281,7 +281,7 @@ class User extends _CActiveRecord
             $relations['consultantTimeCount']=array(self::STAT,'Time','consultantId');
             // one user has many 'manager time' records associated
             $relations['allManagerTime']=array(self::HAS_MANY,'Time','managerId',
-                'order'=>"??.`id` ASC",
+                'order'=>"`t`.`id` ASC",
                 'alias'=>'User_ManagerTime'
             );
             // one user has one of many 'manager time' records associated
@@ -509,10 +509,9 @@ class User extends _CActiveRecord
     {
         $id=(isset($conditions[0]) && ctype_digit($conditions[0]) && $conditions[0]>=1) ? $conditions[0] : null;
         $criteria=new CDbCriteria;
-        $t=self::model()->tableName();
-        $criteria->condition="`$t`.`isActive` IS NULL OR `$t`.`isActive` != '".self::IS_NOT_ACTIVE."'";
+        $criteria->condition="`t`.`isActive` IS NULL OR `t`.`isActive` != '".self::IS_NOT_ACTIVE."'";
         if($id)
-            $criteria->condition.=" OR `$t`.`id` = '$id'";
+            $criteria->condition.=" OR `t`.`id` = '$id'";
         return self::model()->findAll($criteria);
     }
 

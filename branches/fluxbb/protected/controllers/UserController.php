@@ -632,7 +632,7 @@ class UserController extends _CController
     public function actionList()
     {
         $criteria=new CDbCriteria;
-        $criteria->order='t.screenName';
+        $criteria->order="`t`.`screenName`";
 
         $pages=new CPagination(User::model()->count($criteria));
         $pages->pageSize=self::LIST_PAGE_SIZE;
@@ -670,37 +670,37 @@ class UserController extends _CController
         $criteria=new CDbCriteria;
         if($accessType===(string)User::MEMBER)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:member';
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:member";
             $criteria->params=array_merge($criteria->params,array(':member'=>User::MEMBER));
         }
         else if($accessType===(string)User::CLIENT)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:client';
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:client";
             $criteria->params=array_merge($criteria->params,array(':client'=>User::CLIENT));
         }
         else if($accessType===(string)User::CONSULTANT)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:consultant';
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:consultant";
             $criteria->params=array_merge($criteria->params,array(':consultant'=>User::CONSULTANT));
         }
         else if($accessType===(string)User::MANAGER)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:manager';
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:manager";
             $criteria->params=array_merge($criteria->params,array(':manager'=>User::MANAGER));
         }
         else if($accessType===(string)User::ADMINISTRATOR)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:administrator';
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:administrator";
             $criteria->params=array_merge($criteria->params,array(':administrator'=>User::ADMINISTRATOR));
         }
         if($state==='active')
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'(t.isActive IS NULL OR t.isActive!=:isNotActive)';
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."(`t`.`isActive` IS NULL OR `t`.`isActive`!=:isNotActive)";
             $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
         }
         else if($state==='inactive')
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.isActive=:isNotActive';
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`isActive`=:isNotActive";
             $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
         }
 
@@ -718,14 +718,14 @@ class UserController extends _CController
         // sort
         $sort=new CSort('User');
         $sort->attributes=array(
-            'accessType'=>array('asc'=>'t.accessLevel','desc'=>'t.accessLevel desc','label'=>User::model()->getAttributeLabel('accessType')),
-            'createTime'=>array('asc'=>'t.createTime','desc'=>'t.createTime desc','label'=>User::model()->getAttributeLabel('Registered')),
-            'email'=>array('asc'=>'t.email','desc'=>'t.email desc','label'=>User::model()->getAttributeLabel('email')),
-            'screenName'=>array('asc'=>'t.screenName','desc'=>'t.screenName desc','label'=>User::model()->getAttributeLabel('screenName')),
-            'deactivationTime'=>array('asc'=>'User_UserDetails.deactivationTime','desc'=>'User_UserDetails.deactivationTime desc','label'=>UserDetails::model()->getAttributeLabel('Deact')),
-            'occupation'=>array('asc'=>'User_UserDetails.occupation','desc'=>'User_UserDetails.occupation desc','label'=>UserDetails::model()->getAttributeLabel('occupation')),
+            'accessType'=>array('asc'=>"`t`.`accessLevel`",'desc'=>"`t`.`accessLevel` desc",'label'=>User::model()->getAttributeLabel('accessType')),
+            'createTime'=>array('asc'=>"`t`.`createTime`",'desc'=>"`t`.`createTime` desc",'label'=>User::model()->getAttributeLabel('Registered')),
+            'email'=>array('asc'=>"`t`.`email`",'desc'=>"`t`.`email` desc",'label'=>User::model()->getAttributeLabel('email')),
+            'screenName'=>array('asc'=>"`t`.`screenName`",'desc'=>"`t`.`screenName` desc",'label'=>User::model()->getAttributeLabel('screenName')),
+            'deactivationTime'=>array('asc'=>"`User_UserDetails`.`deactivationTime`",'desc'=>"`User_UserDetails`.`deactivationTime` desc",'label'=>UserDetails::model()->getAttributeLabel('Deact')),
+            'occupation'=>array('asc'=>"`User_UserDetails`.`occupation`",'desc'=>"`User_UserDetails`.`occupation` desc",'label'=>UserDetails::model()->getAttributeLabel('occupation')),
         );
-        $sort->defaultOrder='t.screenName';
+        $sort->defaultOrder="`t`.`screenName`";
         $sort->applyOrder($criteria);
 
         // find all
@@ -885,139 +885,140 @@ class UserController extends _CController
         if(!User::isManager() && !User::isAdministrator())
             return null;
 
-        if(Yii::app()->request->isPostRequest)
+        if(!Yii::app()->request->isPostRequest)
         {
-            // specify request details
-            $jqGrid=$this->processJqGridRequest();
+            throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+            exit;
+        }
 
-            // specify filter parameters
-            $accessType=isset($_GET['accessType']) ? $_GET['accessType'] : null;
-            if($accessType!=='all' && $accessType!==(string)User::MEMBER && $accessType!==(string)User::CLIENT && $accessType!==(string)User::CONSULTANT && $accessType!==(string)User::MANAGER && $accessType!==(string)User::ADMINISTRATOR)
-                $accessType='all';
-            $state=isset($_GET['state']) ? $_GET['state'] : null;
-            if($state!=='all' && $state!=='active' && $state!=='inactive')
-                $state='all';
+        // specify request details
+        $jqGrid=$this->processJqGridRequest();
 
-            // criteria
-            $criteria=new CDbCriteria;
-            if($jqGrid['searchField']!==null && $jqGrid['searchString']!==null && $jqGrid['searchOper']!==null)
+        // specify filter parameters
+        $accessType=isset($_GET['accessType']) ? $_GET['accessType'] : null;
+        if($accessType!=='all' && $accessType!==(string)User::MEMBER && $accessType!==(string)User::CLIENT && $accessType!==(string)User::CONSULTANT && $accessType!==(string)User::MANAGER && $accessType!==(string)User::ADMINISTRATOR)
+            $accessType='all';
+        $state=isset($_GET['state']) ? $_GET['state'] : null;
+        if($state!=='all' && $state!=='active' && $state!=='inactive')
+            $state='all';
+
+        // criteria
+        $criteria=new CDbCriteria;
+        if($jqGrid['searchField']!==null && $jqGrid['searchString']!==null && $jqGrid['searchOper']!==null)
+        {
+            $field=array(
+                'accessType'=>"`t`.`accessType`",
+                'createTime'=>"`t`.`createTime`",
+                'email'=>"`t`.`email`",
+                'screenName'=>"`t`.`screenName`",
+                'deactivationTime'=>"`User_UserDetails`.`deactivationTime`",
+                'occupation'=>"`User_UserDetails`.`occupation`",
+            );
+            $operation=$this->getJqGridOperationArray();
+            $keywordFormula=$this->getJqGridKeywordFormulaArray();
+            if(isset($field[$jqGrid['searchField']]) && isset($operation[$jqGrid['searchOper']]))
             {
-                $field=array(
-                    'accessType'=>'t.accessType',
-                    'createTime'=>'t.createTime',
-                    'email'=>'t.email',
-                    'screenName'=>'t.screenName',
-                    'deactivationTime'=>'User_UserDetails.deactivationTime',
-                    'occupation'=>'User_UserDetails.occupation',
-                );
-                $operation=$this->getJqGridOperationArray();
-                $keywordFormula=$this->getJqGridKeywordFormulaArray();
-                if(isset($field[$jqGrid['searchField']]) && isset($operation[$jqGrid['searchOper']]))
+                $criteria->condition='('.$field[$jqGrid['searchField']].' '.$operation[$jqGrid['searchOper']].' :keyword)';
+                $criteria->params=array(':keyword'=>str_replace('keyword',$jqGrid['searchString'],$keywordFormula[$jqGrid['searchOper']]));
+                // search by special field types
+                if($jqGrid['searchField']==='createTime' && ($keyword=strtotime($jqGrid['searchString']))!==false)
                 {
-                    $criteria->condition='('.$field[$jqGrid['searchField']].' '.$operation[$jqGrid['searchOper']].' :keyword)';
-                    $criteria->params=array(':keyword'=>str_replace('keyword',$jqGrid['searchString'],$keywordFormula[$jqGrid['searchOper']]));
-                    // search by special field types
-                    if($jqGrid['searchField']==='createTime' && ($keyword=strtotime($jqGrid['searchString']))!==false)
-                    {
-                        $criteria->params=array(':keyword'=>str_replace('keyword',$keyword,$keywordFormula[$jqGrid['searchOper']]));
-                        if(date('H:i:s',$keyword)==='00:00:00')
-                            // visitor is looking for a precision by day, not by second
-                            $criteria->condition='(TO_DAYS(FROM_UNIXTIME('.$field[$jqGrid['searchField']].',"%Y-%m-%d")) '.$operation[$jqGrid['searchOper']].' TO_DAYS(FROM_UNIXTIME(:keyword,"%Y-%m-%d")))';
-                    }
+                    $criteria->params=array(':keyword'=>str_replace('keyword',$keyword,$keywordFormula[$jqGrid['searchOper']]));
+                    if(date('H:i:s',$keyword)==='00:00:00')
+                        // visitor is looking for a precision by day, not by second
+                        $criteria->condition='(TO_DAYS(FROM_UNIXTIME('.$field[$jqGrid['searchField']].',"%Y-%m-%d")) '.$operation[$jqGrid['searchOper']].' TO_DAYS(FROM_UNIXTIME(:keyword,"%Y-%m-%d")))';
                 }
             }
-            if($accessType===(string)User::MEMBER)
-            {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:member';
-                $criteria->params=array_merge($criteria->params,array(':member'=>User::MEMBER));
-            }
-            else if($accessType===(string)User::CLIENT)
-            {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:client';
-                $criteria->params=array_merge($criteria->params,array(':client'=>User::CLIENT));
-            }
-            else if($accessType===(string)User::CONSULTANT)
-            {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:consultant';
-                $criteria->params=array_merge($criteria->params,array(':consultant'=>User::CONSULTANT));
-            }
-            else if($accessType===(string)User::MANAGER)
-            {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:manager';
-                $criteria->params=array_merge($criteria->params,array(':manager'=>User::MANAGER));
-            }
-            else if($accessType===(string)User::ADMINISTRATOR)
-            {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.accessType=:administrator';
-                $criteria->params=array_merge($criteria->params,array(':administrator'=>User::ADMINISTRATOR));
-            }
-            if($state==='active')
-            {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'(t.isActive IS NULL OR t.isActive!=:isNotActive)';
-                $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
-            }
-            else if($state==='inactive')
-            {
-                $criteria->condition.=($criteria->condition==='' ? '' : ' AND ').'t.isActive=:isNotActive';
-                $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
-            }
-
-            // pagination
-            $with=array();
-            if(strpos($criteria->condition,'User_UserDetails')!==false)
-                $with[]='details';
-            if(count($with)>=1)
-                $pages=new CPagination(User::model()->with($with)->count($criteria));
-            else
-                $pages=new CPagination(User::model()->count($criteria));
-            $pages->pageSize=$jqGrid['pageSize']!==null ? $jqGrid['pageSize'] : self::GRID_PAGE_SIZE;
-            $pages->applyLimit($criteria);
-
-            // sort
-            $sort=new CSort('User');
-            $sort->attributes=array(
-                'accessType'=>array('asc'=>'t.accessLevel','desc'=>'t.accessLevel desc','label'=>User::model()->getAttributeLabel('accessType')),
-                'createTime'=>array('asc'=>'t.createTime','desc'=>'t.createTime desc','label'=>User::model()->getAttributeLabel('Registered')),
-                'email'=>array('asc'=>'t.email','desc'=>'t.email desc','label'=>User::model()->getAttributeLabel('email')),
-                'screenName'=>array('asc'=>'t.screenName','desc'=>'t.screenName desc','label'=>User::model()->getAttributeLabel('screenName')),
-                'deactivationTime'=>array('asc'=>'User_UserDetails.deactivationTime','desc'=>'User_UserDetails.deactivationTime desc','label'=>UserDetails::model()->getAttributeLabel('Deact')),
-                'occupation'=>array('asc'=>'User_UserDetails.occupation','desc'=>'User_UserDetails.occupation desc','label'=>UserDetails::model()->getAttributeLabel('occupation')),
-            );
-            $sort->defaultOrder='t.screenName';
-            $sort->applyOrder($criteria);
-
-            // find all
-            $models=User::model()->with('details')->findAll($criteria);
-
-            // create resulting data array
-            $data=array(
-                'page'=>$pages->getCurrentPage()+1,
-                'total'=>$pages->getPageCount(),
-                'records'=>$pages->getItemCount(),
-                'rows'=>array()
-            );
-            foreach($models as $model)
-            {
-                $data['rows'][]=array('id'=>$model->id,'cell'=>array(
-                    CHtml::encode($model->screenName),
-                    CHtml::encode($model->details->occupation),
-                    CHtml::encode($model->email),
-                    CHtml::encode(MDate::format($model->createTime,'medium',null)),
-                    CHtml::encode(MDate::format($model->details->deactivationTime,'medium',null)),
-                    CHtml::encode($model->getAttributeView('accessType')),
-                    CHtml::link('<span class="ui-icon ui-icon-zoomin"></span>',array('show','id'=>$model->id),array(
-                        'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-first ui-corner-all',
-                        'title'=>Yii::t('link','Show')
-                    )).
-                    CHtml::link('<span class="ui-icon ui-icon-pencil"></span>',array('update','id'=>$model->id),array(
-                        'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-last ui-corner-all',
-                        'title'=>Yii::t('link','Edit')
-                    )),
-                ));
-            }
-            $this->printJson($data);
         }
+        if($accessType===(string)User::MEMBER)
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:member";
+            $criteria->params=array_merge($criteria->params,array(':member'=>User::MEMBER));
+        }
+        else if($accessType===(string)User::CLIENT)
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:client";
+            $criteria->params=array_merge($criteria->params,array(':client'=>User::CLIENT));
+        }
+        else if($accessType===(string)User::CONSULTANT)
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:consultant";
+            $criteria->params=array_merge($criteria->params,array(':consultant'=>User::CONSULTANT));
+        }
+        else if($accessType===(string)User::MANAGER)
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:manager";
+            $criteria->params=array_merge($criteria->params,array(':manager'=>User::MANAGER));
+        }
+        else if($accessType===(string)User::ADMINISTRATOR)
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:administrator";
+            $criteria->params=array_merge($criteria->params,array(':administrator'=>User::ADMINISTRATOR));
+        }
+        if($state==='active')
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."(`t`.`isActive` IS NULL OR `t`.`isActive`!=:isNotActive)";
+            $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
+        }
+        else if($state==='inactive')
+        {
+            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`isActive`=:isNotActive";
+            $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
+        }
+
+        // pagination
+        $with=array();
+        if(strpos($criteria->condition,'User_UserDetails')!==false)
+            $with[]='details';
+        if(count($with)>=1)
+            $pages=new CPagination(User::model()->with($with)->count($criteria));
         else
-            throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+            $pages=new CPagination(User::model()->count($criteria));
+        $pages->pageSize=$jqGrid['pageSize']!==null ? $jqGrid['pageSize'] : self::GRID_PAGE_SIZE;
+        $pages->applyLimit($criteria);
+
+        // sort
+        $sort=new CSort('User');
+        $sort->attributes=array(
+            'accessType'=>array('asc'=>"`t`.`accessLevel`",'desc'=>"`t`.`accessLevel` desc",'label'=>User::model()->getAttributeLabel('accessType')),
+            'createTime'=>array('asc'=>"`t`.`createTime`",'desc'=>"`t`.`createTime` desc",'label'=>User::model()->getAttributeLabel('Registered')),
+            'email'=>array('asc'=>"`t`.`email`",'desc'=>"`t`.`email` desc",'label'=>User::model()->getAttributeLabel('email')),
+            'screenName'=>array('asc'=>"`t`.`screenName`",'desc'=>"`t`.`screenName` desc",'label'=>User::model()->getAttributeLabel('screenName')),
+            'deactivationTime'=>array('asc'=>"`User_UserDetails`.`deactivationTime`",'desc'=>"`User_UserDetails`.`deactivationTime` desc",'label'=>UserDetails::model()->getAttributeLabel('Deact')),
+            'occupation'=>array('asc'=>"`User_UserDetails`.`occupation`",'desc'=>"`User_UserDetails`.`occupation` desc",'label'=>UserDetails::model()->getAttributeLabel('occupation')),
+        );
+        $sort->defaultOrder="`t`.`screenName`";
+        $sort->applyOrder($criteria);
+
+        // find all
+        $models=User::model()->with('details')->findAll($criteria);
+
+        // create resulting data array
+        $data=array(
+            'page'=>$pages->getCurrentPage()+1,
+            'total'=>$pages->getPageCount(),
+            'records'=>$pages->getItemCount(),
+            'rows'=>array()
+        );
+        foreach($models as $model)
+        {
+            $data['rows'][]=array('id'=>$model->id,'cell'=>array(
+                CHtml::encode($model->screenName),
+                CHtml::encode($model->details->occupation),
+                CHtml::encode($model->email),
+                CHtml::encode(MDate::format($model->createTime,'medium',null)),
+                CHtml::encode(MDate::format($model->details->deactivationTime,'medium',null)),
+                CHtml::encode($model->getAttributeView('accessType')),
+                CHtml::link('<span class="ui-icon ui-icon-zoomin"></span>',array('show','id'=>$model->id),array(
+                    'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-first ui-corner-all',
+                    'title'=>Yii::t('link','Show')
+                )).
+                CHtml::link('<span class="ui-icon ui-icon-pencil"></span>',array('update','id'=>$model->id),array(
+                    'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-last ui-corner-all',
+                    'title'=>Yii::t('link','Edit')
+                )),
+            ));
+        }
+        $this->printJson($data);
     }
 }

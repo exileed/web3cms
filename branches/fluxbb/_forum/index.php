@@ -17,7 +17,7 @@ require SHELL_PATH . 'lang/' . $pun_user['language'] . '/index.php';
 // Get list of forums and topics with new posts since last visit
 if (!$pun_user['is_guest'])
 {
-    $db->setQuery('SELECT t.forum_id, t.id, t.last_post FROM ' . $db->db_prefix . 'topics AS t INNER JOIN ' . $db->db_prefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->db_prefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>' . $pun_user['last_visit'] . ' AND t.moved_to IS NULL') or error('Unable to fetch new topics', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT t.forum_id, t.id, t.last_post FROM ' . $db->tablePrefix . 'topics AS t INNER JOIN ' . $db->tablePrefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>' . $pun_user['last_visit'] . ' AND t.moved_to IS NULL') or error('Unable to fetch new topics', __FILE__, __LINE__, $db->error());
 
     $new_topics = array();
     while ($cur_topic = $db->fetch_assoc())
@@ -30,7 +30,7 @@ $page_title = pun_htmlspecialchars($pun_config['o_board_title']);
 define('PUN_ALLOW_INDEX', 1);
 require SHELL_PATH . 'header.php';
 // Print the categories and forums
-$db->setQuery('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.forum_desc, f.redirect_url, f.moderators, f.num_topics, f.num_posts, f.last_post, f.last_post_id, f.last_poster FROM ' . $db->db_prefix . 'categories AS c INNER JOIN ' . $db->db_prefix . 'forums AS f ON c.id=f.cat_id LEFT JOIN ' . $db->db_prefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.forum_desc, f.redirect_url, f.moderators, f.num_topics, f.num_posts, f.last_post, f.last_post_id, f.last_poster FROM ' . $db->tablePrefix . 'categories AS c INNER JOIN ' . $db->tablePrefix . 'forums AS f ON c.id=f.cat_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 
 $cur_category = 0;
 $cat_count = 0;
@@ -147,13 +147,13 @@ while ($cur_forum = $db->fetch_assoc())
     else
         echo '<div id="idx0" class="block"><div class="box"><div class="inbox"><p>' . $lang_index['Empty board'] . '</p></div></div></div>';
     // Collect some statistics from the database
-    $db->setQuery('SELECT COUNT(id)-1 FROM ' . $db->db_prefix . 'users WHERE group_id!=' . PUN_UNVERIFIED) or error('Unable to fetch total user count', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT COUNT(id)-1 FROM ' . $db->tablePrefix . 'users WHERE group_id!=' . PUN_UNVERIFIED) or error('Unable to fetch total user count', __FILE__, __LINE__, $db->error());
     $stats['total_users'] = $db->result($result);
 
-    $db->setQuery('SELECT id, username FROM ' . $db->db_prefix . 'users WHERE group_id!=' . PUN_UNVERIFIED . ' ORDER BY registered DESC LIMIT 1') or error('Unable to fetch newest registered user', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT id, username FROM ' . $db->tablePrefix . 'users WHERE group_id!=' . PUN_UNVERIFIED . ' ORDER BY registered DESC LIMIT 1') or error('Unable to fetch newest registered user', __FILE__, __LINE__, $db->error());
     $stats['last_user'] = $db->fetch_assoc();
 
-    $db->setQuery('SELECT SUM(num_topics), SUM(num_posts) FROM ' . $db->db_prefix . 'forums') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT SUM(num_topics), SUM(num_posts) FROM ' . $db->tablePrefix . 'forums') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $db->error());
     list($stats['total_topics'], $stats['total_posts']) = $db->fetch_row();
 
     if ($pun_user['g_view_users'] == '1')
@@ -182,7 +182,7 @@ while ($cur_forum = $db->fetch_assoc())
         // Fetch users online info and generate strings for output
         $num_guests = 0;
         $users = array();
-        $db->setQuery('SELECT user_id, ident FROM ' . $db->db_prefix . 'online WHERE idle=0 ORDER BY ident', true) or error('Unable to fetch online list', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT user_id, ident FROM ' . $db->tablePrefix . 'online WHERE idle=0 ORDER BY ident', true) or error('Unable to fetch online list', __FILE__, __LINE__, $db->error());
 
         while ($pun_user_online = $db->fetch_assoc())
         {

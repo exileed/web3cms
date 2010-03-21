@@ -10,7 +10,7 @@ if (defined('FORUM_SHOW_QUERIES'))
 
 class DBLayer extends CDbConnection
 {
-    public $db_prefix, $CDbCommand, $CDbDataReader;
+    public $CDbCommand, $CDbDataReader, $tablePrefix;
     public $sameQuery = false;
     public $saved_queries = array();
     public $num_queries = 0;
@@ -27,6 +27,7 @@ class DBLayer extends CDbConnection
             $q_start = get_microtime();
 
         $this->CDbCommand = $this->createCommand($sql);
+        $this->CDbCommand->execute();
         $this->sameQuery = false;
 
         if ($this->CDbCommand)
@@ -151,13 +152,13 @@ class DBLayer extends CDbConnection
 
     public function table_exists($table_name, $no_prefix = false)
     {
-        $this->setQuery('SHOW TABLES LIKE \'' . ($no_prefix ? '' : $this->db_prefix) . $this->escape($table_name) . '\'');
+        $this->setQuery('SHOW TABLES LIKE \'' . ($no_prefix ? '' : $this->tablePrefix) . $this->escape($table_name) . '\'');
         return $this->num_rows() > 0;
     }
 
     public function field_exists($table_name, $field_name, $no_prefix = false)
     {
-        $this->setQuery('SHOW COLUMNS FROM ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . ' LIKE \'' . $this->escape($field_name) . '\'');
+        $this->setQuery('SHOW COLUMNS FROM ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . ' LIKE \'' . $this->escape($field_name) . '\'');
         return $this->num_rows() > 0;
     }
 
@@ -165,10 +166,10 @@ class DBLayer extends CDbConnection
     {
         $exists = false;
 
-        $this->setQuery('SHOW INDEX FROM ' . ($no_prefix ? '' : $this->db_prefix) . $table_name);
+        $this->setQuery('SHOW INDEX FROM ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name);
         while ($cur_index = $this->fetch_assoc())
         {
-            if ($cur_index['Key_name'] == ($no_prefix ? '' : $this->db_prefix) . $table_name . '_' . $index_name)
+            if ($cur_index['Key_name'] == ($no_prefix ? '' : $this->tablePrefix) . $table_name . '_' . $index_name)
             {
                 $exists = true;
                 break;
@@ -183,7 +184,7 @@ class DBLayer extends CDbConnection
         if ($this->table_exists($table_name, $no_prefix))
             return;
 
-        $result = 'CREATE TABLE ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . " (\n";
+        $result = 'CREATE TABLE ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . " (\n";
         foreach ($schema['FIELDS'] as $field_name => $field_data)
         {
             $field_data['datatype'] = preg_replace(array_keys($this->datatype_transformations), array_values($this->datatype_transformations), $field_data['datatype']);
@@ -206,12 +207,12 @@ class DBLayer extends CDbConnection
         if (isset($schema['UNIQUE KEYS']))
         {
             foreach ($schema['UNIQUE KEYS'] as $key_name => $key_fields)
-            $result .= 'UNIQUE KEY ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . '_' . $key_name . '(' . implode(',', $key_fields) . '),' . "\n";
+            $result .= 'UNIQUE KEY ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . '_' . $key_name . '(' . implode(',', $key_fields) . '),' . "\n";
         }
         if (isset($schema['INDEXES']))
         {
             foreach ($schema['INDEXES'] as $index_name => $index_fields)
-            $result .= 'KEY ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . '_' . $index_name . '(' . implode(',', $index_fields) . '),' . "\n";
+            $result .= 'KEY ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . '_' . $index_name . '(' . implode(',', $index_fields) . '),' . "\n";
         }
         $result = substr($result, 0, strlen($result) - 2) . "\n" . ') ENGINE = ' . (isset($schema['ENGINE']) ? $schema['ENGINE'] : 'MyISAM') . ' CHARACTER SET utf8';
 
@@ -223,7 +224,7 @@ class DBLayer extends CDbConnection
         if (!$this->table_exists($table_name, $no_prefix))
             return;
 
-        $this->setQuery('DROP TABLE ' . ($no_prefix ? '' : $this->db_prefix) . $table_name) or error(__FILE__, __LINE__);
+        $this->setQuery('DROP TABLE ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name) or error(__FILE__, __LINE__);
     }
 
     public function add_field($table_name, $field_name, $field_type, $allow_null, $default_value = null, $after_field = null, $no_prefix = false)
@@ -236,7 +237,7 @@ class DBLayer extends CDbConnection
         if ($default_value !== null && !is_int($default_value) && !is_float($default_value))
             $default_value = '\'' . $this->escape($default_value) . '\'';
 
-        $this->setQuery('ALTER TABLE ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . ' ADD ' . $field_name . ' ' . $field_type . ($allow_null ? ' ' : ' NOT NULL') . ($default_value !== null ? ' DEFAULT ' . $default_value : ' ') . ($after_field != null ? ' AFTER ' . $after_field : '')) or error(__FILE__, __LINE__);
+        $this->setQuery('ALTER TABLE ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . ' ADD ' . $field_name . ' ' . $field_type . ($allow_null ? ' ' : ' NOT NULL') . ($default_value !== null ? ' DEFAULT ' . $default_value : ' ') . ($after_field != null ? ' AFTER ' . $after_field : '')) or error(__FILE__, __LINE__);
     }
 
     public function alter_field($table_name, $field_name, $field_type, $allow_null, $default_value = null, $after_field = null, $no_prefix = false)
@@ -249,7 +250,7 @@ class DBLayer extends CDbConnection
         if ($default_value !== null && !is_int($default_value) && !is_float($default_value))
             $default_value = '\'' . $this->escape($default_value) . '\'';
 
-        $this->setQuery('ALTER TABLE ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . ' MODIFY ' . $field_name . ' ' . $field_type . ($allow_null ? ' ' : ' NOT NULL') . ($default_value !== null ? ' DEFAULT ' . $default_value : ' ') . ($after_field != null ? ' AFTER ' . $after_field : '')) or error(__FILE__, __LINE__);
+        $this->setQuery('ALTER TABLE ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . ' MODIFY ' . $field_name . ' ' . $field_type . ($allow_null ? ' ' : ' NOT NULL') . ($default_value !== null ? ' DEFAULT ' . $default_value : ' ') . ($after_field != null ? ' AFTER ' . $after_field : '')) or error(__FILE__, __LINE__);
     }
 
     public function drop_field($table_name, $field_name, $no_prefix = false)
@@ -257,7 +258,7 @@ class DBLayer extends CDbConnection
         if (!$this->field_exists($table_name, $field_name, $no_prefix))
             return;
 
-        $this->setQuery('ALTER TABLE ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . ' DROP ' . $field_name) or error(__FILE__, __LINE__);
+        $this->setQuery('ALTER TABLE ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . ' DROP ' . $field_name) or error(__FILE__, __LINE__);
     }
 
     public function add_index($table_name, $index_name, $index_fields, $unique = false, $no_prefix = false)
@@ -265,7 +266,7 @@ class DBLayer extends CDbConnection
         if ($this->index_exists($table_name, $index_name, $no_prefix))
             return;
 
-        $this->setQuery('ALTER TABLE ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . ' ADD ' . ($unique ? 'UNIQUE ' : '') . 'INDEX ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . '_' . $index_name . ' (' . implode(',', $index_fields) . ')') or error(__FILE__, __LINE__);
+        $this->setQuery('ALTER TABLE ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . ' ADD ' . ($unique ? 'UNIQUE ' : '') . 'INDEX ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . '_' . $index_name . ' (' . implode(',', $index_fields) . ')') or error(__FILE__, __LINE__);
     }
 
     public function drop_index($table_name, $index_name, $no_prefix = false)
@@ -273,7 +274,7 @@ class DBLayer extends CDbConnection
         if (!$this->index_exists($table_name, $index_name, $no_prefix))
             return;
 
-        $this->setQuery('ALTER TABLE ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . ' DROP INDEX ' . ($no_prefix ? '' : $this->db_prefix) . $table_name . '_' . $index_name) or error(__FILE__, __LINE__);
+        $this->setQuery('ALTER TABLE ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . ' DROP INDEX ' . ($no_prefix ? '' : $this->tablePrefix) . $table_name . '_' . $index_name) or error(__FILE__, __LINE__);
     }
 
     public function query_build($result, $return_query_string = false, $unbuffered = false)
@@ -282,12 +283,12 @@ class DBLayer extends CDbConnection
 
         if (isset($result['SELECT']))
         {
-            $sql = 'SELECT ' . $result['SELECT'] . ' FROM ' . (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->db_prefix) . $result['FROM'];
+            $sql = 'SELECT ' . $result['SELECT'] . ' FROM ' . (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->tablePrefix) . $result['FROM'];
 
             if (isset($result['JOINS']))
             {
                 foreach ($result['JOINS'] as $cur_join)
-                $sql .= ' ' . key($cur_join) . ' ' . (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->db_prefix) . current($cur_join) . ' ON ' . $cur_join['ON'];
+                $sql .= ' ' . key($cur_join) . ' ' . (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->tablePrefix) . current($cur_join) . ' ON ' . $cur_join['ON'];
             }
 
             if (!empty($result['WHERE']))
@@ -303,7 +304,7 @@ class DBLayer extends CDbConnection
         }
         else if (isset($result['INSERT']))
         {
-            $sql = 'INSERT INTO ' . (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->db_prefix) . $result['INTO'];
+            $sql = 'INSERT INTO ' . (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->tablePrefix) . $result['INTO'];
 
             if (!empty($result['INSERT']))
                 $sql .= ' (' . $result['INSERT'] . ')';
@@ -315,7 +316,7 @@ class DBLayer extends CDbConnection
         }
         else if (isset($result['UPDATE']))
         {
-            $result['UPDATE'] = (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->db_prefix) . $result['UPDATE'];
+            $result['UPDATE'] = (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->tablePrefix) . $result['UPDATE'];
 
             $sql = 'UPDATE ' . $result['UPDATE'] . ' SET ' . $result['SET'];
 
@@ -324,14 +325,14 @@ class DBLayer extends CDbConnection
         }
         else if (isset($result['DELETE']))
         {
-            $sql = 'DELETE FROM ' . (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->db_prefix) . $result['DELETE'];
+            $sql = 'DELETE FROM ' . (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->tablePrefix) . $result['DELETE'];
 
             if (!empty($result['WHERE']))
                 $sql .= ' WHERE ' . $result['WHERE'];
         }
         else if (isset($result['REPLACE']))
         {
-            $sql = 'REPLACE INTO ' . (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->db_prefix) . $result['INTO'];
+            $sql = 'REPLACE INTO ' . (isset($result['PARAMS']['NO_PREFIX']) ? '' : $this->tablePrefix) . $result['INTO'];
 
             if (!empty($result['REPLACE']))
                 $sql .= ' (' . $result['REPLACE'] . ')';

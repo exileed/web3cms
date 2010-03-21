@@ -19,7 +19,7 @@ if ($id < 1)
 // Load the viewforum.php language file
 require SHELL_PATH . 'lang/' . $pun_user['language'] . '/forum.php';
 // Fetch some info about the forum
-$db->setQuery('SELECT f.forum_name, f.redirect_url, f.moderators, f.num_topics, f.sort_by, fp.post_topics FROM ' . $db->db_prefix . 'forums AS f LEFT JOIN ' . $db->db_prefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id=' . $id) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT f.forum_name, f.redirect_url, f.moderators, f.num_topics, f.sort_by, fp.post_topics FROM ' . $db->tablePrefix . 'forums AS f LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id=' . $id) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
 if (!$db->num_rows())
     message($lang_common['Bad request']);
 
@@ -87,7 +87,7 @@ require SHELL_PATH . 'header.php';
 if ($pun_user['is_guest'] || $pun_config['o_show_dot'] == '0')
 {
     // Without "the dot"
-    $sql = 'SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to FROM ' . $db->db_prefix . 'topics WHERE forum_id=' . $id . ' ORDER BY sticky DESC, ' . (($cur_forum['sort_by'] == '1') ? 'posted' : 'last_post') . ' DESC LIMIT ' . $start_from . ', ' . $pun_user['disp_topics'];
+    $sql = 'SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to FROM ' . $db->tablePrefix . 'topics WHERE forum_id=' . $id . ' ORDER BY sticky DESC, ' . (($cur_forum['sort_by'] == '1') ? 'posted' : 'last_post') . ' DESC LIMIT ' . $start_from . ', ' . $pun_user['disp_topics'];
 }
 else
 {
@@ -96,15 +96,15 @@ else
     {
         case 'mysql':
         case 'mysqli':
-            $sql = 'SELECT p.poster_id AS has_posted, t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to FROM ' . $db->db_prefix . 'topics AS t LEFT JOIN ' . $db->db_prefix . 'posts AS p ON t.id=p.topic_id AND p.poster_id=' . $pun_user['id'] . ' WHERE t.forum_id=' . $id . ' GROUP BY t.id ORDER BY sticky DESC, ' . (($cur_forum['sort_by'] == '1') ? 'posted' : 'last_post') . ' DESC LIMIT ' . $start_from . ', ' . $pun_user['disp_topics'];
+            $sql = 'SELECT p.poster_id AS has_posted, t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to FROM ' . $db->tablePrefix . 'topics AS t LEFT JOIN ' . $db->tablePrefix . 'posts AS p ON t.id=p.topic_id AND p.poster_id=' . $pun_user['id'] . ' WHERE t.forum_id=' . $id . ' GROUP BY t.id ORDER BY sticky DESC, ' . (($cur_forum['sort_by'] == '1') ? 'posted' : 'last_post') . ' DESC LIMIT ' . $start_from . ', ' . $pun_user['disp_topics'];
             break;
 
         case 'sqlite':
-            $sql = 'SELECT p.poster_id AS has_posted, t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to FROM ' . $db->db_prefix . 'topics AS t LEFT JOIN ' . $db->db_prefix . 'posts AS p ON t.id=p.topic_id AND p.poster_id=' . $pun_user['id'] . ' WHERE t.id IN(SELECT id FROM ' . $db->db_prefix . 'topics WHERE forum_id=' . $id . ' ORDER BY sticky DESC, ' . (($cur_forum['sort_by'] == '1') ? 'posted' : 'last_post') . ' DESC LIMIT ' . $start_from . ', ' . $pun_user['disp_topics'] . ') GROUP BY t.id ORDER BY t.sticky DESC, t.last_post DESC';
+            $sql = 'SELECT p.poster_id AS has_posted, t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to FROM ' . $db->tablePrefix . 'topics AS t LEFT JOIN ' . $db->tablePrefix . 'posts AS p ON t.id=p.topic_id AND p.poster_id=' . $pun_user['id'] . ' WHERE t.id IN(SELECT id FROM ' . $db->tablePrefix . 'topics WHERE forum_id=' . $id . ' ORDER BY sticky DESC, ' . (($cur_forum['sort_by'] == '1') ? 'posted' : 'last_post') . ' DESC LIMIT ' . $start_from . ', ' . $pun_user['disp_topics'] . ') GROUP BY t.id ORDER BY t.sticky DESC, t.last_post DESC';
             break;
 
         default:
-            $sql = 'SELECT p.poster_id AS has_posted, t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to FROM ' . $db->db_prefix . 'topics AS t LEFT JOIN ' . $db->db_prefix . 'posts AS p ON t.id=p.topic_id AND p.poster_id=' . $pun_user['id'] . ' WHERE t.forum_id=' . $id . ' GROUP BY t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to, p.poster_id ORDER BY sticky DESC, ' . (($cur_forum['sort_by'] == '1') ? 'posted' : 'last_post') . ' DESC LIMIT ' . $start_from . ', ' . $pun_user['disp_topics'];
+            $sql = 'SELECT p.poster_id AS has_posted, t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to FROM ' . $db->tablePrefix . 'topics AS t LEFT JOIN ' . $db->tablePrefix . 'posts AS p ON t.id=p.topic_id AND p.poster_id=' . $pun_user['id'] . ' WHERE t.forum_id=' . $id . ' GROUP BY t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to, p.poster_id ORDER BY sticky DESC, ' . (($cur_forum['sort_by'] == '1') ? 'posted' : 'last_post') . ' DESC LIMIT ' . $start_from . ', ' . $pun_user['disp_topics'];
             break;
     }
 }

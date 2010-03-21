@@ -29,11 +29,11 @@ if (isset($_POST['add_rank']))
     if (!@preg_match('#^\d+$#', $min_posts))
         message('Minimum posts must be a positive integer value.');
     // Make sure there isn't already a rank with the same min_posts value
-    $db->setQuery('SELECT 1 FROM ' . $db->db_prefix . 'ranks WHERE min_posts=' . $min_posts) or error('Unable to fetch rank info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT 1 FROM ' . $db->tablePrefix . 'ranks WHERE min_posts=' . $min_posts) or error('Unable to fetch rank info', __FILE__, __LINE__, $db->error());
     if ($db->num_rows())
         message('There is already a rank with a minimun posts value of ' . $min_posts . '.');
 
-    $db->setQuery('INSERT INTO ' . $db->db_prefix . 'ranks (rank, min_posts) VALUES(\'' . $db->escape($rank) . '\', ' . $min_posts . ')') or error('Unable to add rank', __FILE__, __LINE__, $db->error());
+    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'ranks (rank, min_posts) VALUES(\'' . $db->escape($rank) . '\', ' . $min_posts . ')') or error('Unable to add rank', __FILE__, __LINE__, $db->error());
     // Regenerate the ranks cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
@@ -58,11 +58,11 @@ else if (isset($_POST['update']))
     if (!@preg_match('#^\d+$#', $min_posts))
         message('Minimum posts must be a positive integer value.');
     // Make sure there isn't already a rank with the same min_posts value
-    $db->setQuery('SELECT 1 FROM ' . $db->db_prefix . 'ranks WHERE id!=' . $id . ' AND min_posts=' . $min_posts) or error('Unable to fetch rank info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT 1 FROM ' . $db->tablePrefix . 'ranks WHERE id!=' . $id . ' AND min_posts=' . $min_posts) or error('Unable to fetch rank info', __FILE__, __LINE__, $db->error());
     if ($db->num_rows())
         message('There is already a rank with a minimun posts value of ' . $min_posts . '.');
 
-    $db->setQuery('UPDATE ' . $db->db_prefix . 'ranks SET rank=\'' . $db->escape($rank) . '\', min_posts=' . $min_posts . ' WHERE id=' . $id) or error('Unable to update rank', __FILE__, __LINE__, $db->error());
+    $db->setQuery('UPDATE ' . $db->tablePrefix . 'ranks SET rank=\'' . $db->escape($rank) . '\', min_posts=' . $min_posts . ' WHERE id=' . $id) or error('Unable to update rank', __FILE__, __LINE__, $db->error());
     // Regenerate the ranks cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
@@ -78,7 +78,7 @@ else if (isset($_POST['remove']))
 
     $id = intval(key($_POST['remove']));
 
-    $db->setQuery('DELETE FROM ' . $db->db_prefix . 'ranks WHERE id=' . $id) or error('Unable to delete rank', __FILE__, __LINE__, $db->error());
+    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'ranks WHERE id=' . $id) or error('Unable to delete rank', __FILE__, __LINE__, $db->error());
     // Regenerate the ranks cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
@@ -129,7 +129,7 @@ generate_admin_menu('ranks');
 						<div class="infldset">
 <?php
 
-$db->setQuery('SELECT id, rank, min_posts FROM ' . $db->db_prefix . 'ranks ORDER BY min_posts') or error('Unable to fetch rank list', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT id, rank, min_posts FROM ' . $db->tablePrefix . 'ranks ORDER BY min_posts') or error('Unable to fetch rank list', __FILE__, __LINE__, $db->error());
 if ($db->num_rows())
 {?>
 							<table cellspacing="0">

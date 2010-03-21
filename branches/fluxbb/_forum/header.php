@@ -60,8 +60,9 @@ ob_start();
 if (!defined('PUN_ALLOW_INDEX'))
     echo '<meta name="ROBOTS" content="NOINDEX, FOLLOW" />' . "\n";
 
+
+//$this->pageTitle = $page_title . (isset($p) ? ' (' . sprintf($lang_common['Page'], forum_number_format($p)) . ')' : '');
 ?>
-<title><?php echo $page_title . (isset($p) ? ' (' . sprintf($lang_common['Page'], forum_number_format($p)) . ')' : '') ?></title>
 <link rel="stylesheet" type="text/css" href="<?php echo WEB_PATH;?>style/<?php echo $pun_user['style'] . '.css' ?>" />
 <?php
 
@@ -143,7 +144,7 @@ else
 
     if ($pun_user['is_admmod'])
     {
-        $db->setQuery('SELECT COUNT(id) FROM ' . $db->db_prefix . 'reports WHERE zapped IS NULL') or error('Unable to fetch reports info', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT COUNT(id) FROM ' . $db->tablePrefix . 'reports WHERE zapped IS NULL') or error('Unable to fetch reports info', __FILE__, __LINE__, $db->error());
 
         if ($db->result())
             $tpl_temp .= "\n\t\t\t\t" . '<li class="reportlink"><strong>' . CHtml::link('There are new reports', array('forum/admin_reports')) . '</strong></li>';

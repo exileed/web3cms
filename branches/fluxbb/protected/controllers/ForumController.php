@@ -9,8 +9,7 @@ class ForumController extends _CController
     public function missingAction($missingActionId)
     {
     	if (file_exists(Yii::app()->getBasePath() . '/../_forum/'.$missingActionId.'.php')) {
-    		$this->setAction($this->createAction('index'));
-			$this->render('index',array('page'=>$missingActionId));
+            $this->render('index',array('page'=>$missingActionId));
     	}
     }
 }

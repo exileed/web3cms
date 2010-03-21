@@ -33,8 +33,8 @@ if (isset($_GET['i_per_page']) && isset($_GET['i_start_at']))
         confirm_referrer('admin_maintenance.php');
 
         $truncate_sql = ($db_type != 'sqlite' && $db_type != 'pgsql') ? 'TRUNCATE TABLE ' : 'DELETE FROM ';
-        $db->setQuery($truncate_sql . $db->tablePrefix . 'search_matches') or error('Unable to empty search index match table', __FILE__, __LINE__, $db->error());
-        $db->setQuery($truncate_sql . $db->tablePrefix . 'search_words') or error('Unable to empty search index words table', __FILE__, __LINE__, $db->error());
+        $db->setQuery($truncate_sql . $db->tablePrefix . 'search_matches')->execute() or error('Unable to empty search index match table', __FILE__, __LINE__, $db->error());
+        $db->setQuery($truncate_sql . $db->tablePrefix . 'search_words')->execute() or error('Unable to empty search index words table', __FILE__, __LINE__, $db->error());
         // Reset the sequence for the search words (not needed for SQLite)
         switch ($db_type)
         {

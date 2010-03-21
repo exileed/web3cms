@@ -108,7 +108,7 @@ if (isset($_POST['form_sent']))
             else
                 $value = 'NULL';
 
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'config SET conf_value=' . $value . ' WHERE conf_name=\'o_' . $db->escape($key) . '\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'config SET conf_value=' . $value . ' WHERE conf_name=\'o_' . $db->escape($key) . '\'')->execute() or error('Unable to update board config', __FILE__, __LINE__, $db->error());
         }
     }
     // Regenerate the config cache

@@ -30,7 +30,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
             if (sha1($cur_user['salt'] . sha1($form_password)) == $cur_user['password'])
             {
                 $authorized = true;
-                $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET password=\'' . $form_password_hash . '\', salt=NULL WHERE id=' . $cur_user['id']) or error('Unable to update user password', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET password=\'' . $form_password_hash . '\', salt=NULL WHERE id=' . $cur_user['id'])->execute() or error('Unable to update user password', __FILE__, __LINE__, $db->error());
             }
         }
         else
@@ -41,7 +41,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
             {
                 $authorized = true;
                 if ($sha1_available) // There's an MD5 hash in the database, but SHA1 hashing is available, so we update the DB
-                    $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET password=\'' . $form_password_hash . '\' WHERE id=' . $cur_user['id']) or error('Unable to update user password', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET password=\'' . $form_password_hash . '\' WHERE id=' . $cur_user['id'])->execute() or error('Unable to update user password', __FILE__, __LINE__, $db->error());
             }
         }
     }
@@ -49,8 +49,8 @@ if (isset($_POST['form_sent']) && $action == 'in')
         message($lang_login['Wrong user/pass'] . ' ' . CHtml::link($lang_login['Forgotten pass'], array('forum/login', 'action' => 'forget')));
     // Update the status if this is the first time the user logged in
     if ($cur_user['group_id'] == PUN_UNVERIFIED)
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET group_id=' . $pun_config['o_default_user_group'] . ' WHERE id=' . $cur_user['id']) or error('Unable to update user status', __FILE__, __LINE__, $db->error()); // Remove this users guest entry from the online list
-    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE ident=\'' . $db->escape(get_remote_address()) . '\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET group_id=' . $pun_config['o_default_user_group'] . ' WHERE id=' . $cur_user['id'])->execute() or error('Unable to update user status', __FILE__, __LINE__, $db->error()); // Remove this users guest entry from the online list
+    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE ident=\'' . $db->escape(get_remote_address()) . '\'')->execute() or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
     $expire = ($save_pass == '1') ? time() + 1209600 : time() + $pun_config['o_timeout_visit'];
     pun_setcookie($cur_user['id'], $form_password_hash, $expire);
     // Reset tracked topics
@@ -64,10 +64,10 @@ else if ($action == 'out')
         Yii::app()->request->redirect(Yii::app()->createUrl('forum/'));
     }
     // Remove user from "users online" list
-    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE user_id=' . $pun_user['id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE user_id=' . $pun_user['id'])->execute() or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
     // Update last_visit (make sure there's something to update it with)
     if (isset($pun_user['logged']))
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_visit=' . $pun_user['logged'] . ' WHERE id=' . $pun_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_visit=' . $pun_user['logged'] . ' WHERE id=' . $pun_user['id'])->execute() or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
     pun_setcookie(1, md5(uniqid(rand(), true)), time() + 31536000);
     redirect('index.php', $lang_login['Logout redirect']);
 }
@@ -99,7 +99,7 @@ else if ($action == 'forget' || $action == 'forget_2')
                 // Generate a new password and a new password activation code
                 $new_password = random_pass(8);
                 $new_password_key = random_pass(8);
-                $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET activate_string = \'' . pun_hash($new_password) . '\', activate_key=\'' . $new_password_key . '\', last_email_sent = ' . time() . ' WHERE id=' . $cur_hit['id']) or error('Unable to update activation data', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET activate_string = \'' . pun_hash($new_password) . '\', activate_key=\'' . $new_password_key . '\', last_email_sent = ' . time() . ' WHERE id=' . $cur_hit['id'])->execute() or error('Unable to update activation data', __FILE__, __LINE__, $db->error());
                 // Do the user specific replacements to the template
                 $cur_mail_message = str_replace('<username>', $cur_hit['username'], $mail_message);
                 $cur_mail_message = str_replace('<activation_url>', $pun_config['o_WEB_PATH'] . ' / profile.php?id = ' . $cur_hit['id'] . '&action = change_pass&key = ' . $new_password_key, $cur_mail_message);

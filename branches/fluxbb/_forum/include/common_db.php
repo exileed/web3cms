@@ -27,25 +27,13 @@ class DBLayer extends CDbConnection
             $q_start = get_microtime();
 
         $this->CDbCommand = $this->createCommand($sql);
-        $this->CDbCommand->execute();
         $this->sameQuery = false;
-
-        if ($this->CDbCommand)
-        {
-            if (defined('FORUM_SHOW_QUERIES'))
-                $this->saved_queries[] = array($sql, sprintf('%.5f', get_microtime() - $q_start));
-
+        if (defined('FORUM_SHOW_QUERIES')) {
+            $this->saved_queries[] = array($sql, sprintf('%.5f', get_microtime() - $q_start));
             ++$this->num_queries;
-
-            return true;
         }
-        else
-        {
-            if (defined('FORUM_SHOW_QUERIES'))
-                $this->saved_queries[] = array($sql, 0);
-
-            return false;
-        }
+            return $this->CDbCommand;
+            //$this->saved_queries[] = array($sql, 0);
     }
 
     public function result($row = 0, $col = 0)

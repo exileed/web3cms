@@ -81,7 +81,7 @@ if (isset($_GET['tid']))
             if ($db->num_rows() != substr_count($posts, ',') + 1)
                 message($lang_common['Bad request']);
             // Delete the posts
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'posts WHERE id IN(' . $posts . ')') or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'posts WHERE id IN(' . $posts . ')')->execute() or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
 
             require SHELL_PATH . 'include/search_idx.php';
             strip_search_index($posts);
@@ -91,7 +91,7 @@ if (isset($_GET['tid']))
             // How many posts did we just delete?
             $num_posts_deleted = substr_count($posts, ',') + 1;
             // Update the topic
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post=' . $last_post['posted'] . ', last_post_id=' . $last_post['id'] . ', last_poster=\'' . $db->escape($last_post['poster']) . '\', num_replies=num_replies-' . $num_posts_deleted . ' WHERE id=' . $tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post=' . $last_post['posted'] . ', last_post_id=' . $last_post['id'] . ', last_poster=\'' . $db->escape($last_post['poster']) . '\', num_replies=num_replies-' . $num_posts_deleted . ' WHERE id=' . $tid)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 
             update_forum($fid);
 
@@ -156,18 +156,18 @@ if (isset($_GET['tid']))
             $db->setQuery('SELECT p.id, p.poster, p.posted FROM ' . $db->tablePrefix . 'posts AS p WHERE id IN(' . $posts . ') ORDER BY p.id ASC LIMIT 1') or error('Unable to get first post', __FILE__, __LINE__, $db->error());
             $first_post_data = $db->fetch_assoc();
             // Create the new topic
-            $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'topics (poster, subject, posted, first_post_id, forum_id) VALUES (\'' . $db->escape($first_post_data['poster']) . '\', \'' . $db->escape($new_subject) . '\', ' . $first_post_data['posted'] . ', ' . $first_post_data['id'] . ', ' . $fid . ')') or error('Unable to create new topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'topics (poster, subject, posted, first_post_id, forum_id) VALUES (\'' . $db->escape($first_post_data['poster']) . '\', \'' . $db->escape($new_subject) . '\', ' . $first_post_data['posted'] . ', ' . $first_post_data['id'] . ', ' . $fid . ')')->execute() or error('Unable to create new topic', __FILE__, __LINE__, $db->error());
             $new_tid = $db->insert_id();
             // Move the posts to the new topic
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'posts SET topic_id=' . $new_tid . ' WHERE id IN(' . $posts . ')') or error('Unable to move posts into new topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'posts SET topic_id=' . $new_tid . ' WHERE id IN(' . $posts . ')')->execute() or error('Unable to move posts into new topic', __FILE__, __LINE__, $db->error());
             // Get last_post, last_post_id, and last_poster from the topic and update it
             $db->setQuery('SELECT id, poster, posted FROM ' . $db->tablePrefix . 'posts WHERE topic_id=' . $tid . ' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
             $last_post_data = $db->fetch_assoc();
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post=' . $last_post_data['posted'] . ', last_post_id=' . $last_post_data['id'] . ', last_poster=\'' . $db->escape($last_post_data['poster']) . '\', num_replies=num_replies-' . $num_posts_splitted . ' WHERE id=' . $tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post=' . $last_post_data['posted'] . ', last_post_id=' . $last_post_data['id'] . ', last_poster=\'' . $db->escape($last_post_data['poster']) . '\', num_replies=num_replies-' . $num_posts_splitted . ' WHERE id=' . $tid)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
             // Get last_post, last_post_id, and last_poster from the new topic and update it
             $db->setQuery('SELECT id, poster, posted FROM ' . $db->tablePrefix . 'posts WHERE topic_id=' . $new_tid . ' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
             $last_post_data = $db->fetch_assoc();
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post=' . $last_post_data['posted'] . ', last_post_id=' . $last_post_data['id'] . ', last_poster=\'' . $db->escape($last_post_data['poster']) . '\', num_replies=' . ($num_posts_splitted - 1) . ' WHERE id=' . $new_tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post=' . $last_post_data['posted'] . ', last_post_id=' . $last_post_data['id'] . ', last_poster=\'' . $db->escape($last_post_data['poster']) . '\', num_replies=' . ($num_posts_splitted - 1) . ' WHERE id=' . $new_tid)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 
             update_forum($fid);
 
@@ -338,9 +338,9 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
         if ($db->num_rows() != count($topics))
             message($lang_common['Bad request']);
         // Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
-        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE forum_id=' . $move_to_forum . ' AND moved_to IN(' . implode(',', $topics) . ')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE forum_id=' . $move_to_forum . ' AND moved_to IN(' . implode(',', $topics) . ')')->execute() or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
         // Move the topic(s)
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET forum_id=' . $move_to_forum . ' WHERE id IN(' . implode(',', $topics) . ')') or error('Unable to move topics', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET forum_id=' . $move_to_forum . ' WHERE id IN(' . implode(',', $topics) . ')')->execute() or error('Unable to move topics', __FILE__, __LINE__, $db->error());
         // Should we create redirect topics?
         if (isset($_POST['with_redirect']))
         {
@@ -350,7 +350,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
                 $db->setQuery('SELECT poster, subject, posted, last_post FROM ' . $db->tablePrefix . 'topics WHERE id=' . $cur_topic) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
                 $moved_to = $db->fetch_assoc();
                 // Create the redirect topic
-                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'topics (poster, subject, posted, last_post, moved_to, forum_id) VALUES(\'' . $db->escape($moved_to['poster']) . '\', \'' . $db->escape($moved_to['subject']) . '\', ' . $moved_to['posted'] . ', ' . $moved_to['last_post'] . ', ' . $cur_topic . ', ' . $fid . ')') or error('Unable to create redirect topic', __FILE__, __LINE__, $db->error());
+                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'topics (poster, subject, posted, last_post, moved_to, forum_id) VALUES(\'' . $db->escape($moved_to['poster']) . '\', \'' . $db->escape($moved_to['subject']) . '\', ' . $moved_to['posted'] . ', ' . $moved_to['last_post'] . ', ' . $cur_topic . ', ' . $fid . ')')->execute() or error('Unable to create redirect topic', __FILE__, __LINE__, $db->error());
             }
         }
 
@@ -461,14 +461,14 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
             if (isset($_POST['with_redirect']))
                 $query .= ' OR (id IN(' . implode(',', $topics) . ') AND id != ' . $merge_to_tid . ')';
 
-            $db->setQuery($query) or error('Unable to make redirection topics', __FILE__, __LINE__, $db->error());
+            $db->setQuery($query)->execute() or error('Unable to make redirection topics', __FILE__, __LINE__, $db->error());
             // Merge the posts into the topic
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'posts SET topic_id=' . $merge_to_tid . ' WHERE topic_id IN(' . implode(',', $topics) . ')') or error('Unable to merge the posts into the topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'posts SET topic_id=' . $merge_to_tid . ' WHERE topic_id IN(' . implode(',', $topics) . ')')->execute() or error('Unable to merge the posts into the topic', __FILE__, __LINE__, $db->error());
             // Delete any subscriptions
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE topic_id IN(' . implode(',', $topics) . ') AND topic_id != ' . $merge_to_tid) or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE topic_id IN(' . implode(',', $topics) . ') AND topic_id != ' . $merge_to_tid)->execute() or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
             // Without redirection the old topics are removed
             if (!isset($_POST['with_redirect']))
-                $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id IN(' . implode(',', $topics) . ') AND id != ' . $merge_to_tid) or error('Unable to delete old topics', __FILE__, __LINE__, $db->error());
+                $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id IN(' . implode(',', $topics) . ') AND id != ' . $merge_to_tid)->execute() or error('Unable to delete old topics', __FILE__, __LINE__, $db->error());
             // Count number of replies in the topic
             $db->setQuery('SELECT COUNT(id) FROM ' . $db->tablePrefix . 'posts WHERE topic_id=' . $merge_to_tid) or error('Unable to fetch post count for topic', __FILE__, __LINE__, $db->error());
             $num_replies = $db->result($result, 0) - 1;
@@ -476,7 +476,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
             $db->setQuery('SELECT posted, id, poster FROM ' . $db->tablePrefix . 'posts WHERE topic_id=' . $merge_to_tid . ' ORDER BY id DESC LIMIT 1') or error('Unable to get last post info', __FILE__, __LINE__, $db->error());
             list($last_post, $last_post_id, $last_poster) = $db->fetch_row();
             // Update topic
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET num_replies=' . $num_replies . ', last_post=' . $last_post . ', last_post_id=' . $last_post_id . ', last_poster=\'' . $db->escape($last_poster) . '\' WHERE id=' . $merge_to_tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET num_replies=' . $num_replies . ', last_post=' . $last_post . ', last_post_id=' . $last_post_id . ', last_poster=\'' . $db->escape($last_poster) . '\' WHERE id=' . $merge_to_tid)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
             // Update the forum FROM which the topic was moved and redirect
             update_forum($fid);
             redirect('viewforum.php?id=' . $fid, $lang_misc['Merge topics redirect']);
@@ -534,9 +534,9 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
             if ($db->num_rows() != substr_count($topics, ',') + 1)
                 message($lang_common['Bad request']);
             // Delete the topics and any redirect topics
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id IN(' . $topics . ') OR moved_to IN(' . $topics . ')') or error('Unable to delete topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id IN(' . $topics . ') OR moved_to IN(' . $topics . ')')->execute() or error('Unable to delete topic', __FILE__, __LINE__, $db->error());
             // Delete any subscriptions
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE topic_id IN(' . $topics . ')') or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE topic_id IN(' . $topics . ')')->execute() or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
             // Create a list of the post IDs in this topic and then strip the search index
             $db->setQuery('SELECT id FROM ' . $db->tablePrefix . 'posts WHERE topic_id IN(' . $topics . ')') or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 
@@ -547,7 +547,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
             if ($post_ids != '')
                 strip_search_index($post_ids);
             // Delete posts
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'posts WHERE topic_id IN(' . $topics . ')') or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'posts WHERE topic_id IN(' . $topics . ')')->execute() or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
 
             update_forum($fid);
 
@@ -593,7 +593,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
             if (empty($topics))
                 message($lang_misc['No topics selected']);
 
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET closed=' . $action . ' WHERE id IN(' . implode(',', $topics) . ') AND forum_id=' . $fid) or error('Unable to close topics', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET closed=' . $action . ' WHERE id IN(' . implode(',', $topics) . ') AND forum_id=' . $fid)->execute() or error('Unable to close topics', __FILE__, __LINE__, $db->error());
 
             $redirect_msg = ($action) ? $lang_misc['Close topics redirect'] : $lang_misc['Open topics redirect'];
             redirect('moderate.php?fid=' . $fid, $redirect_msg);
@@ -607,7 +607,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
             if ($topic_id < 1)
                 message($lang_common['Bad request']);
 
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET closed=' . $action . ' WHERE id=' . $topic_id . ' AND forum_id=' . $fid) or error('Unable to close topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET closed=' . $action . ' WHERE id=' . $topic_id . ' AND forum_id=' . $fid)->execute() or error('Unable to close topic', __FILE__, __LINE__, $db->error());
 
             $redirect_msg = ($action) ? $lang_misc['Close topic redirect'] : $lang_misc['Open topic redirect'];
             redirect('viewtopic.php?id=' . $topic_id, $redirect_msg);
@@ -622,7 +622,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
         if ($stick < 1)
             message($lang_common['Bad request']);
 
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET sticky=\'1\' WHERE id=' . $stick . ' AND forum_id=' . $fid) or error('Unable to stick topic', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET sticky=\'1\' WHERE id=' . $stick . ' AND forum_id=' . $fid)->execute() or error('Unable to stick topic', __FILE__, __LINE__, $db->error());
 
         redirect('viewtopic.php?id=' . $stick, $lang_misc['Stick topic redirect']);
     }
@@ -635,7 +635,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
         if ($unstick < 1)
             message($lang_common['Bad request']);
 
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET sticky=\'0\' WHERE id=' . $unstick . ' AND forum_id=' . $fid) or error('Unable to unstick topic', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET sticky=\'0\' WHERE id=' . $unstick . ' AND forum_id=' . $fid)->execute() or error('Unable to unstick topic', __FILE__, __LINE__, $db->error());
 
         redirect('viewtopic.php?id=' . $unstick, $lang_misc['Unstick topic redirect']);
     }

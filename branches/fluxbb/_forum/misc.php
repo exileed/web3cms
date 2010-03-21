@@ -46,7 +46,7 @@ else if ($action == 'markread')
     if ($pun_user['is_guest'])
         message($lang_common['No permission']);
 
-    $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_visit=' . $pun_user['logged'] . ' WHERE id=' . $pun_user['id']) or error('Unable to update user last visit data', __FILE__, __LINE__, $db->error());
+    $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_visit=' . $pun_user['logged'] . ' WHERE id=' . $pun_user['id'])->execute() or error('Unable to update user last visit data', __FILE__, __LINE__, $db->error());
     // Reset tracked topics
     set_tracked_topics(null);
 
@@ -119,7 +119,7 @@ else if (isset($_GET['email']))
 
         pun_mail($recipient_email, $mail_subject, $mail_message, $pun_user['email'], $pun_user['username']);
 
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_email_sent=' . time() . ' WHERE id=' . $pun_user['id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_email_sent=' . time() . ' WHERE id=' . $pun_user['id'])->execute() or error('Unable to update user', __FILE__, __LINE__, $db->error());
 
         redirect(htmlspecialchars($_POST['redirect_url']), $lang_misc['Email sent redirect']);
     }
@@ -192,7 +192,7 @@ else if (isset($_GET['report']))
         list($subject, $forum_id) = $db->fetch_row();
         // Should we use the internal report handling?
         if ($pun_config['o_report_method'] == 0 || $pun_config['o_report_method'] == 2)
-            $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES(' . $post_id . ', ' . $topic_id . ', ' . $forum_id . ', ' . $pun_user['id'] . ', ' . time() . ', \'' . $db->escape($reason) . '\')') or error('Unable to create report', __FILE__, __LINE__, $db->error());
+            $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES(' . $post_id . ', ' . $topic_id . ', ' . $forum_id . ', ' . $pun_user['id'] . ', ' . time() . ', \'' . $db->escape($reason) . '\')')->execute() or error('Unable to create report', __FILE__, __LINE__, $db->error());
         // Should we email the report?
         if ($pun_config['o_report_method'] == 1 || $pun_config['o_report_method'] == 2)
         {
@@ -210,7 +210,7 @@ else if (isset($_GET['report']))
             }
         }
 
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_email_sent=' . time() . ' WHERE id=' . $pun_user['id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_email_sent=' . time() . ' WHERE id=' . $pun_user['id'])->execute() or error('Unable to update user', __FILE__, __LINE__, $db->error());
 
         redirect('viewtopic.php?pid=' . $post_id . '#p' . $post_id, $lang_misc['Report redirect']);
     }
@@ -261,7 +261,7 @@ else if (isset($_GET['subscribe']))
     if ($db->num_rows())
         message($lang_misc['Already subscribed']);
 
-    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'subscriptions (user_id, topic_id) VALUES(' . $pun_user['id'] . ' ,' . $topic_id . ')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
+    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'subscriptions (user_id, topic_id) VALUES(' . $pun_user['id'] . ' ,' . $topic_id . ')')->execute() or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
 
     redirect('viewtopic.php?id=' . $topic_id, $lang_misc['Subscribe redirect']);
 }
@@ -279,7 +279,7 @@ else if (isset($_GET['unsubscribe']))
     if (!$db->num_rows())
         message($lang_misc['Not subscribed']);
 
-    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE user_id=' . $pun_user['id'] . ' AND topic_id=' . $topic_id) or error('Unable to remove subscription', __FILE__, __LINE__, $db->error());
+    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE user_id=' . $pun_user['id'] . ' AND topic_id=' . $topic_id)->execute() or error('Unable to remove subscription', __FILE__, __LINE__, $db->error());
 
     redirect('viewtopic.php?id=' . $topic_id, $lang_misc['Unsubscribe redirect']);
 }

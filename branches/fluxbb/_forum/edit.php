@@ -78,14 +78,14 @@ if (isset($_POST['form_sent']))
         if ($can_edit_subject)
         {
             // Update the topic and any redirect topics
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET subject=\'' . $db->escape($subject) . '\' WHERE id=' . $cur_post['tid'] . ' OR moved_to=' . $cur_post['tid']) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET subject=\'' . $db->escape($subject) . '\' WHERE id=' . $cur_post['tid'] . ' OR moved_to=' . $cur_post['tid'])->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
             // We changed the subject, so we need to take that into account when we update the search words
             update_search_index('edit', $id, $message, $subject);
         }
         else
             update_search_index('edit', $id, $message);
         // Update the post
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'posts SET message=\'' . $db->escape($message) . '\', hide_smilies=' . $hide_smilies . $edited_sql . ' WHERE id=' . $id) or error('Unable to update post', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'posts SET message=\'' . $db->escape($message) . '\', hide_smilies=' . $hide_smilies . $edited_sql . ' WHERE id=' . $id)->execute() or error('Unable to update post', __FILE__, __LINE__, $db->error());
 
         redirect('viewtopic.php?pid=' . $id . '#p' . $id, $lang_post['Edit redirect']);
     }

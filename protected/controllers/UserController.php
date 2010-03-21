@@ -237,12 +237,15 @@ class UserController extends _CController
         // collect user input data
         if(isset($_POST['UserLoginForm']))
         {
-            $form->attributes=$_POST['UserLoginForm'];
             if(isset($_POST['UserLoginForm']['loginWithField']))
+            {
                 // if user is logging with email, but param changed to username,
                 // we should try to log him in with email.
                 // if login attempt is unsuccessful, he will have to try again with username
                 UserLoginForm::$loginWithField=$_POST['UserLoginForm']['loginWithField'];
+                unset($_POST['UserLoginForm']['loginWithField']);
+            }
+            $form->attributes=$_POST['UserLoginForm'];
             // validate user input and redirect to return page if valid
             if($form->validate())
             {

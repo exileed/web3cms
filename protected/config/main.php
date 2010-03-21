@@ -37,75 +37,32 @@ $retval=array(
         'db'=>array(
             //'connectionString'=>'sqlite:'.dirname(__FILE__).'/../data/web3cms.db',
             // CREATE DATABASE `web3cms_r34` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-            'connectionString'=>'mysql:host=localhost;dbname=web3cms_r34',
-            'username'=>'web3cmsuser', //'web3cmsuser'
-            'password'=>'web3cmspass', //'web3cmspass'
+            'class'=>'application.components.DBLayer',
+            'connectionString'=>'mysql:host=localhost;dbname=db',
+            'username'=>'root', //'web3cmsuser'
+            'password'=>'', //'web3cmspass'
             'charset'=>'utf8', //comment this if you are using a different db charset
         ),
         'errorHandler'=>array(
             'errorAction'=>'site/error',
         ),
         'log'=>array(
-            'class'=>'CLogRouter',
-            'routes'=>array(
-                array(
-                    'class'=>'CFileLogRoute',
-                    'levels'=>'error',
-                    'logFile'=>'error.log',
-                    'filter'=>'CLogFilter', // this saves _cookie, _server
-                ),
-                array(
-                    'class'=>'CFileLogRoute',
-                    'levels'=>'warning',
-                    'logFile'=>'warning.log',
-                ),
-                array(
-                    'class'=>'CFileLogRoute',
-                    'levels'=>'notice',
-                    'logFile'=>'notice.log',
-                ),
-                array(
-                    'class'=>'CFileLogRoute',
-                    'levels'=>'info',
-                    'logFile'=>'info.log',
-                ),
-                array(
-                    'class'=>'CFileLogRoute',
-                    'levels'=>'email, sent, not-sent',
-                    'categories'=>'email',
-                    'logFile'=>'email.log',
-                ),
-                array(
-                    'class'=>'CFileLogRoute',
-                    'levels'=>'email, sent, not-sent',
-                    'categories'=>'email-details',
-                    'logFile'=>'email-details.log',
-                    'maxFileSize'=>2048,
-                ),
-                array(
-                    'class'=>'CFileLogRoute', // 'CFileLogRoute','CWebLogRoute'
-                    'levels'=>'trace', // 'trace,info,error,warning'
-                    'logFile'=>'trace.log', //
-                    'maxFileSize'=>1024, //
-                    // to track down problems with specific users:
-                    //'filter' => array(
-                        //'class' => 'CLogFilter',
-                        //'prefixSession' => true,
-                        //'prefixUser' => false,
-                        //'logUser' => false,
-                        //'logVars' => array(),
-                    //),
-                ),
-                array(
-                    'class'=>'CFileLogRoute',
-                    'levels'=>'w3',
-                    'categories'=>'w3',
-                    'logFile'=>'w3.log',
+        'class'=>'CLogRouter',
+        'routes'=>array(
+            array(
+                'class'=>'CWebLogRoute',
+                'levels'=>'trace,info,error,warning',
+                'filter' => array(
+                    'class' => 'CLogFilter',
+                    'prefixSession' => true,
+                    'prefixUser' => false,
+                    'logUser' => false,
+                    'logVars' => array(),
                 ),
             ),
-        ),
+        )),
         'urlManager'=>array(
-            'urlFormat'=>'path',
+            //'urlFormat'=>'path',
             //'caseSensitive'=>false,
             //'showScriptName'=>true,
             //'urlSuffix'=>'.html',

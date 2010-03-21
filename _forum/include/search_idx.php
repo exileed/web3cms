@@ -63,7 +63,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 
     if ($mode == 'edit')
     {
-        $db->setQuery('SELECT w.id, w.word, m.subject_match FROM ' . $db->db_prefix . 'search_words AS w INNER JOIN ' . $db->db_prefix . 'search_matches AS m ON w.id=m.word_id WHERE m.post_id=' . $post_id, true) or error('Unable to fetch search index words', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT w.id, w.word, m.subject_match FROM ' . $db->tablePrefix . 'search_words AS w INNER JOIN ' . $db->tablePrefix . 'search_matches AS m ON w.id=m.word_id WHERE m.post_id=' . $post_id, true) or error('Unable to fetch search index words', __FILE__, __LINE__, $db->error());
         // Declare here to stop array_keys() and array_diff() from complaining if not set
         $cur_words['post'] = array();
         $cur_words['subject'] = array();
@@ -94,7 +94,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 
     if (!empty($unique_words))
     {
-        $db->setQuery('SELECT id, word FROM ' . $db->db_prefix . 'search_words WHERE word IN(' . implode(',', preg_replace('#^(.*)$#', '\'\1\'', $unique_words)) . ')', true) or error('Unable to fetch search index words', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT id, word FROM ' . $db->tablePrefix . 'search_words WHERE word IN(' . implode(',', preg_replace('#^(.*)$#', '\'\1\'', $unique_words)) . ')', true) or error('Unable to fetch search index words', __FILE__, __LINE__, $db->error());
 
         $word_ids = array();
         while ($row = $db->fetch_row())
@@ -110,12 +110,12 @@ function update_search_index($mode, $post_id, $message, $subject = null)
                 case 'mysqli':
                 case 'mysql_innodb':
                 case 'mysqli_innodb':
-                    $db->setQuery('INSERT INTO ' . $db->db_prefix . 'search_words (word) VALUES' . implode(',', preg_replace('#^(.*)$#', '(\'\1\')', $new_words))) or error('Unable to insert search index words', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'search_words (word) VALUES' . implode(',', preg_replace('#^(.*)$#', '(\'\1\')', $new_words))) or error('Unable to insert search index words', __FILE__, __LINE__, $db->error());
                     break;
 
                 default:
                     while (list(, $word) = @each($new_words))
-                    $db->setQuery('INSERT INTO ' . $db->db_prefix . 'search_words (word) VALUES(\'' . $word . '\')') or error('Unable to insert search index words', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'search_words (word) VALUES(\'' . $word . '\')') or error('Unable to insert search index words', __FILE__, __LINE__, $db->error());
                     break;
             }
         }
@@ -133,7 +133,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
             while (list(, $word) = @each($wordlist))
             $sql .= (($sql != '') ? ',' : '') . $cur_words[$match_in][$word];
 
-            $db->setQuery('DELETE FROM ' . $db->db_prefix . 'search_matches WHERE word_id IN(' . $sql . ') AND post_id=' . $post_id . ' AND subject_match=' . $subject_match) or error('Unable to delete search index word matches', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'search_matches WHERE word_id IN(' . $sql . ') AND post_id=' . $post_id . ' AND subject_match=' . $subject_match) or error('Unable to delete search index word matches', __FILE__, __LINE__, $db->error());
         }
     }
     // Add new matches
@@ -142,7 +142,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
         $subject_match = ($match_in == 'subject') ? 1 : 0;
 
         if (!empty($wordlist))
-            $db->setQuery('INSERT INTO ' . $db->db_prefix . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . $db->db_prefix . 'search_words WHERE word IN(' . implode(',', preg_replace('#^(.*)$#', '\'\1\'', $wordlist)) . ')') or error('Unable to insert search index word matches', __FILE__, __LINE__, $db->error());
+            $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . $db->tablePrefix . 'search_words WHERE word IN(' . implode(',', preg_replace('#^(.*)$#', '\'\1\'', $wordlist)) . ')') or error('Unable to insert search index word matches', __FILE__, __LINE__, $db->error());
     }
 
     unset($words);
@@ -159,7 +159,7 @@ function strip_search_index($post_ids)
         case 'mysql_innodb':
         case 'mysqli_innodb':
             {
-                $db->setQuery('SELECT word_id FROM ' . $db->db_prefix . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id') or error('Unable to fetch search index word match', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT word_id FROM ' . $db->tablePrefix . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id') or error('Unable to fetch search index word match', __FILE__, __LINE__, $db->error());
 
                 if ($db->num_rows())
                 {
@@ -167,7 +167,7 @@ function strip_search_index($post_ids)
                     while ($row = $db->fetch_row())
                     $word_ids .= ($word_ids != '') ? ',' . $row[0] : $row[0];
 
-                    $db->setQuery('SELECT word_id FROM ' . $db->db_prefix . 'search_matches WHERE word_id IN(' . $word_ids . ') GROUP BY word_id HAVING COUNT(word_id)=1') or error('Unable to fetch search index word match', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('SELECT word_id FROM ' . $db->tablePrefix . 'search_matches WHERE word_id IN(' . $word_ids . ') GROUP BY word_id HAVING COUNT(word_id)=1') or error('Unable to fetch search index word match', __FILE__, __LINE__, $db->error());
 
                     if ($db->num_rows())
                     {
@@ -175,7 +175,7 @@ function strip_search_index($post_ids)
                         while ($row = $db->fetch_row())
                         $word_ids .= ($word_ids != '') ? ',' . $row[0] : $row[0];
 
-                        $db->setQuery('DELETE FROM ' . $db->db_prefix . 'search_words WHERE id IN(' . $word_ids . ')') or error('Unable to delete search index word', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'search_words WHERE id IN(' . $word_ids . ')') or error('Unable to delete search index word', __FILE__, __LINE__, $db->error());
                     }
                 }
 
@@ -183,9 +183,9 @@ function strip_search_index($post_ids)
             }
 
         default:
-            $db->setQuery('DELETE FROM ' . $db->db_prefix . 'search_words WHERE id IN(SELECT word_id FROM ' . $db->db_prefix . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . $db->db_prefix . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)') or error('Unable to delete from search index', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'search_words WHERE id IN(SELECT word_id FROM ' . $db->tablePrefix . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . $db->tablePrefix . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)') or error('Unable to delete from search index', __FILE__, __LINE__, $db->error());
             break;
     }
 
-    $db->setQuery('DELETE FROM ' . $db->db_prefix . 'search_matches WHERE post_id IN(' . $post_ids . ')') or error('Unable to delete search index word match', __FILE__, __LINE__, $db->error());
+    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'search_matches WHERE post_id IN(' . $post_ids . ')') or error('Unable to delete search index word match', __FILE__, __LINE__, $db->error());
 }

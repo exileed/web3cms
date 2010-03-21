@@ -25,7 +25,7 @@ if (isset($_POST['add_word']))
     if ($search_for == '' || $replace_with == '')
         message('You must enter both a word to censor and text to replace it with.');
 
-    $db->setQuery('INSERT INTO ' . $db->db_prefix . 'censoring (search_for, replace_with) VALUES (\'' . $db->escape($search_for) . '\', \'' . $db->escape($replace_with) . '\')') or error('Unable to add censor word', __FILE__, __LINE__, $db->error());
+    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'censoring (search_for, replace_with) VALUES (\'' . $db->escape($search_for) . '\', \'' . $db->escape($replace_with) . '\')') or error('Unable to add censor word', __FILE__, __LINE__, $db->error());
 
     redirect('admin_censoring.php', 'Censor word added. Redirecting &hellip;');
 }
@@ -42,7 +42,7 @@ else if (isset($_POST['update']))
     if ($search_for == '' || $replace_with == '')
         message('You must enter both text to search for and text to replace with.');
 
-    $db->setQuery('UPDATE ' . $db->db_prefix . 'censoring SET search_for=\'' . $db->escape($search_for) . '\', replace_with=\'' . $db->escape($replace_with) . '\' WHERE id=' . $id) or error('Unable to update censor word', __FILE__, __LINE__, $db->error());
+    $db->setQuery('UPDATE ' . $db->tablePrefix . 'censoring SET search_for=\'' . $db->escape($search_for) . '\', replace_with=\'' . $db->escape($replace_with) . '\' WHERE id=' . $id) or error('Unable to update censor word', __FILE__, __LINE__, $db->error());
 
     redirect('admin_censoring.php', 'Censor word updated. Redirecting &hellip;');
 }
@@ -53,7 +53,7 @@ else if (isset($_POST['remove']))
 
     $id = intval(key($_POST['remove']));
 
-    $db->setQuery('DELETE FROM ' . $db->db_prefix . 'censoring WHERE id=' . $id) or error('Unable to delete censor word', __FILE__, __LINE__, $db->error());
+    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'censoring WHERE id=' . $id) or error('Unable to delete censor word', __FILE__, __LINE__, $db->error());
 
     redirect('admin_censoring.php', 'Censor word removed. Redirecting &hellip;');
 }
@@ -99,7 +99,7 @@ generate_admin_menu('censoring');
 						<div class="infldset">
 <?php
 
-$db->setQuery('SELECT id, search_for, replace_with FROM ' . $db->db_prefix . 'censoring ORDER BY id') or error('Unable to fetch censor word list', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT id, search_for, replace_with FROM ' . $db->tablePrefix . 'censoring ORDER BY id') or error('Unable to fetch censor word list', __FILE__, __LINE__, $db->error());
 if ($db->num_rows())
 {?>
 							<table cellspacing="0" >

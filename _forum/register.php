@@ -57,7 +57,7 @@ $errors = array();
 if (isset($_POST['form_sent']))
 {
     // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
-    $db->setQuery('SELECT 1 FROM ' . $db->db_prefix . 'users WHERE registration_ip=\'' . get_remote_address() . '\' AND registered>' . (time() - 3600)) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT 1 FROM ' . $db->tablePrefix . 'users WHERE registration_ip=\'' . get_remote_address() . '\' AND registered>' . (time() - 3600)) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 
     if ($db->num_rows())
         message($lang_register['Registration flood']);
@@ -100,7 +100,7 @@ if (isset($_POST['form_sent']))
             $errors[] = $lang_register['Username censor'];
     }
     // Check that the username (or a too similar username) is not already registered
-    $db->setQuery('SELECT username FROM ' . $db->db_prefix . 'users WHERE UPPER(username)=UPPER(\'' . $db->escape($username) . '\') OR UPPER(username)=UPPER(\'' . $db->escape(preg_replace('/[^\w]/', '', $username)) . '\')') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT username FROM ' . $db->tablePrefix . 'users WHERE UPPER(username)=UPPER(\'' . $db->escape($username) . '\') OR UPPER(username)=UPPER(\'' . $db->escape(preg_replace('/[^\w]/', '', $username)) . '\')') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 
     if ($db->num_rows())
     {
@@ -141,7 +141,7 @@ if (isset($_POST['form_sent']))
     // Check if someone else already has registered with that email address
     $dupe_list = array();
 
-    $db->setQuery('SELECT username FROM ' . $db->db_prefix . 'users WHERE email=\'' . $db->escape($email1) . '\'') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT username FROM ' . $db->tablePrefix . 'users WHERE email=\'' . $db->escape($email1) . '\'') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
     if ($db->num_rows())
     {
         if ($pun_config['p_allow_dupe_email'] == '0')
@@ -175,7 +175,7 @@ if (isset($_POST['form_sent']))
         $intial_group_id = ($pun_config['o_regs_verify'] == '0') ? $pun_config['o_default_user_group'] : PUN_UNVERIFIED;
         $password_hash = pun_hash($password1);
         // Add the user
-        $db->setQuery('INSERT INTO ' . $db->db_prefix . 'users (username, group_id, password, email, email_setting, timezone, dst, language, style, registered, registration_ip, last_visit) VALUES(\'' . $db->escape($username) . '\', ' . $intial_group_id . ', \'' . $password_hash . '\', \'' . $db->escape($email1) . '\', ' . $email_setting . ', ' . $timezone . ' , ' . $dst . ', \'' . $db->escape($language) . '\', \'' . $pun_config['o_default_style'] . '\', ' . $now . ', \'' . get_remote_address() . '\', ' . $now . ')') or error('Unable to create user', __FILE__, __LINE__, $db->error());
+        $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'users (username, group_id, password, email, email_setting, timezone, dst, language, style, registered, registration_ip, last_visit) VALUES(\'' . $db->escape($username) . '\', ' . $intial_group_id . ', \'' . $password_hash . '\', \'' . $db->escape($email1) . '\', ' . $email_setting . ', ' . $timezone . ' , ' . $dst . ', \'' . $db->escape($language) . '\', \'' . $pun_config['o_default_style'] . '\', ' . $now . ', \'' . get_remote_address() . '\', ' . $now . ')') or error('Unable to create user', __FILE__, __LINE__, $db->error());
         $new_uid = $db->insert_id();
         // If we previously found out that the email was banned
         if ($banned_email && $pun_config['o_mailing_list'] != '')

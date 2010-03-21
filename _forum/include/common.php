@@ -27,8 +27,8 @@ if (!defined('PUN'))
 require SHELL_PATH . 'include/common_db.php';
 // Create the database adapter object (and open/connect to/select db)
 $db = Yii::app()->db;
-$db->db_prefix = $db_prefix;
 $db->active = true;
+$db->tablePrefix = $db_prefix;
 // Load the functions script
 require SHELL_PATH . 'include/functions.php';
 // Load UTF-8 functions

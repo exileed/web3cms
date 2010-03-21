@@ -34,7 +34,7 @@ if ($pun_user['g_search_users'] == '1' && $username != '')
 if ($show_group > - 1)
     $where_sql[] = 'u.group_id=' . $show_group;
 // Fetch user count
-$db->setQuery('SELECT COUNT(id) FROM ' . $db->db_prefix . 'users AS u WHERE u.id>1 AND u.group_id!=' . PUN_UNVERIFIED . (!empty($where_sql) ? ' AND ' . implode(' AND ', $where_sql) : '')) or error('Unable to fetch user list count', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT COUNT(id) FROM ' . $db->tablePrefix . 'users AS u WHERE u.id>1 AND u.group_id!=' . PUN_UNVERIFIED . (!empty($where_sql) ? ' AND ' . implode(' AND ', $where_sql) : '')) or error('Unable to fetch user list count', __FILE__, __LINE__, $db->error());
 $num_users = $db->result($result);
 // Determine the user offset (based on $_GET['p'])
 $num_pages = ceil($num_users / 50);
@@ -66,7 +66,7 @@ require SHELL_PATH . 'header.php';
 							<option value="-1"<?php if ($show_group == - 1) echo ' selected="selected"' ?>><?php echo $lang_ul['All users'] ?></option>
 <?php
 
-    $db->setQuery('SELECT g_id, g_title FROM ' . $db->db_prefix . 'groups WHERE g_id!=' . PUN_GUEST . ' ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT g_id, g_title FROM ' . $db->tablePrefix . 'groups WHERE g_id!=' . PUN_GUEST . ' ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
 while ($cur_group = $db->fetch_assoc())
 {
@@ -124,7 +124,7 @@ while ($cur_group = $db->fetch_assoc())
 		<tbody>
 <?php
                     // Grab the users
-                    $db->setQuery('SELECT u.id, u.username, u.title, u.num_posts, u.registered, g.g_id, g.g_user_title FROM ' . $db->db_prefix . 'users AS u LEFT JOIN ' . $db->db_prefix . 'groups AS g ON g.g_id=u.group_id WHERE u.id>1 AND u.group_id!=' . PUN_UNVERIFIED . (!empty($where_sql) ? ' AND ' . implode(' AND ', $where_sql) : '') . ' ORDER BY ' . $sort_by . ' ' . $sort_dir . ', u.id ASC LIMIT ' . $start_from . ', 50') or error('Unable to fetch user list', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('SELECT u.id, u.username, u.title, u.num_posts, u.registered, g.g_id, g.g_user_title FROM ' . $db->tablePrefix . 'users AS u LEFT JOIN ' . $db->tablePrefix . 'groups AS g ON g.g_id=u.group_id WHERE u.id>1 AND u.group_id!=' . PUN_UNVERIFIED . (!empty($where_sql) ? ' AND ' . implode(' AND ', $where_sql) : '') . ' ORDER BY ' . $sort_by . ' ' . $sort_dir . ', u.id ASC LIMIT ' . $start_from . ', 50') or error('Unable to fetch user list', __FILE__, __LINE__, $db->error());
                     if ($db->num_rows())
                     {
                         while ($user_data = $db->fetch_assoc())

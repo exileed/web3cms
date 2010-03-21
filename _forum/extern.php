@@ -249,7 +249,7 @@ if ($action == 'feed')
     {
         $tid = intval($_GET['tid']);
         // Fetch topic subject
-        $db->setQuery('SELECT t.subject, t.first_post_id FROM ' . $db->db_prefix . 'topics AS t LEFT JOIN ' . $db->db_prefix . 'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL AND t.id=' . $tid) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT t.subject, t.first_post_id FROM ' . $db->tablePrefix . 'topics AS t LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL AND t.id=' . $tid) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
         if (!$db->num_rows())
         {
             http_authenticate_user();
@@ -269,7 +269,7 @@ if ($action == 'feed')
             'type' => 'posts'
             );
         // Fetch $show posts
-        $db->setQuery('SELECT p.id, p.poster, p.message, p.hide_smilies, p.posted, p.poster_id, u.email_setting, u.email, p.poster_email FROM ' . $db->db_prefix . 'posts AS p INNER JOIN ' . $db->db_prefix . 'users AS u ON u.id=p.poster_id WHERE p.topic_id=' . $tid . ' ORDER BY p.posted DESC LIMIT ' . $show) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT p.id, p.poster, p.message, p.hide_smilies, p.posted, p.poster_id, u.email_setting, u.email, p.poster_email FROM ' . $db->tablePrefix . 'posts AS p INNER JOIN ' . $db->tablePrefix . 'users AS u ON u.id=p.poster_id WHERE p.topic_id=' . $tid . ' ORDER BY p.posted DESC LIMIT ' . $show) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
         while ($cur_post = $db->fetch_assoc())
         {
             $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
@@ -318,7 +318,7 @@ if ($action == 'feed')
             if (count($fids) == 1)
             {
                 // Fetch forum name
-                $db->setQuery('SELECT f.forum_name FROM ' . $db->db_prefix . 'forums AS f LEFT JOIN ' . $db->db_prefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id=' . $fids[0]) or error('Unable to fetch forum name', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT f.forum_name FROM ' . $db->tablePrefix . 'forums AS f LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id=' . $fids[0]) or error('Unable to fetch forum name', __FILE__, __LINE__, $db->error());
                 if ($db->num_rows())
                     $forum_name = ' ' . $db->result($result);
             }
@@ -341,7 +341,7 @@ if ($action == 'feed')
             'type' => 'topics'
             );
         // Fetch $show topics
-        $db->setQuery('SELECT t.id, t.poster, t.subject, t.posted, t.last_post, t.last_poster, p.message, p.hide_smilies, u.email_setting, u.email, p.poster_id, p.poster_email FROM ' . $db->db_prefix . 'topics AS t INNER JOIN ' . $db->db_prefix . 'posts AS p ON p.id=' . ($order_posted ? 't.first_post_id' : 't.last_post_id') . ' INNER JOIN ' . $db->db_prefix . 'users AS u ON u.id=p.poster_id LEFT JOIN ' . $db->db_prefix . 'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL' . $forum_sql . ' ORDER BY ' . ($order_posted ? 't.posted' : 't.last_post') . ' DESC LIMIT ' . $show) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT t.id, t.poster, t.subject, t.posted, t.last_post, t.last_poster, p.message, p.hide_smilies, u.email_setting, u.email, p.poster_id, p.poster_email FROM ' . $db->tablePrefix . 'topics AS t INNER JOIN ' . $db->tablePrefix . 'posts AS p ON p.id=' . ($order_posted ? 't.first_post_id' : 't.last_post_id') . ' INNER JOIN ' . $db->tablePrefix . 'users AS u ON u.id=p.poster_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL' . $forum_sql . ' ORDER BY ' . ($order_posted ? 't.posted' : 't.last_post') . ' DESC LIMIT ' . $show) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
         while ($cur_topic = $db->fetch_assoc())
         {
             $cur_topic['message'] = parse_message($cur_topic['message'], $cur_topic['hide_smilies']);
@@ -388,7 +388,7 @@ else if ($action == 'online' || $action == 'online_full')
     $num_guests = $num_users = 0;
     $users = array();
 
-    $db->setQuery('SELECT user_id, ident FROM ' . $db->db_prefix . 'online WHERE idle=0 ORDER BY ident', true) or error('Unable to fetch online list', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT user_id, ident FROM ' . $db->tablePrefix . 'online WHERE idle=0 ORDER BY ident', true) or error('Unable to fetch online list', __FILE__, __LINE__, $db->error());
 
     while ($pun_user_online = $db->fetch_assoc())
     {
@@ -421,13 +421,13 @@ else if ($action == 'stats')
     // Load the index.php language file
     require SHELL_PATH . 'lang/' . $pun_config['o_default_lang'] . '/index.php';
     // Collect some statistics from the database
-    $db->setQuery('SELECT COUNT(id)-1 FROM ' . $db->db_prefix . 'users') or error('Unable to fetch total user count', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT COUNT(id)-1 FROM ' . $db->tablePrefix . 'users') or error('Unable to fetch total user count', __FILE__, __LINE__, $db->error());
     $stats['total_users'] = $db->result($result);
 
-    $db->setQuery('SELECT id, username FROM ' . $db->db_prefix . 'users ORDER BY registered DESC LIMIT 1') or error('Unable to fetch newest registered user', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT id, username FROM ' . $db->tablePrefix . 'users ORDER BY registered DESC LIMIT 1') or error('Unable to fetch newest registered user', __FILE__, __LINE__, $db->error());
     $stats['last_user'] = $db->fetch_assoc();
 
-    $db->setQuery('SELECT SUM(num_topics), SUM(num_posts) FROM ' . $db->db_prefix . 'forums') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT SUM(num_topics), SUM(num_posts) FROM ' . $db->tablePrefix . 'forums') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $db->error());
     list($stats['total_topics'], $stats['total_posts']) = $db->fetch_row();
     // Send the Content-type header in case the web server is setup to send something else
     header('Content-type: text/html; charset=utf-8');

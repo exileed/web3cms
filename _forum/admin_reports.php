@@ -22,11 +22,11 @@ if (isset($_POST['zap_id']))
 
     $zap_id = intval(key($_POST['zap_id']));
 
-    $db->setQuery('SELECT zapped FROM ' . $db->db_prefix . 'reports WHERE id=' . $zap_id) or error('Unable to fetch report info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT zapped FROM ' . $db->tablePrefix . 'reports WHERE id=' . $zap_id) or error('Unable to fetch report info', __FILE__, __LINE__, $db->error());
     $zapped = $db->result($result);
 
     if ($zapped == '')
-        $db->setQuery('UPDATE ' . $db->db_prefix . 'reports SET zapped=' . time() . ', zapped_by=' . $pun_user['id'] . ' WHERE id=' . $zap_id) or error('Unable to zap report', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'reports SET zapped=' . time() . ', zapped_by=' . $pun_user['id'] . ' WHERE id=' . $zap_id) or error('Unable to zap report', __FILE__, __LINE__, $db->error());
 
     redirect('admin_reports.php', 'Report zapped. Redirecting &hellip;');
 }
@@ -41,7 +41,7 @@ generate_admin_menu('reports');
 		<h2><span>New reports</span></h2>
 		<div class="box">
 			<?php echo CHtml::form(array('admin_reports','action'=>'zap'), 'POST');
-$db->setQuery('SELECT r.id, r.topic_id, r.forum_id, r.reported_by, r.created, r.message, p.id AS pid, t.subject, f.forum_name, u.username AS reporter FROM ' . $db->db_prefix . 'reports AS r LEFT JOIN ' . $db->db_prefix . 'posts AS p ON r.post_id=p.id LEFT JOIN ' . $db->db_prefix . 'topics AS t ON r.topic_id=t.id LEFT JOIN ' . $db->db_prefix . 'forums AS f ON r.forum_id=f.id LEFT JOIN ' . $db->db_prefix . 'users AS u ON r.reported_by=u.id WHERE r.zapped IS NULL ORDER BY created DESC') or error('Unable to fetch report list', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT r.id, r.topic_id, r.forum_id, r.reported_by, r.created, r.message, p.id AS pid, t.subject, f.forum_name, u.username AS reporter FROM ' . $db->tablePrefix . 'reports AS r LEFT JOIN ' . $db->tablePrefix . 'posts AS p ON r.post_id=p.id LEFT JOIN ' . $db->tablePrefix . 'topics AS t ON r.topic_id=t.id LEFT JOIN ' . $db->tablePrefix . 'forums AS f ON r.forum_id=f.id LEFT JOIN ' . $db->tablePrefix . 'users AS u ON r.reported_by=u.id WHERE r.zapped IS NULL ORDER BY created DESC') or error('Unable to fetch report list', __FILE__, __LINE__, $db->error());
 
 if ($db->num_rows())
 {
@@ -89,7 +89,7 @@ else
 			<div class="fakeform">
 <?php
 
-$db->setQuery('SELECT r.id, r.topic_id, r.forum_id, r.reported_by, r.message, r.zapped, r.zapped_by AS zapped_by_id, p.id AS pid, t.subject, f.forum_name, u.username AS reporter, u2.username AS zapped_by FROM ' . $db->db_prefix . 'reports AS r LEFT JOIN ' . $db->db_prefix . 'posts AS p ON r.post_id=p.id LEFT JOIN ' . $db->db_prefix . 'topics AS t ON r.topic_id=t.id LEFT JOIN ' . $db->db_prefix . 'forums AS f ON r.forum_id=f.id LEFT JOIN ' . $db->db_prefix . 'users AS u ON r.reported_by=u.id LEFT JOIN ' . $db->db_prefix . 'users AS u2 ON r.zapped_by=u2.id WHERE r.zapped IS NOT NULL ORDER BY zapped DESC LIMIT 10') or error('Unable to fetch report list', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT r.id, r.topic_id, r.forum_id, r.reported_by, r.message, r.zapped, r.zapped_by AS zapped_by_id, p.id AS pid, t.subject, f.forum_name, u.username AS reporter, u2.username AS zapped_by FROM ' . $db->tablePrefix . 'reports AS r LEFT JOIN ' . $db->tablePrefix . 'posts AS p ON r.post_id=p.id LEFT JOIN ' . $db->tablePrefix . 'topics AS t ON r.topic_id=t.id LEFT JOIN ' . $db->tablePrefix . 'forums AS f ON r.forum_id=f.id LEFT JOIN ' . $db->tablePrefix . 'users AS u ON r.reported_by=u.id LEFT JOIN ' . $db->tablePrefix . 'users AS u2 ON r.zapped_by=u2.id WHERE r.zapped IS NOT NULL ORDER BY zapped DESC LIMIT 10') or error('Unable to fetch report list', __FILE__, __LINE__, $db->error());
 
 if ($db->num_rows())
 {

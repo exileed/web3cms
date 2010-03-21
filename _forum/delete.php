@@ -17,7 +17,7 @@ $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if ($id < 1)
     message($lang_common['Bad request']);
 // Fetch some info about the post, the topic and the forum
-$db->setQuery('SELECT f.id AS fid, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.id AS tid, t.subject, t.posted, t.first_post_id, t.closed, p.poster, p.poster_id, p.message, p.hide_smilies FROM ' . $db->db_prefix . 'posts AS p INNER JOIN ' . $db->db_prefix . 'topics AS t ON t.id=p.topic_id INNER JOIN ' . $db->db_prefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->db_prefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id=' . $id) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT f.id AS fid, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.id AS tid, t.subject, t.posted, t.first_post_id, t.closed, p.poster, p.poster_id, p.message, p.hide_smilies FROM ' . $db->tablePrefix . 'posts AS p INNER JOIN ' . $db->tablePrefix . 'topics AS t ON t.id=p.topic_id INNER JOIN ' . $db->tablePrefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id=' . $id) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 if (!$db->num_rows())
     message($lang_common['Bad request']);
 

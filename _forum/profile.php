@@ -40,14 +40,14 @@ if ($action == 'change_pass')
 
         $key = $_GET['key'];
 
-        $db->setQuery('SELECT activate_string, activate_key FROM ' . $db->db_prefix . 'users WHERE id=' . $id) or error('Unable to fetch new password', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT activate_string, activate_key FROM ' . $db->tablePrefix . 'users WHERE id=' . $id) or error('Unable to fetch new password', __FILE__, __LINE__, $db->error());
         list($new_password_hash, $new_password_key) = $db->fetch_row();
 
         if ($key == '' || $key != $new_password_key)
             message($lang_profile['Pass key bad'] . ' ' . CHtml::link($pun_config['o_admin_email'], 'mailto:' . $pun_config['o_admin_email']));
         else
         {
-            $db->setQuery('UPDATE ' . $db->db_prefix . 'users SET password=\'' . $new_password_hash . '\', activate_string=NULL, activate_key=NULL WHERE id=' . $id) or error('Unable to update password', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET password=\'' . $new_password_hash . '\', activate_string=NULL, activate_key=NULL WHERE id=' . $id) or error('Unable to update password', __FILE__, __LINE__, $db->error());
 
             message($lang_profile['Pass updated'], true);
         }
@@ -59,7 +59,7 @@ if ($action == 'change_pass')
             message($lang_common['No permission']);
         else if ($pun_user['g_moderator'] == '1') // A moderator trying to change a users password?
             {
-                $db->setQuery('SELECT u.group_id, g.g_moderator FROM ' . $db->db_prefix . 'users AS u INNER JOIN ' . $db->db_prefix . 'groups AS g ON (g.g_id=u.group_id) WHERE u.id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT u.group_id, g.g_moderator FROM ' . $db->tablePrefix . 'users AS u INNER JOIN ' . $db->tablePrefix . 'groups AS g ON (g.g_id=u.group_id) WHERE u.id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
             if (!$db->num_rows())
                 message($lang_common['Bad request']);
 
@@ -84,7 +84,7 @@ if ($action == 'change_pass')
         if (strlen($new_password1) < 4)
             message($lang_prof_reg['Pass too short']);
 
-        $db->setQuery('SELECT password FROM ' . $db->db_prefix . 'users WHERE id=' . $id) or error('Unable to fetch password', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT password FROM ' . $db->tablePrefix . 'users WHERE id=' . $id) or error('Unable to fetch password', __FILE__, __LINE__, $db->error());
         list($db_password_hash) = $db->fetch_row();
 
         $authorized = false;
@@ -106,7 +106,7 @@ if ($action == 'change_pass')
 
         $new_password_hash = pun_hash($new_password1);
 
-        $db->setQuery('UPDATE ' . $db->db_prefix . 'users SET password=\'' . $new_password_hash . '\' WHERE id=' . $id) or error('Unable to update password', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET password=\'' . $new_password_hash . '\' WHERE id=' . $id) or error('Unable to update password', __FILE__, __LINE__, $db->error());
 
         if ($pun_user['id'] == $id)
         {
@@ -159,7 +159,7 @@ else if ($action == 'change_email')
             message($lang_common['No permission']);
         else if ($pun_user['g_moderator'] == '1') // A moderator trying to change a users email?
             {
-                $db->setQuery('SELECT u.group_id, g.g_moderator FROM ' . $db->db_prefix . 'users AS u INNER JOIN ' . $db->db_prefix . 'groups AS g ON (g.g_id=u.group_id) WHERE u.id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT u.group_id, g.g_moderator FROM ' . $db->tablePrefix . 'users AS u INNER JOIN ' . $db->tablePrefix . 'groups AS g ON (g.g_id=u.group_id) WHERE u.id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
             if (!$db->num_rows())
                 message($lang_common['Bad request']);
 
@@ -174,14 +174,14 @@ else if ($action == 'change_email')
     {
         $key = $_GET['key'];
 
-        $db->setQuery('SELECT activate_string, activate_key FROM ' . $db->db_prefix . 'users WHERE id=' . $id) or error('Unable to fetch activation data', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT activate_string, activate_key FROM ' . $db->tablePrefix . 'users WHERE id=' . $id) or error('Unable to fetch activation data', __FILE__, __LINE__, $db->error());
         list($new_email, $new_email_key) = $db->fetch_row();
 
         if ($key == '' || $key != $new_email_key)
             message($lang_profile['Email key bad'] . ' ' . CHtml::link($pun_config['o_admin_email'], 'mailto:' . $pun_config['o_admin_email']));
         else
         {
-            $db->setQuery('UPDATE ' . $db->db_prefix . 'users SET email=activate_string, activate_string=NULL, activate_key=NULL WHERE id=' . $id) or error('Unable to update email address', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET email=activate_string, activate_string=NULL, activate_key=NULL WHERE id=' . $id) or error('Unable to update email address', __FILE__, __LINE__, $db->error());
 
             message($lang_profile['Email updated'], true);
         }
@@ -212,7 +212,7 @@ else if ($action == 'change_email')
             }
         }
         // Check if someone else already has registered with that email address
-        $db->setQuery('SELECT id, username FROM ' . $db->db_prefix . 'users WHERE email=\'' . $db->escape($new_email) . '\'') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT id, username FROM ' . $db->tablePrefix . 'users WHERE email=\'' . $db->escape($new_email) . '\'') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
         if ($db->num_rows())
         {
             if ($pun_config['p_allow_dupe_email'] == '0')
@@ -233,7 +233,7 @@ else if ($action == 'change_email')
 
         $new_email_key = random_pass(8);
 
-        $db->setQuery('UPDATE ' . $db->db_prefix . 'users SET activate_string=\'' . $db->escape($new_email) . '\', activate_key=\'' . $new_email_key . '\' WHERE id=' . $id) or error('Unable to update activation data', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET activate_string=\'' . $db->escape($new_email) . '\', activate_key=\'' . $new_email_key . '\' WHERE id=' . $id) or error('Unable to update activation data', __FILE__, __LINE__, $db->error());
         // Load the "activate email" template
         $mail_tpl = trim(file_get_contents(SHELL_PATH . 'lang/' . $pun_user['language'] . '/mail_templates/activate_email.tpl'));
         // The first row contains the subject
@@ -421,14 +421,14 @@ else if (isset($_POST['update_group_membership']))
 
     $new_group_id = intval($_POST['group_id']);
 
-    $db->setQuery('UPDATE ' . $db->db_prefix . 'users SET group_id=' . $new_group_id . ' WHERE id=' . $id) or error('Unable to change user group', __FILE__, __LINE__, $db->error());
+    $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET group_id=' . $new_group_id . ' WHERE id=' . $id) or error('Unable to change user group', __FILE__, __LINE__, $db->error());
 
-    $db->setQuery('SELECT g_moderator FROM ' . $db->db_prefix . 'groups WHERE g_id=' . $new_group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT g_moderator FROM ' . $db->tablePrefix . 'groups WHERE g_id=' . $new_group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
     $new_group_mod = $db->result($result);
     // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
     if ($new_group_id != PUN_ADMIN && $new_group_mod != '1')
     {
-        $db->setQuery('SELECT id, moderators FROM ' . $db->db_prefix . 'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT id, moderators FROM ' . $db->tablePrefix . 'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 
         while ($cur_forum = $db->fetch_assoc())
         {
@@ -440,7 +440,7 @@ else if (isset($_POST['update_group_membership']))
                 unset($cur_moderators[$username]);
                 $cur_moderators = (!empty($cur_moderators)) ? '\'' . $db->escape(serialize($cur_moderators)) . '\'' : 'NULL';
 
-                $db->setQuery('UPDATE ' . $db->db_prefix . 'forums SET moderators=' . $cur_moderators . ' WHERE id=' . $cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET moderators=' . $cur_moderators . ' WHERE id=' . $cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
             }
         }
     }
@@ -455,12 +455,12 @@ else if (isset($_POST['update_forums']))
 
     confirm_referrer('profile.php');
     // Get the username of the user we are processing
-    $db->setQuery('SELECT username FROM ' . $db->db_prefix . 'users WHERE id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT username FROM ' . $db->tablePrefix . 'users WHERE id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
     $username = $db->result($result);
 
     $moderator_in = (isset($_POST['moderator_in'])) ? array_keys($_POST['moderator_in']) : array();
     // Loop through all forums
-    $db->setQuery('SELECT id, moderators FROM ' . $db->db_prefix . 'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT id, moderators FROM ' . $db->tablePrefix . 'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 
     while ($cur_forum = $db->fetch_assoc())
     {
@@ -471,7 +471,7 @@ else if (isset($_POST['update_forums']))
             $cur_moderators[$username] = $id;
             ksort($cur_moderators);
 
-            $db->setQuery('UPDATE ' . $db->db_prefix . 'forums SET moderators=\'' . $db->escape(serialize($cur_moderators)) . '\' WHERE id=' . $cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET moderators=\'' . $db->escape(serialize($cur_moderators)) . '\' WHERE id=' . $cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
         }
         // If the user shouldn't have moderator access (and he/she already has it)
         else if (!in_array($cur_forum['id'], $moderator_in) && in_array($id, $cur_moderators))
@@ -479,7 +479,7 @@ else if (isset($_POST['update_forums']))
             unset($cur_moderators[$username]);
             $cur_moderators = (!empty($cur_moderators)) ? '\'' . $db->escape(serialize($cur_moderators)) . '\'' : 'NULL';
 
-            $db->setQuery('UPDATE ' . $db->db_prefix . 'forums SET moderators=' . $cur_moderators . ' WHERE id=' . $cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET moderators=' . $cur_moderators . ' WHERE id=' . $cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
         }
     }
 
@@ -501,7 +501,7 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
 
     confirm_referrer('profile.php');
     // Get the username and group of the user we are deleting
-    $db->setQuery('SELECT group_id, username FROM ' . $db->db_prefix . 'users WHERE id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT group_id, username FROM ' . $db->tablePrefix . 'users WHERE id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
     list($group_id, $username) = $db->fetch_row();
 
     if ($group_id == PUN_ADMIN)
@@ -510,12 +510,12 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
     if (isset($_POST['delete_user_comply']))
     {
         // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-        $db->setQuery('SELECT g_moderator FROM ' . $db->db_prefix . 'groups WHERE g_id=' . $group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT g_moderator FROM ' . $db->tablePrefix . 'groups WHERE g_id=' . $group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
         $group_mod = $db->result($result);
 
         if ($group_id == PUN_ADMIN || $group_mod == '1')
         {
-            $db->setQuery('SELECT id, moderators FROM ' . $db->db_prefix . 'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
+            $db->setQuery('SELECT id, moderators FROM ' . $db->tablePrefix . 'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 
             while ($cur_forum = $db->fetch_assoc())
             {
@@ -526,27 +526,27 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
                     unset($cur_moderators[$username]);
                     $cur_moderators = (!empty($cur_moderators)) ? '\'' . $db->escape(serialize($cur_moderators)) . '\'' : 'NULL';
 
-                    $db->setQuery('UPDATE ' . $db->db_prefix . 'forums SET moderators=' . $cur_moderators . ' WHERE id=' . $cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET moderators=' . $cur_moderators . ' WHERE id=' . $cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
                 }
             }
         }
         // Delete any subscriptions
-        $db->setQuery('DELETE FROM ' . $db->db_prefix . 'subscriptions WHERE user_id=' . $id) or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE user_id=' . $id) or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
         // Remove him/her from the online list (if they happen to be logged in)
-        $db->setQuery('DELETE FROM ' . $db->db_prefix . 'online WHERE user_id=' . $id) or error('Unable to remove user from online list', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE user_id=' . $id) or error('Unable to remove user from online list', __FILE__, __LINE__, $db->error());
         // Should we delete all posts made by this user?
         if (isset($_POST['delete_posts']))
         {
             require SHELL_PATH . 'include/search_idx.php';
             @set_time_limit(0);
             // Find all posts made by this user
-            $db->setQuery('SELECT p.id, p.topic_id, t.forum_id FROM ' . $db->db_prefix . 'posts AS p INNER JOIN ' . $db->db_prefix . 'topics AS t ON t.id=p.topic_id INNER JOIN ' . $db->db_prefix . 'forums AS f ON f.id=t.forum_id WHERE p.poster_id=' . $id) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
+            $db->setQuery('SELECT p.id, p.topic_id, t.forum_id FROM ' . $db->tablePrefix . 'posts AS p INNER JOIN ' . $db->tablePrefix . 'topics AS t ON t.id=p.topic_id INNER JOIN ' . $db->tablePrefix . 'forums AS f ON f.id=t.forum_id WHERE p.poster_id=' . $id) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
             if ($db->num_rows())
             {
                 while ($cur_post = $db->fetch_assoc())
                 {
                     // Determine whether this post is the "topic post" or not
-                    $db->setQuery('SELECT id FROM ' . $db->db_prefix . 'posts WHERE topic_id=' . $cur_post['topic_id'] . ' ORDER BY posted LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('SELECT id FROM ' . $db->tablePrefix . 'posts WHERE topic_id=' . $cur_post['topic_id'] . ' ORDER BY posted LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 
                     if ($db->result() == $cur_post['id'])
                         delete_topic($cur_post['topic_id']);
@@ -559,9 +559,9 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
         }
         else
             // Set all his/her posts to guest
-            $db->setQuery('UPDATE ' . $db->db_prefix . 'posts SET poster_id=1 WHERE poster_id=' . $id) or error('Unable to update posts', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'posts SET poster_id=1 WHERE poster_id=' . $id) or error('Unable to update posts', __FILE__, __LINE__, $db->error());
         // Delete the user
-        $db->setQuery('DELETE FROM ' . $db->db_prefix . 'users WHERE id=' . $id) or error('Unable to delete user', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'users WHERE id=' . $id) or error('Unable to delete user', __FILE__, __LINE__, $db->error());
         // Delete user avatar
         delete_avatar($id);
 
@@ -600,7 +600,7 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
 else if (isset($_POST['form_sent']))
 {
     // Fetch the user group of the user we are editing
-    $db->setQuery('SELECT u.group_id, g.g_moderator FROM ' . $db->db_prefix . 'users AS u INNER JOIN ' . $db->db_prefix . 'groups AS g ON (g.g_id=u.group_id) WHERE u.id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT u.group_id, g.g_moderator FROM ' . $db->tablePrefix . 'users AS u INNER JOIN ' . $db->tablePrefix . 'groups AS g ON (g.g_id=u.group_id) WHERE u.id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
     if (!$db->num_rows())
         message($lang_common['Bad request']);
 
@@ -656,7 +656,7 @@ else if (isset($_POST['form_sent']))
                         else if (preg_match('/(?:\[\/?(?:b|u|i|h|colou?r|quote|code|img|url|email|list)\]|\[(?:code|quote|list)=)/i', $form['username']))
                             message($lang_prof_reg['Username BBCode']);
                         // Check that the username is not already registered
-                        $db->setQuery('SELECT 1 FROM ' . $db->db_prefix . 'users WHERE username=\'' . $db->escape($form['username']) . '\' AND id!=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('SELECT 1 FROM ' . $db->tablePrefix . 'users WHERE username=\'' . $db->escape($form['username']) . '\' AND id!=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
                         if ($db->num_rows())
                             message($lang_profile['Dupe username']);
 
@@ -806,26 +806,26 @@ else if (isset($_POST['form_sent']))
     if (empty($temp))
         message($lang_common['Bad request']);
 
-    $db->setQuery('UPDATE ' . $db->db_prefix . 'users SET ' . implode(',', $temp) . ' WHERE id=' . $id) or error('Unable to update profile', __FILE__, __LINE__, $db->error());
+    $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET ' . implode(',', $temp) . ' WHERE id=' . $id) or error('Unable to update profile', __FILE__, __LINE__, $db->error());
     // If we changed the username we have to update some stuff
     if ($username_updated)
     {
-        $db->setQuery('UPDATE ' . $db->db_prefix . 'posts SET poster=\'' . $db->escape($form['username']) . '\' WHERE poster_id=' . $id) or error('Unable to update posts', __FILE__, __LINE__, $db->error());
-        $db->setQuery('UPDATE ' . $db->db_prefix . 'posts SET edited_by=\'' . $db->escape($form['username']) . '\' WHERE edited_by=\'' . $db->escape($old_username) . '\'') or error('Unable to update posts', __FILE__, __LINE__, $db->error());
-        $db->setQuery('UPDATE ' . $db->db_prefix . 'topics SET poster=\'' . $db->escape($form['username']) . '\' WHERE poster=\'' . $db->escape($old_username) . '\'') or error('Unable to update topics', __FILE__, __LINE__, $db->error());
-        $db->setQuery('UPDATE ' . $db->db_prefix . 'topics SET last_poster=\'' . $db->escape($form['username']) . '\' WHERE last_poster=\'' . $db->escape($old_username) . '\'') or error('Unable to update topics', __FILE__, __LINE__, $db->error());
-        $db->setQuery('UPDATE ' . $db->db_prefix . 'forums SET last_poster=\'' . $db->escape($form['username']) . '\' WHERE last_poster=\'' . $db->escape($old_username) . '\'') or error('Unable to update forums', __FILE__, __LINE__, $db->error());
-        $db->setQuery('UPDATE ' . $db->db_prefix . 'online SET ident=\'' . $db->escape($form['username']) . '\' WHERE ident=\'' . $db->escape($old_username) . '\'') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'posts SET poster=\'' . $db->escape($form['username']) . '\' WHERE poster_id=' . $id) or error('Unable to update posts', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'posts SET edited_by=\'' . $db->escape($form['username']) . '\' WHERE edited_by=\'' . $db->escape($old_username) . '\'') or error('Unable to update posts', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET poster=\'' . $db->escape($form['username']) . '\' WHERE poster=\'' . $db->escape($old_username) . '\'') or error('Unable to update topics', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_poster=\'' . $db->escape($form['username']) . '\' WHERE last_poster=\'' . $db->escape($old_username) . '\'') or error('Unable to update topics', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET last_poster=\'' . $db->escape($form['username']) . '\' WHERE last_poster=\'' . $db->escape($old_username) . '\'') or error('Unable to update forums', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'online SET ident=\'' . $db->escape($form['username']) . '\' WHERE ident=\'' . $db->escape($old_username) . '\'') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
         // If the user is a moderator or an administrator we have to update the moderator lists
-        $db->setQuery('SELECT group_id FROM ' . $db->db_prefix . 'users WHERE id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT group_id FROM ' . $db->tablePrefix . 'users WHERE id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
         $group_id = $db->result($result);
 
-        $db->setQuery('SELECT g_moderator FROM ' . $db->db_prefix . 'groups WHERE g_id=' . $group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT g_moderator FROM ' . $db->tablePrefix . 'groups WHERE g_id=' . $group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
         $group_mod = $db->result($result);
 
         if ($group_id == PUN_ADMIN || $group_mod == '1')
         {
-            $db->setQuery('SELECT id, moderators FROM ' . $db->db_prefix . 'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
+            $db->setQuery('SELECT id, moderators FROM ' . $db->tablePrefix . 'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 
             while ($cur_forum = $db->fetch_assoc())
             {
@@ -837,7 +837,7 @@ else if (isset($_POST['form_sent']))
                     $cur_moderators[$form['username']] = $id;
                     ksort($cur_moderators);
 
-                    $db->setQuery('UPDATE ' . $db->db_prefix . 'forums SET moderators=\'' . $db->escape(serialize($cur_moderators)) . '\' WHERE id=' . $cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET moderators=\'' . $db->escape(serialize($cur_moderators)) . '\' WHERE id=' . $cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
                 }
             }
         }
@@ -846,7 +846,7 @@ else if (isset($_POST['form_sent']))
     redirect('profile.php?section=' . $section . '&amp;id=' . $id, $lang_profile['Profile redirect']);
 }
 
-$db->setQuery('SELECT u.username, u.email, u.title, u.realname, u.url, u.jabber, u.icq, u.msn, u.aim, u.yahoo, u.location, u.signature, u.disp_topics, u.disp_posts, u.email_setting, u.notify_with_post, u.auto_notify, u.show_smilies, u.show_img, u.show_img_sig, u.show_avatars, u.show_sig, u.timezone, u.dst, u.language, u.style, u.num_posts, u.last_post, u.registered, u.registration_ip, u.admin_note, u.date_format, u.time_format, g.g_id, g.g_user_title, g.g_moderator FROM ' . $db->db_prefix . 'users AS u LEFT JOIN ' . $db->db_prefix . 'groups AS g ON g.g_id=u.group_id WHERE u.id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT u.username, u.email, u.title, u.realname, u.url, u.jabber, u.icq, u.msn, u.aim, u.yahoo, u.location, u.signature, u.disp_topics, u.disp_posts, u.email_setting, u.notify_with_post, u.auto_notify, u.show_smilies, u.show_img, u.show_img_sig, u.show_avatars, u.show_sig, u.timezone, u.dst, u.language, u.style, u.num_posts, u.last_post, u.registered, u.registration_ip, u.admin_note, u.date_format, u.time_format, g.g_id, g.g_user_title, g.g_moderator FROM ' . $db->tablePrefix . 'users AS u LEFT JOIN ' . $db->tablePrefix . 'groups AS g ON g.g_id=u.group_id WHERE u.id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 if (!$db->num_rows())
     message($lang_common['Bad request']);
 
@@ -1507,7 +1507,7 @@ if ($pun_user['id'] != $id &&
 							<select id="group_id" name="group_id">
 <?php
 
-                                                                                                                                                                                                                        $db->setQuery('SELECT g_id, g_title FROM ' . $db->db_prefix . 'groups WHERE g_id!=' . PUN_GUEST . ' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+                                                                                                                                                                                                                        $db->setQuery('SELECT g_id, g_title FROM ' . $db->tablePrefix . 'groups WHERE g_id!=' . PUN_GUEST . ' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
                                                                                                                                                                                                                         while ($cur_group = $db->fetch_assoc($result))
                                                                                                                                                                                                                         {
@@ -1547,7 +1547,7 @@ if ($pun_user['id'] != $id &&
 							<p><?php echo $lang_profile['Moderator in info'] ?></p>
 <?php
 
-                                                                                                                                                                                                                        $db->setQuery('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.moderators FROM ' . $db->db_prefix . 'categories AS c INNER JOIN ' . $db->db_prefix . 'forums AS f ON c.id=f.cat_id WHERE f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
+                                                                                                                                                                                                                        $db->setQuery('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.moderators FROM ' . $db->tablePrefix . 'categories AS c INNER JOIN ' . $db->tablePrefix . 'forums AS f ON c.id=f.cat_id WHERE f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 
                                                                                                                                                                                                                         $cur_category = 0;
                                                                                                                                                                                                                         while ($cur_forum = $db->fetch_assoc($result))

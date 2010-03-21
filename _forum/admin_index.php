@@ -58,7 +58,7 @@ else if (!in_array(PHP_OS, array('WINNT', 'WIN32')) && preg_match('/averages?: (
 else
     $server_load = 'Not available';
 // Get number of current visitors
-$db->setQuery('SELECT COUNT(user_id) FROM ' . $db->db_prefix . 'online WHERE idle=0') or error('Unable to fetch online count', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT COUNT(user_id) FROM ' . $db->tablePrefix . 'online WHERE idle=0') or error('Unable to fetch online count', __FILE__, __LINE__, $db->error());
 $num_online = $db->result($result);
 // Collect some additional info about MySQL
 if ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb')

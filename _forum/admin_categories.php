@@ -23,7 +23,7 @@ if (isset($_POST['add_cat']))
     if ($new_cat_name == '')
         message('You must enter a name for the category.');
 
-    $db->setQuery('INSERT INTO ' . $db->db_prefix . 'categories (cat_name) VALUES(\'' . $db->escape($new_cat_name) . '\')') or error('Unable to create category', __FILE__, __LINE__, $db->error());
+    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'categories (cat_name) VALUES(\'' . $db->escape($new_cat_name) . '\')') or error('Unable to create category', __FILE__, __LINE__, $db->error());
 
     redirect('admin_categories.php', 'Category added. Redirecting &hellip;');
 }
@@ -40,7 +40,7 @@ else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply']))
         {
             @set_time_limit(0);
 
-        $db->setQuery('SELECT id FROM ' . $db->db_prefix . 'forums WHERE cat_id=' . $cat_to_delete) or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT id FROM ' . $db->tablePrefix . 'forums WHERE cat_id=' . $cat_to_delete) or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
         $num_forums = $db->num_rows();
 
         for ($i = 0; $i < $num_forums; ++$i)
@@ -49,10 +49,10 @@ else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply']))
             // Prune all posts and topics
             prune($cur_forum, 1, - 1);
             // Delete the forum
-            $db->setQuery('DELETE FROM ' . $db->db_prefix . 'forums WHERE id=' . $cur_forum) or error('Unable to delete forum', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forums WHERE id=' . $cur_forum) or error('Unable to delete forum', __FILE__, __LINE__, $db->error());
         }
         // Locate any "orphaned redirect topics" and delete them
-        $db->setQuery('SELECT t1.id FROM ' . $db->db_prefix . 'topics AS t1 LEFT JOIN ' . $db->db_prefix . 'topics AS t2 ON t1.moved_to=t2.id WHERE t2.id IS NULL AND t1.moved_to IS NOT NULL') or error('Unable to fetch redirect topics', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT t1.id FROM ' . $db->tablePrefix . 'topics AS t1 LEFT JOIN ' . $db->tablePrefix . 'topics AS t2 ON t1.moved_to=t2.id WHERE t2.id IS NULL AND t1.moved_to IS NOT NULL') or error('Unable to fetch redirect topics', __FILE__, __LINE__, $db->error());
         $num_orphans = $db->num_rows();
 
         if ($num_orphans)
@@ -60,10 +60,10 @@ else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply']))
             for ($i = 0; $i < $num_orphans; ++$i)
             $orphans[] = $db->result($result, $i);
 
-            $db->setQuery('DELETE FROM ' . $db->db_prefix . 'topics WHERE id IN(' . implode(',', $orphans) . ')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id IN(' . implode(',', $orphans) . ')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
         }
         // Delete the category
-        $db->setQuery('DELETE FROM ' . $db->db_prefix . 'categories WHERE id=' . $cat_to_delete) or error('Unable to delete category', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'categories WHERE id=' . $cat_to_delete) or error('Unable to delete category', __FILE__, __LINE__, $db->error());
         // Regenerate the quick jump cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
             require SHELL_PATH . 'include/cache.php';
@@ -74,7 +74,7 @@ else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply']))
     }
     else // If the user hasn't comfirmed the delete
         {
-            $db->setQuery('SELECT cat_name FROM ' . $db->db_prefix . 'categories WHERE id=' . $cat_to_delete) or error('Unable to fetch category info', __FILE__, __LINE__, $db->error());
+            $db->setQuery('SELECT cat_name FROM ' . $db->tablePrefix . 'categories WHERE id=' . $cat_to_delete) or error('Unable to fetch category info', __FILE__, __LINE__, $db->error());
         $cat_name = $db->result($result);
 
         $page_title = pun_htmlspecialchars($pun_config['o_board_title']) . ' / Admin / Categories';
@@ -116,7 +116,7 @@ else if (isset($_POST['update'])) // Change position and name of the categories
     $cat_order = $_POST['cat_order'];
     $cat_name = $_POST['cat_name'];
 
-    $db->setQuery('SELECT id, disp_position FROM ' . $db->db_prefix . 'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT id, disp_position FROM ' . $db->tablePrefix . 'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
     $num_cats = $db->num_rows();
 
     for ($i = 0; $i < $num_cats; ++$i)
@@ -129,7 +129,7 @@ else if (isset($_POST['update'])) // Change position and name of the categories
 
         list($cat_id, $position) = $db->fetch_row();
 
-        $db->setQuery('UPDATE ' . $db->db_prefix . 'categories SET cat_name=\'' . $db->escape($cat_name[$i]) . '\', disp_position=' . $cat_order[$i] . ' WHERE id=' . $cat_id) or error('Unable to update category', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'categories SET cat_name=\'' . $db->escape($cat_name[$i]) . '\', disp_position=' . $cat_order[$i] . ' WHERE id=' . $cat_id) or error('Unable to update category', __FILE__, __LINE__, $db->error());
     }
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -140,7 +140,7 @@ else if (isset($_POST['update'])) // Change position and name of the categories
     redirect('admin_categories.php', 'Categories updated. Redirecting &hellip;');
 }
 // Generate an array with all categories
-$db->setQuery('SELECT id, cat_name, disp_position FROM ' . $db->db_prefix . 'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT id, cat_name, disp_position FROM ' . $db->tablePrefix . 'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
 $num_cats = $db->num_rows();
 
 for ($i = 0; $i < $num_cats; ++$i)

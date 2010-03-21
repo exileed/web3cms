@@ -24,7 +24,7 @@ if (isset($_POST['add_forum']))
     if ($add_to_cat < 1)
         message($lang_common['Bad request']);
 
-    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'forums (cat_id) VALUES(' . $add_to_cat . ')') or error('Unable to create forum', __FILE__, __LINE__, $db->error());
+    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'forums (cat_id) VALUES(' . $add_to_cat . ')')->execute() or error('Unable to create forum', __FILE__, __LINE__, $db->error());
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
@@ -56,11 +56,11 @@ else if (isset($_GET['del_forum']))
             for ($i = 0; $i < $num_orphans; ++$i)
             $orphans[] = $db->result($result, $i);
 
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id IN(' . implode(',', $orphans) . ')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id IN(' . implode(',', $orphans) . ')')->execute() or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
         }
         // Delete the forum and any forum specific group permissions
-        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forums WHERE id=' . $forum_id) or error('Unable to delete forum', __FILE__, __LINE__, $db->error());
-        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forum_perms WHERE forum_id=' . $forum_id) or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forums WHERE id=' . $forum_id)->execute() or error('Unable to delete forum', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forum_perms WHERE forum_id=' . $forum_id)->execute() or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
         // Regenerate the quick jump cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
             require SHELL_PATH . 'include/cache.php';
@@ -114,7 +114,7 @@ else if (isset($_POST['update_positions']))
         if (!@preg_match('#^\d+$#', $disp_position))
             message('Position must be a positive integer value.');
 
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET disp_position=' . $disp_position . ' WHERE id=' . intval($forum_id)) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET disp_position=' . $disp_position . ' WHERE id=' . intval($forum_id))->execute() or error('Unable to update forum', __FILE__, __LINE__, $db->error());
     }
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -150,7 +150,7 @@ else if (isset($_GET['edit_forum']))
         $forum_desc = ($forum_desc != '') ? '\'' . $db->escape($forum_desc) . '\'' : 'NULL';
         $redirect_url = ($redirect_url != '') ? '\'' . $db->escape($redirect_url) . '\'' : 'NULL';
 
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET forum_name=\'' . $db->escape($forum_name) . '\', forum_desc=' . $forum_desc . ', redirect_url=' . $redirect_url . ', sort_by=' . $sort_by . ', cat_id=' . $cat_id . ' WHERE id=' . $forum_id) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET forum_name=\'' . $db->escape($forum_name) . '\', forum_desc=' . $forum_desc . ', redirect_url=' . $redirect_url . ', sort_by=' . $sort_by . ', cat_id=' . $cat_id . ' WHERE id=' . $forum_id)->execute() or error('Unable to update forum', __FILE__, __LINE__, $db->error());
         // Now let's deal with the permissions
         if (isset($_POST['read_forum_old']))
         {
@@ -165,13 +165,13 @@ else if (isset($_GET['edit_forum']))
                 {
                     // If the new settings are identical to the default settings for this group, delete it's row in forum_perms
                     if ($read_forum_new == '1' && $post_replies_new == $cur_group['g_post_replies'] && $post_topics_new == $cur_group['g_post_topics'])
-                        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forum_perms WHERE group_id=' . $cur_group['g_id'] . ' AND forum_id=' . $forum_id) or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forum_perms WHERE group_id=' . $cur_group['g_id'] . ' AND forum_id=' . $forum_id)->execute() or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
                     else
                     {
                         // Run an UPDATE and see if it affected a row, if not, INSERT
-                        $db->setQuery('UPDATE ' . $db->tablePrefix . 'forum_perms SET read_forum=' . $read_forum_new . ', post_replies=' . $post_replies_new . ', post_topics=' . $post_topics_new . ' WHERE group_id=' . $cur_group['g_id'] . ' AND forum_id=' . $forum_id) or error('Unable to insert group forum permissions', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('UPDATE ' . $db->tablePrefix . 'forum_perms SET read_forum=' . $read_forum_new . ', post_replies=' . $post_replies_new . ', post_topics=' . $post_topics_new . ' WHERE group_id=' . $cur_group['g_id'] . ' AND forum_id=' . $forum_id)->execute() or error('Unable to insert group forum permissions', __FILE__, __LINE__, $db->error());
                         if (!$db->affected_rows())
-                            $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'forum_perms (group_id, forum_id, read_forum, post_replies, post_topics) VALUES(' . $cur_group['g_id'] . ', ' . $forum_id . ', ' . $read_forum_new . ', ' . $post_replies_new . ', ' . $post_topics_new . ')') or error('Unable to insert group forum permissions', __FILE__, __LINE__, $db->error());
+                            $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'forum_perms (group_id, forum_id, read_forum, post_replies, post_topics) VALUES(' . $cur_group['g_id'] . ', ' . $forum_id . ', ' . $read_forum_new . ', ' . $post_replies_new . ', ' . $post_topics_new . ')')->execute() or error('Unable to insert group forum permissions', __FILE__, __LINE__, $db->error());
                     }
                 }
             }
@@ -188,7 +188,7 @@ else if (isset($_GET['edit_forum']))
     {
         confirm_referrer('admin_forums.php');
 
-        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forum_perms WHERE forum_id=' . $forum_id) or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forum_perms WHERE forum_id=' . $forum_id)->execute() or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
         // Regenerate the quick jump cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
             require SHELL_PATH . 'include/cache.php';

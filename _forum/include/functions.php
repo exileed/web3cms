@@ -64,11 +64,11 @@ function check_cookie(&$pun_user)
                     case 'mysql_innodb':
                     case 'mysqli_innodb':
                     case 'mysqli':
-                        $db->setQuery('REPLACE INTO ' . $db->tablePrefix . 'online (user_id, ident, logged) VALUES(' . $pun_user['id'] . ', \'' . $db->escape($pun_user['username']) . '\', ' . $pun_user['logged'] . ')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('REPLACE INTO ' . $db->tablePrefix . 'online (user_id, ident, logged) VALUES(' . $pun_user['id'] . ', \'' . $db->escape($pun_user['username']) . '\', ' . $pun_user['logged'] . ')')->execute() or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
                         break;
 
                     default:
-                        $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'online (user_id, ident, logged) SELECT ' . $pun_user['id'] . ', \'' . $db->escape($pun_user['username']) . '\', ' . $pun_user['logged'] . ' WHERE NOT EXISTS (SELECT 1 FROM ' . $db->tablePrefix . 'online WHERE user_id=' . $pun_user['id'] . ')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'online (user_id, ident, logged) SELECT ' . $pun_user['id'] . ', \'' . $db->escape($pun_user['username']) . '\', ' . $pun_user['logged'] . ' WHERE NOT EXISTS (SELECT 1 FROM ' . $db->tablePrefix . 'online WHERE user_id=' . $pun_user['id'] . ')')->execute() or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
                         break;
                 }
                 // Reset tracked topics
@@ -79,12 +79,12 @@ function check_cookie(&$pun_user)
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
                 if ($pun_user['logged'] < ($now - $pun_config['o_timeout_visit']))
                 {
-                    $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_visit=' . $pun_user['logged'] . ' WHERE id=' . $pun_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_visit=' . $pun_user['logged'] . ' WHERE id=' . $pun_user['id'])->execute() or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
                     $pun_user['last_visit'] = $pun_user['logged'];
                 }
 
                 $idle_sql = ($pun_user['idle'] == '1') ? ', idle=0' : '';
-                $db->setQuery('UPDATE ' . $db->tablePrefix . 'online SET logged=' . $now . $idle_sql . ' WHERE user_id=' . $pun_user['id']) or error('Unable to update online list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE ' . $db->tablePrefix . 'online SET logged=' . $now . $idle_sql . ' WHERE user_id=' . $pun_user['id'])->execute() or error('Unable to update online list', __FILE__, __LINE__, $db->error());
             }
         }
         else
@@ -161,16 +161,16 @@ function set_default_user()
             case 'mysql_innodb':
             case 'mysqli_innodb':
             case 'sqlite':
-                $db->setQuery('REPLACE INTO ' . $db->tablePrefix . 'online (user_id, ident, logged) VALUES(1, \'' . $db->escape($remote_addr) . '\', ' . $pun_user['logged'] . ')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('REPLACE INTO ' . $db->tablePrefix . 'online (user_id, ident, logged) VALUES(1, \'' . $db->escape($remote_addr) . '\', ' . $pun_user['logged'] . ')')->execute() or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
                 break;
 
             default:
-                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'online (user_id, ident, logged) SELECT 1, \'' . $db->escape($remote_addr) . '\', ' . $pun_user['logged'] . ' WHERE NOT EXISTS (SELECT 1 FROM ' . $db->tablePrefix . 'online WHERE ident=\'' . $db->escape($remote_addr) . '\')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'online (user_id, ident, logged) SELECT 1, \'' . $db->escape($remote_addr) . '\', ' . $pun_user['logged'] . ' WHERE NOT EXISTS (SELECT 1 FROM ' . $db->tablePrefix . 'online WHERE ident=\'' . $db->escape($remote_addr) . '\')')->execute() or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
                 break;
         }
     }
     else
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'online SET logged=' . time() . ' WHERE ident=\'' . $db->escape($remote_addr) . '\'') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'online SET logged=' . time() . ' WHERE ident=\'' . $db->escape($remote_addr) . '\'')->execute() or error('Unable to update online list', __FILE__, __LINE__, $db->error());
 
     $pun_user['disp_topics'] = $pun_config['o_disp_topics_default'];
     $pun_user['disp_posts'] = $pun_config['o_disp_posts_default'];
@@ -221,7 +221,7 @@ function check_bans()
         // Has this ban expired?
         if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time())
         {
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'bans WHERE id=' . $cur_ban['id']) or error('Unable to delete expired ban', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'bans WHERE id=' . $cur_ban['id'])->execute() or error('Unable to delete expired ban', __FILE__, __LINE__, $db->error());
             $bans_altered = true;
             continue;
         }
@@ -252,7 +252,7 @@ function check_bans()
 
         if ($is_banned)
         {
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE ident=\'' . $db->escape($pun_user['username']) . '\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE ident=\'' . $db->escape($pun_user['username']) . '\'')->execute() or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
             message($lang_common['Ban message'] . ' ' . (($cur_ban['expire'] != '') ? $lang_common['Ban message 2'] . ' ' . strtolower(format_time($cur_ban['expire'], true)) . '. ' : '') . (($cur_ban['message'] != '') ? $lang_common['Ban message 3'] . '<br /><br /><strong>' . pun_htmlspecialchars($cur_ban['message']) . '</strong><br /><br />' : '<br /><br />') . $lang_common['Ban message 4'] . ' ' . CHtml::link($pun_config['o_admin_email'], 'mailto:' . $pun_config['o_admin_email']), true);
         }
     }
@@ -277,17 +277,17 @@ function update_users_online()
     {
         // If the entry is a guest, delete it
         if ($cur_user['user_id'] == '1')
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE ident=\'' . $db->escape($cur_user['ident']) . '\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE ident=\'' . $db->escape($cur_user['ident']) . '\'')->execute() or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
         else
         {
             // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
             if ($cur_user['logged'] < ($now - $pun_config['o_timeout_visit']))
             {
-                $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_visit=' . $cur_user['logged'] . ' WHERE id=' . $cur_user['user_id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
-                $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE user_id=' . $cur_user['user_id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_visit=' . $cur_user['logged'] . ' WHERE id=' . $cur_user['user_id'])->execute() or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
+                $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'online WHERE user_id=' . $cur_user['user_id'])->execute() or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
             }
             else if ($cur_user['idle'] == '0')
-                $db->setQuery('UPDATE ' . $db->tablePrefix . 'online SET idle=1 WHERE user_id=' . $cur_user['user_id']) or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE ' . $db->tablePrefix . 'online SET idle=1 WHERE user_id=' . $cur_user['user_id'])->execute() or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
         }
     }
 }
@@ -470,10 +470,10 @@ function generate_profile_menu($page = '')
             if ($db->num_rows()) // There are topics in the forum
                 {
                     list($last_post, $last_post_id, $last_poster) = $db->fetch_row();
-                $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET num_topics=' . $num_topics . ', num_posts=' . $num_posts . ', last_post=' . $last_post . ', last_post_id=' . $last_post_id . ', last_poster=\'' . $db->escape($last_poster) . '\' WHERE id=' . $forum_id) or error('Unable to update last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET num_topics=' . $num_topics . ', num_posts=' . $num_posts . ', last_post=' . $last_post . ', last_post_id=' . $last_post_id . ', last_poster=\'' . $db->escape($last_poster) . '\' WHERE id=' . $forum_id)->execute() or error('Unable to update last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error());
             }
             else // There are no topics
-                $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET num_topics=' . $num_topics . ', num_posts=' . $num_posts . ', last_post=NULL, last_post_id=NULL, last_poster=NULL WHERE id=' . $forum_id) or error('Unable to update last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET num_topics=' . $num_topics . ', num_posts=' . $num_posts . ', last_post=NULL, last_post_id=NULL, last_poster=NULL WHERE id=' . $forum_id)->execute() or error('Unable to update last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error());
         }
         // Deletes any avatars owned by the specified user ID
         function delete_avatar($user_id)
@@ -492,7 +492,7 @@ function generate_profile_menu($page = '')
         {
             global $db;
             // Delete the topic and any redirect topics
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id=' . $topic_id . ' OR moved_to=' . $topic_id) or error('Unable to delete topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id=' . $topic_id . ' OR moved_to=' . $topic_id)->execute() or error('Unable to delete topic', __FILE__, __LINE__, $db->error());
             // Create a list of the post IDs in this topic
             $post_ids = '';
             $db->setQuery('SELECT id FROM ' . $db->tablePrefix . 'posts WHERE topic_id=' . $topic_id) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
@@ -503,10 +503,10 @@ function generate_profile_menu($page = '')
             {
                 strip_search_index($post_ids);
                 // Delete posts in topic
-                $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'posts WHERE topic_id=' . $topic_id) or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
+                $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'posts WHERE topic_id=' . $topic_id)->execute() or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
             }
             // Delete any subscriptions for this topic
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE topic_id=' . $topic_id) or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE topic_id=' . $topic_id)->execute() or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
         }
         // Delete a single post
         function delete_post($post_id, $topic_id)
@@ -516,7 +516,7 @@ function generate_profile_menu($page = '')
             list($last_id, ,) = $db->fetch_row();
             list($second_last_id, $second_poster, $second_posted) = $db->fetch_row();
             // Delete the post
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'posts WHERE id=' . $post_id) or error('Unable to delete post', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'posts WHERE id=' . $post_id)->execute() or error('Unable to delete post', __FILE__, __LINE__, $db->error());
             strip_search_index($post_id);
             // Count number of replies in the topic
             $db->setQuery('SELECT COUNT(id) FROM ' . $db->tablePrefix . 'posts WHERE topic_id=' . $topic_id) or error('Unable to fetch post count for topic', __FILE__, __LINE__, $db->error());
@@ -526,14 +526,14 @@ function generate_profile_menu($page = '')
             {
                 // If there is a $second_last_id there is more than 1 reply to the topic
                 if (!empty($second_last_id))
-                    $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post=' . $second_posted . ', last_post_id=' . $second_last_id . ', last_poster=\'' . $db->escape($second_poster) . '\', num_replies=' . $num_replies . ' WHERE id=' . $topic_id) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post=' . $second_posted . ', last_post_id=' . $second_last_id . ', last_poster=\'' . $db->escape($second_poster) . '\', num_replies=' . $num_replies . ' WHERE id=' . $topic_id)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
                 else
                     // We deleted the only reply, so now last_post/last_post_id/last_poster is posted/id/poster from the topic itself
-                    $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post=posted, last_post_id=id, last_poster=poster, num_replies=' . $num_replies . ' WHERE id=' . $topic_id) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post=posted, last_post_id=id, last_poster=poster, num_replies=' . $num_replies . ' WHERE id=' . $topic_id)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
             }
             else
                 // Otherwise we just decrement the reply counter
-                $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET num_replies=' . $num_replies . ' WHERE id=' . $topic_id) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET num_replies=' . $num_replies . ' WHERE id=' . $topic_id)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
         }
         // Delete every .php file in the forum's cache directory
         function forum_clear_cache()
@@ -971,35 +971,9 @@ function generate_profile_menu($page = '')
         // Display a simple error message
         function error($message, $file, $line, $db_error = false)
         {
-            global $pun_config;
-            // Set some default settings if the script failed before $pun_config could be populated
-            if (empty($pun_config))
-            {
-                $pun_config['o_board_title'] = 'FluxBB';
-                $pun_config['o_gzip'] = '0';
-            }
-            // Empty all output buffers and stop buffering
-            while (@ob_end_clean());
-            // "Restart" output buffering if we are using ob_gzhandler (since the gzip header is already sent)
-            if ($pun_config['o_gzip'] && extension_loaded('zlib'))
-                ob_start('ob_gzhandler');
+           ?>
 
-            ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo pun_htmlspecialchars($pun_config['o_board_title']) ?> / Error</title>
-<style type="text/css">
-<!--
-BODY {MARGIN: 10% 20% auto 20%; font: 10px Verdana, Arial, Helvetica, sans-serif}
-#errorbox {BORDER: 1px solid #B84623}
-H2 {MARGIN: 0; COLOR: #FFFFFF; BACKGROUND-COLOR: #B84623; FONT-SIZE: 1.1em; PADDING: 5px 4px}
-#errorbox DIV {PADDING: 6px 5px; BACKGROUND-COLOR: #F1F1F1}
--->
-</style>
-</head>
-<body>
 
 <div id="errorbox">
 	<h2>An error was encountered</h2>
@@ -1022,14 +996,10 @@ H2 {MARGIN: 0; COLOR: #FFFFFF; BACKGROUND-COLOR: #B84623; FONT-SIZE: 1.1em; PADD
             ?>
 	</div>
 </div>
-
-</body>
-</html>
 <?php
             // If a database connection was established (before this error) we close it
             if ($db_error)
                 $GLOBALS['db']->close();
-            exit;
         }
         // Unset any variables instantiated as a result of register_globals being enabled
         function forum_unregister_globals()

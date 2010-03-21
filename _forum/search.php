@@ -321,7 +321,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             while ($row = $db->fetch_row())
             $old_searches[] = '\'' . $db->escape($row[0]) . '\'';
 
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'search_cache WHERE ident NOT IN(' . implode(',', $old_searches) . ')') or error('Unable to delete search results', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'search_cache WHERE ident NOT IN(' . implode(',', $old_searches) . ')')->execute() or error('Unable to delete search results', __FILE__, __LINE__, $db->error());
         }
         // Final search results
         $search_results = implode(',', $search_ids);
@@ -336,7 +336,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
         $ident = ($pun_user['is_guest']) ? get_remote_address() : $pun_user['username'];
 
-        $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'search_cache (id, ident, search_data) VALUES(' . $search_id . ', \'' . $db->escape($ident) . '\', \'' . $db->escape($temp) . '\')') or error('Unable to insert search results', __FILE__, __LINE__, $db->error());
+        $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'search_cache (id, ident, search_data) VALUES(' . $search_id . ', \'' . $db->escape($ident) . '\', \'' . $db->escape($temp) . '\')')->execute() or error('Unable to insert search results', __FILE__, __LINE__, $db->error());
 
         if ($action != 'show_new' && $action != 'show_24h')
         {

@@ -360,7 +360,7 @@ if ($quickpost)
 }
 // Increment "num_views" for topic
 if ($pun_config['o_topic_views'] == '1')
-    $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET num_views=num_views+1 WHERE id=' . $id) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+    $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET num_views=num_views+1 WHERE id=' . $id)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 
 $forum_id = $cur_topic['forum_id'];
 $footer_style = 'viewtopic';

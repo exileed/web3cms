@@ -33,7 +33,7 @@ if (isset($_POST['add_rank']))
     if ($db->num_rows())
         message('There is already a rank with a minimun posts value of ' . $min_posts . '.');
 
-    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'ranks (rank, min_posts) VALUES(\'' . $db->escape($rank) . '\', ' . $min_posts . ')') or error('Unable to add rank', __FILE__, __LINE__, $db->error());
+    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'ranks (rank, min_posts) VALUES(\'' . $db->escape($rank) . '\', ' . $min_posts . ')')->execute() or error('Unable to add rank', __FILE__, __LINE__, $db->error());
     // Regenerate the ranks cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
@@ -62,7 +62,7 @@ else if (isset($_POST['update']))
     if ($db->num_rows())
         message('There is already a rank with a minimun posts value of ' . $min_posts . '.');
 
-    $db->setQuery('UPDATE ' . $db->tablePrefix . 'ranks SET rank=\'' . $db->escape($rank) . '\', min_posts=' . $min_posts . ' WHERE id=' . $id) or error('Unable to update rank', __FILE__, __LINE__, $db->error());
+    $db->setQuery('UPDATE ' . $db->tablePrefix . 'ranks SET rank=\'' . $db->escape($rank) . '\', min_posts=' . $min_posts . ' WHERE id=' . $id)->execute() or error('Unable to update rank', __FILE__, __LINE__, $db->error());
     // Regenerate the ranks cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
@@ -78,7 +78,7 @@ else if (isset($_POST['remove']))
 
     $id = intval(key($_POST['remove']));
 
-    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'ranks WHERE id=' . $id) or error('Unable to delete rank', __FILE__, __LINE__, $db->error());
+    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'ranks WHERE id=' . $id)->execute() or error('Unable to delete rank', __FILE__, __LINE__, $db->error());
     // Regenerate the ranks cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';

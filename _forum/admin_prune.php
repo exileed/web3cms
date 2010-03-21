@@ -57,7 +57,7 @@ if (isset($_GET['action']) || isset($_POST['prune']) || isset($_POST['prune_comp
             for ($i = 0; $i < $num_orphans; ++$i)
             $orphans[] = $db->result($result, $i);
 
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id IN(' . implode(',', $orphans) . ')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id IN(' . implode(',', $orphans) . ')')->execute() or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
         }
 
         redirect('admin_prune.php', 'Posts pruned. Redirecting &hellip;');

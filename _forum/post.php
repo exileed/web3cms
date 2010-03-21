@@ -153,29 +153,29 @@ if (isset($_POST['form_sent']))
             {
                 $new_tid = $tid;
                 // Insert the new post
-                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\'' . $db->escape($username) . '\', ' . $pun_user['id'] . ', \'' . get_remote_address() . '\', \'' . $db->escape($message) . '\', ' . $hide_smilies . ', ' . $now . ', ' . $tid . ')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
+                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\'' . $db->escape($username) . '\', ' . $pun_user['id'] . ', \'' . get_remote_address() . '\', \'' . $db->escape($message) . '\', ' . $hide_smilies . ', ' . $now . ', ' . $tid . ')')->execute() or error('Unable to create post', __FILE__, __LINE__, $db->error());
                 $new_pid = $db->insert_id();
                 // To subscribe or not to subscribe, that ...
                 if ($pun_config['o_subscriptions'] == '1')
                 {
                     if ($subscribe && !$is_subscribed)
-                        $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'subscriptions (user_id, topic_id) VALUES(' . $pun_user['id'] . ' ,' . $tid . ')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'subscriptions (user_id, topic_id) VALUES(' . $pun_user['id'] . ' ,' . $tid . ')')->execute() or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
                     else if (!$subscribe && $is_subscribed)
-                        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE user_id=' . $pun_user['id'] . ' AND topic_id=' . $tid) or error('Unable to remove subscription', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'subscriptions WHERE user_id=' . $pun_user['id'] . ' AND topic_id=' . $tid)->execute() or error('Unable to remove subscription', __FILE__, __LINE__, $db->error());
                 }
             }
             else
             {
                 // It's a guest. Insert the new post
                 $email_sql = ($pun_config['p_force_guest_email'] == '1' || $email != '') ? '\'' . $email . '\'' : 'NULL';
-                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id) VALUES(\'' . $db->escape($username) . '\', \'' . get_remote_address() . '\', ' . $email_sql . ', \'' . $db->escape($message) . '\', ' . $hide_smilies . ', ' . $now . ', ' . $tid . ')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
+                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id) VALUES(\'' . $db->escape($username) . '\', \'' . get_remote_address() . '\', ' . $email_sql . ', \'' . $db->escape($message) . '\', ' . $hide_smilies . ', ' . $now . ', ' . $tid . ')')->execute() or error('Unable to create post', __FILE__, __LINE__, $db->error());
                 $new_pid = $db->insert_id();
             }
             // Count number of replies in the topic
             $db->setQuery('SELECT COUNT(id) FROM ' . $db->tablePrefix . 'posts WHERE topic_id=' . $tid) or error('Unable to fetch post count for topic', __FILE__, __LINE__, $db->error());
             $num_replies = $db->result($result, 0) - 1;
             // Update topic
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET num_replies=' . $num_replies . ', last_post=' . $now . ', last_post_id=' . $new_pid . ', last_poster=\'' . $db->escape($username) . '\' WHERE id=' . $tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET num_replies=' . $num_replies . ', last_post=' . $now . ', last_post_id=' . $new_pid . ', last_poster=\'' . $db->escape($username) . '\' WHERE id=' . $tid)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 
             update_search_index('post', $new_pid, $message);
 
@@ -253,26 +253,26 @@ if (isset($_POST['form_sent']))
         else if ($fid)
         {
             // Create the topic
-            $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'topics (poster, subject, posted, last_post, last_poster, forum_id) VALUES(\'' . $db->escape($username) . '\', \'' . $db->escape($subject) . '\', ' . $now . ', ' . $now . ', \'' . $db->escape($username) . '\', ' . $fid . ')') or error('Unable to create topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'topics (poster, subject, posted, last_post, last_poster, forum_id) VALUES(\'' . $db->escape($username) . '\', \'' . $db->escape($subject) . '\', ' . $now . ', ' . $now . ', \'' . $db->escape($username) . '\', ' . $fid . ')')->execute() or error('Unable to create topic', __FILE__, __LINE__, $db->error());
             $new_tid = $db->insert_id();
 
             if (!$pun_user['is_guest'])
             {
                 // To subscribe or not to subscribe, that ...
                 if ($pun_config['o_subscriptions'] == '1' && $subscribe)
-                    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'subscriptions (user_id, topic_id) VALUES(' . $pun_user['id'] . ' ,' . $new_tid . ')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'subscriptions (user_id, topic_id) VALUES(' . $pun_user['id'] . ' ,' . $new_tid . ')')->execute() or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
                 // Create the post ("topic post")
-                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\'' . $db->escape($username) . '\', ' . $pun_user['id'] . ', \'' . get_remote_address() . '\', \'' . $db->escape($message) . '\', ' . $hide_smilies . ', ' . $now . ', ' . $new_tid . ')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
+                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\'' . $db->escape($username) . '\', ' . $pun_user['id'] . ', \'' . get_remote_address() . '\', \'' . $db->escape($message) . '\', ' . $hide_smilies . ', ' . $now . ', ' . $new_tid . ')')->execute() or error('Unable to create post', __FILE__, __LINE__, $db->error());
             }
             else
             {
                 // Create the post ("topic post")
                 $email_sql = ($pun_config['p_force_guest_email'] == '1' || $email != '') ? '\'' . $email . '\'' : 'NULL';
-                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id) VALUES(\'' . $db->escape($username) . '\', \'' . get_remote_address() . '\', ' . $email_sql . ', \'' . $db->escape($message) . '\', ' . $hide_smilies . ', ' . $now . ', ' . $new_tid . ')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
+                $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id) VALUES(\'' . $db->escape($username) . '\', \'' . get_remote_address() . '\', ' . $email_sql . ', \'' . $db->escape($message) . '\', ' . $hide_smilies . ', ' . $now . ', ' . $new_tid . ')')->execute() or error('Unable to create post', __FILE__, __LINE__, $db->error());
             }
             $new_pid = $db->insert_id();
             // Update the topic with last_post_id
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post_id=' . $new_pid . ', first_post_id=' . $new_pid . ' WHERE id=' . $new_tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'topics SET last_post_id=' . $new_pid . ', first_post_id=' . $new_pid . ' WHERE id=' . $new_tid)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 
             update_search_index('post', $new_pid, $message, $subject);
 
@@ -291,7 +291,7 @@ if (isset($_POST['form_sent']))
         // If the posting user is logged in, increment his/her post count
         if (!$pun_user['is_guest'])
         {
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET num_posts=num_posts+1, last_post=' . $now . ' WHERE id=' . $pun_user['id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET num_posts=num_posts+1, last_post=' . $now . ' WHERE id=' . $pun_user['id'])->execute() or error('Unable to update user', __FILE__, __LINE__, $db->error());
 
             $tracked_topics = get_tracked_topics();
             $tracked_topics['topics'][$new_tid] = time();
@@ -299,7 +299,7 @@ if (isset($_POST['form_sent']))
         }
         else
         {
-            $db->setQuery('UPDATE ' . $db->tablePrefix . 'online SET last_post=' . $now . ' WHERE ident=\'' . $db->escape(get_remote_address()) . '\'') or error('Unable to update user', __FILE__, __LINE__, $db->error());
+            $db->setQuery('UPDATE ' . $db->tablePrefix . 'online SET last_post=' . $now . ' WHERE ident=\'' . $db->escape(get_remote_address()) . '\'')->execute() or error('Unable to update user', __FILE__, __LINE__, $db->error());
         }
 
         redirect('viewtopic.php?pid=' . $new_pid . '#p' . $new_pid, $lang_post['Post redirect']);

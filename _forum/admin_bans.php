@@ -235,9 +235,9 @@ else if (isset($_POST['add_edit_ban']))
     $ban_message = ($ban_message != '') ? '\'' . $db->escape($ban_message) . '\'' : 'NULL';
 
     if ($_POST['mode'] == 'add')
-        $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'bans (username, ip, email, message, expire, ban_creator) VALUES(' . $ban_user . ', ' . $ban_ip . ', ' . $ban_email . ', ' . $ban_message . ', ' . $ban_expire . ', ' . $pun_user['id'] . ')') or error('Unable to add ban', __FILE__, __LINE__, $db->error());
+        $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'bans (username, ip, email, message, expire, ban_creator) VALUES(' . $ban_user . ', ' . $ban_ip . ', ' . $ban_email . ', ' . $ban_message . ', ' . $ban_expire . ', ' . $pun_user['id'] . ')')->execute() or error('Unable to add ban', __FILE__, __LINE__, $db->error());
     else
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'bans SET username=' . $ban_user . ', ip=' . $ban_ip . ', email=' . $ban_email . ', message=' . $ban_message . ', expire=' . $ban_expire . ' WHERE id=' . intval($_POST['ban_id'])) or error('Unable to update ban', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'bans SET username=' . $ban_user . ', ip=' . $ban_ip . ', email=' . $ban_email . ', message=' . $ban_message . ', expire=' . $ban_expire . ' WHERE id=' . intval($_POST['ban_id']))->execute() or error('Unable to update ban', __FILE__, __LINE__, $db->error());
     // Regenerate the bans cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
@@ -255,7 +255,7 @@ else if (isset($_GET['del_ban']))
     if ($ban_id < 1)
         message($lang_common['Bad request']);
 
-    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'bans WHERE id=' . $ban_id) or error('Unable to delete ban', __FILE__, __LINE__, $db->error());
+    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'bans WHERE id=' . $ban_id)->execute() or error('Unable to delete ban', __FILE__, __LINE__, $db->error());
     // Regenerate the bans cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';

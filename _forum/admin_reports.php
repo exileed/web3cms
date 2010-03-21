@@ -26,7 +26,7 @@ if (isset($_POST['zap_id']))
     $zapped = $db->result($result);
 
     if ($zapped == '')
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'reports SET zapped=' . time() . ', zapped_by=' . $pun_user['id'] . ' WHERE id=' . $zap_id) or error('Unable to zap report', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE ' . $db->tablePrefix . 'reports SET zapped=' . time() . ', zapped_by=' . $pun_user['id'] . ' WHERE id=' . $zap_id)->execute() or error('Unable to zap report', __FILE__, __LINE__, $db->error());
 
     redirect('admin_reports.php', 'Report zapped. Redirecting &hellip;');
 }

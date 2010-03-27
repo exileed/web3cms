@@ -47,7 +47,7 @@ class _CDbConnection extends CDbConnection
         else
         {
             $res = $this->CDbCommand->queryRow(false);
-            return $res[$col];
+            return $res[0];
         }
     }
 
@@ -68,6 +68,7 @@ class _CDbConnection extends CDbConnection
             $this->sameQuery = true;
         	$this->CDbDataReader = $this->CDbCommand->query();
         }
+        $this->CDbDataReader->setFetchMode(3);
         return $this->CDbDataReader->read();
     }
 

@@ -5,7 +5,9 @@ if (!defined('PUN'))
 // Display the admin navigation menu
 function generate_admin_menu($page = '')
 {
-    global $_config, $_user;    $is_admin = $_user['g_id'] == PUN_ADMIN ? true : false;    ?>
+    global $_config, $_user;
+    $is_admin = $_user['g_id'] == PUN_ADMIN ? true : false;
+    ?>
 <div id="adminconsole" class="block2col">
 	<div id="adminmenu" class="blockmenu">
 		<h2><span><?php echo ($is_admin) ? 'Admin' : 'Moderator' ?> menu</span></h2>
@@ -13,7 +15,8 @@ function generate_admin_menu($page = '')
 			<div class="inbox">
 				<ul>
 					<li<?php if ($page == 'index') echo ' class="isactive"';?>><?php
-    echo _CHtml::link('Index', array('forum/admin_index'));    ?></li>
+    echo _CHtml::link('Index', array('forum/admin_index'));
+    ?></li>
 <?php if ($is_admin): ?>
 <li<?php if ($page == 'categories') echo ' class="isactive"'; ?>>
 <?php echo _CHtml::link('Categories', array('forum/admin_categories'));?></li>
@@ -36,54 +39,58 @@ function generate_admin_menu($page = '')
 			</div>
 		</div>
 <?php
-        // See if there are any plugins
-        $plugins = array();
-        $d = dir(SHELL_PATH . 'plugins');
-        while (($entry = $d->read()) !== false)
-        {
-            $prefix = substr($entry, 0, strpos($entry, '_'));
-            $suffix = substr($entry, strlen($entry) - 4);            if ($suffix == '.php' && ((!$is_admin && $prefix == 'AMP') || ($is_admin && ($prefix == 'AP' || $prefix == 'AMP'))))
-                $plugins[] = array(substr($entry, strpos($entry, '_') + 1, - 4), $entry);
-        }
-        $d->close();
-        // Did we find any plugins?
-        if (!empty($plugins))
-        {?>
+                                        // See if there are any plugins
+                                        $plugins = array();
+                                        $d = dir(SHELL_PATH . 'plugins');
+                                        while (($entry = $d->read()) !== false) {
+                                            $prefix = substr($entry, 0, strpos($entry, '_'));
+                                            $suffix = substr($entry, strlen($entry) - 4);
+                                            if ($suffix == '.php' && ((!$is_admin && $prefix == 'AMP') || ($is_admin && ($prefix == 'AP' || $prefix == 'AMP'))))
+                                                $plugins[] = array(substr($entry, strpos($entry, '_') + 1, - 4), $entry);
+                                        }
+                                        $d->close();
+                                        // Did we find any plugins?
+                                        if (!empty($plugins)) {?>
 		<h2 class="block2"><span>Plugins</span></h2>
 		<div class="box">
 			<div class="inbox">
 				<ul>
-<?php            while (list(, $cur_plugin) = @each($plugins))
-            echo "\t\t\t\t\t" . '<li' . (($page == $cur_plugin[1]) ? ' class="isactive"' : '') . '>' . _CHtml::link(str_replace('_', ' ', $cur_plugin[0]), array('forum/admin_loader', 'plugin' => $cur_plugin[1])) . '</li>' . "\n";            ?>
+<?php while (list(, $cur_plugin) = @each($plugins))
+                                            echo "\t\t\t\t\t" . '<li' . (($page == $cur_plugin[1]) ? ' class="isactive"' : '') . '>' . _CHtml::link(str_replace('_', ' ', $cur_plugin[0]), array('forum/admin_loader', 'plugin' => $cur_plugin[1])) . '</li>' . "\n";
+                                            ?>
 				</ul>
 			</div>
 		</div>
-<?php        }        ?>
-	</div><?php    }
-    // Delete topics from $forum_id that are "older than" $prune_date (if $prune_sticky is 1, sticky topics will also be deleted)
-    function prune($forum_id, $prune_sticky, $prune_date)
-    {
-        global $db;        $extra_sql = ($prune_date != - 1) ? ' AND last_post<' . $prune_date : '';        if (!$prune_sticky)
-            $extra_sql .= ' AND sticky=\'0\'';
-        // Fetch topics to prune
-        $db->setQuery('SELECT id FROM forum_topics WHERE forum_id=' . $forum_id . $extra_sql, true) or error('Unable to fetch topics', __FILE__, __LINE__, $db->error());        $topic_ids = '';
-        while ($row = $db->fetch_row())
-        $topic_ids .= (($topic_ids != '') ? ',' : '') . $row[0];        if ($topic_ids != '')
-        {
-            // Fetch posts to prune
-            $db->setQuery('SELECT id FROM forum_posts WHERE topic_id IN(' . $topic_ids . ')', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());            $post_ids = '';
-            while ($row = $db->fetch_row())
-            $post_ids .= (($post_ids != '') ? ',' : '') . $row[0];            if ($post_ids != '')
-            {
-                // Delete topics
-                $db->setQuery('DELETE FROM forum_topics WHERE id IN(' . $topic_ids . ')')->execute() or error('Unable to prune topics', __FILE__, __LINE__, $db->error());
-                // Delete subscriptions
-                $db->setQuery('DELETE FROM forum_subscriptions WHERE topic_id IN(' . $topic_ids . ')')->execute() or error('Unable to prune subscriptions', __FILE__, __LINE__, $db->error());
-                // Delete posts
-                $db->setQuery('DELETE FROM forum_posts WHERE id IN(' . $post_ids . ')')->execute() or error('Unable to prune posts', __FILE__, __LINE__, $db->error());
-                // We removed a bunch of posts, so now we have to update the search index
-                require_once SHELL_PATH . 'include/search_idx.php';
-                strip_search_index($post_ids);
-            }
-        }
-    }
+<?php } ?>
+	</div><?php }
+                                    // Delete topics from $forum_id that are "older than" $prune_date (if $prune_sticky is 1, sticky topics will also be deleted)
+                                    function prune($forum_id, $prune_sticky, $prune_date)
+                                    {
+                                        global $db;
+                                        $extra_sql = ($prune_date != - 1) ? ' AND last_post<' . $prune_date : '';
+                                        if (!$prune_sticky)
+                                            $extra_sql .= ' AND sticky=\'0\'';
+                                        // Fetch topics to prune
+                                        $db->setQuery('SELECT id FROM forum_topics WHERE forum_id=' . $forum_id . $extra_sql, true) or error('Unable to fetch topics', __FILE__, __LINE__, $db->error());
+                                        $topic_ids = '';
+                                        while ($row = $db->fetch_row())
+                                        $topic_ids .= (($topic_ids != '') ? ',' : '') . $row[0];
+                                        if ($topic_ids != '') {
+                                            // Fetch posts to prune
+                                            $db->setQuery('SELECT id FROM forum_posts WHERE topic_id IN(' . $topic_ids . ')', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
+                                            $post_ids = '';
+                                            while ($row = $db->fetch_row())
+                                            $post_ids .= (($post_ids != '') ? ',' : '') . $row[0];
+                                            if ($post_ids != '') {
+                                                // Delete topics
+                                                $db->setQuery('DELETE FROM forum_topics WHERE id IN(' . $topic_ids . ')')->execute() or error('Unable to prune topics', __FILE__, __LINE__, $db->error());
+                                                // Delete subscriptions
+                                                $db->setQuery('DELETE FROM forum_subscriptions WHERE topic_id IN(' . $topic_ids . ')')->execute() or error('Unable to prune subscriptions', __FILE__, __LINE__, $db->error());
+                                                // Delete posts
+                                                $db->setQuery('DELETE FROM forum_posts WHERE id IN(' . $post_ids . ')')->execute() or error('Unable to prune posts', __FILE__, __LINE__, $db->error());
+                                                // We removed a bunch of posts, so now we have to update the search index
+                                                require_once SHELL_PATH . 'include/search_idx.php';
+                                                strip_search_index($post_ids);
+                                            }
+                                        }
+                                    }

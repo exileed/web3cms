@@ -1,11 +1,14 @@
 <?php
 // Tell header.php to use the admin template
-define('PUN_ADMIN_CONSOLE', 1);require SHELL_PATH . 'include/common.php';
-require SHELL_PATH . 'include/common_admin.php';if ($_user['g_id'] != PUN_ADMIN)
-    message($lang_common['No permission']);if (isset($_POST['form_sent']))
-{
-    confirm_referrer('admin_permissions.php');    $form = array_map('intval', $_POST['form']);    while (list($key, $input) = @each($form))
-    {
+define('PUN_ADMIN_CONSOLE', 1);
+require SHELL_PATH . 'include/common.php';
+require SHELL_PATH . 'include/common_admin.php';
+if ($_user['g_id'] != PUN_ADMIN)
+    message($lang_common['No permission']);
+if (isset($_POST['form_sent'])) {
+    confirm_referrer('admin_permissions.php');
+    $form = array_map('intval', $_POST['form']);
+    while (list($key, $input) = @each($form)) {
         // Only update values that have changed
         if (array_key_exists('p_' . $key, $_config) && $_config['p_' . $key] != $input)
             $db->setQuery('UPDATE forum_config SET conf_value=' . $input . ' WHERE conf_name=\'p_' . $db->escape($key) . '\'')->execute() or error('Unable to update board config', __FILE__, __LINE__, $db->error());
@@ -13,9 +16,11 @@ require SHELL_PATH . 'include/common_admin.php';if ($_user['g_id'] != PUN_ADMIN)
     // Regenerate the config cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
-		redirect('admin_permissions.php', 'Permissions updated. Redirecting &hellip;');
-}require SHELL_PATH . 'header.php';
-generate_admin_menu('permissions');?>
+    redirect('admin_permissions.php', 'Permissions updated. Redirecting &hellip;');
+}
+require SHELL_PATH . 'header.php';
+generate_admin_menu('permissions');
+?>
 	<div class="blockform">
 		<h2><span>Permissions</span></h2>
 		<div class="box">
@@ -139,4 +144,4 @@ generate_admin_menu('permissions');?>
 	</div>
 	<div class="clearer"></div>
 </div>
-<?php                                                                                require SHELL_PATH . 'footer.php';
+<?php require SHELL_PATH . 'footer.php';

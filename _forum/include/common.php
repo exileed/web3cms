@@ -14,8 +14,7 @@ require SHELL_PATH . 'include/functions.php';
 // Load UTF-8 functions
 require SHELL_PATH . 'include/utf8/utf8.php';
 // Block prefetch requests
-if (isset($_SERVER['HTTP_X_MOZ']) && $_SERVER['HTTP_X_MOZ'] == 'prefetch')
-{
+if (isset($_SERVER['HTTP_X_MOZ']) && $_SERVER['HTTP_X_MOZ'] == 'prefetch') {
     header('HTTP/1.1 403 Prefetching Forbidden');
     // Send no-cache headers
     header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
@@ -35,12 +34,12 @@ if (get_magic_quotes_runtime())
 // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
 setlocale(LC_CTYPE, 'C');
 // Strip slashes from GET/POST/COOKIE (if magic_quotes_gpc is enabled)
-if (get_magic_quotes_gpc())
-{
+if (get_magic_quotes_gpc()) {
     function stripslashes_array($array)
     {
         return is_array($array) ? array_map('stripslashes_array', $array) : stripslashes($array);
-    }    $_GET = stripslashes_array($_GET);
+    }
+    $_GET = stripslashes_array($_GET);
     $_POST = stripslashes_array($_POST);
     $_COOKIE = stripslashes_array($_COOKIE);
 }
@@ -53,14 +52,12 @@ define('PUN_UNVERIFIED', 0);
 define('PUN_ADMIN', 1);
 define('PUN_MOD', 2);
 define('PUN_GUEST', 3);
-define('PUN_MEMBER', 4);
-{
+define('PUN_MEMBER', 4); {
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
 }
 // Enable output buffering
-if (!defined('PUN_DISABLE_BUFFERING'))
-{
+if (!defined('PUN_DISABLE_BUFFERING')) {
     // Should we use gzip output compression?
     if ($_config['o_gzip'] && extension_loaded('zlib'))
         ob_start('ob_gzhandler');
@@ -73,8 +70,7 @@ $_user = check_cookie($_user);
 // Attempt to load the common language file
 if (file_exists(SHELL_PATH . 'lang/' . $_user['language'] . '/common.php'))
     include SHELL_PATH . 'lang/' . $_user['language'] . '/common.php';
-else
-{
+else {
     error('There is no valid language pack \'' . _CHtml::encode($_user['language']) . '\' installed. Please reinstall a language of that name.');
 }
 // Check if we are to display a maintenance message
@@ -82,10 +78,11 @@ if ($_config['o_maintenance'] && $_user['g_id'] > PUN_ADMIN && !defined('PUN_TUR
     maintenance_message();
 // Load cached bans
 if (file_exists(FORUM_CACHE_DIR . 'cache_bans.php'))
-    include FORUM_CACHE_DIR . 'cache_bans.php';if (!defined('PUN_BANS_LOADED'))
-{
+    include FORUM_CACHE_DIR . 'cache_bans.php';
+if (!defined('PUN_BANS_LOADED')) {
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
-        require SHELL_PATH . 'include/cache.php';    generate_bans_cache();
+        require SHELL_PATH . 'include/cache.php';
+    generate_bans_cache();
     require FORUM_CACHE_DIR . 'cache_bans.php';
 }
 // Check if current user is banned

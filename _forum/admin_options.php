@@ -1,19 +1,27 @@
 <?php
 // Tell header.php to use the admin template
-define('PUN_ADMIN_CONSOLE', 1);require SHELL_PATH . 'include/common.php';
-require SHELL_PATH . 'include/common_admin.php';if ($_user['g_id'] != PUN_ADMIN)
-    message($lang_common['No permission']);if (isset($_POST['form_sent']))
-{
+define('PUN_ADMIN_CONSOLE', 1);
+require SHELL_PATH . 'include/common.php';
+require SHELL_PATH . 'include/common_admin.php';
+if ($_user['g_id'] != PUN_ADMIN)
+    message($lang_common['No permission']);
+if (isset($_POST['form_sent'])) {
     // Custom referrer check (so we can output a custom error message)
     if (!preg_match('#^' . preg_quote(str_replace('www.', '', $_config['o_web_path']) . '/admin_options.php', '#') . '#i', str_replace('www.', '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : ''))))
-        message('Bad HTTP_REFERER. If you have moved these forums from one location to another or switched domains, you need to update the Base URL manually in the database (look for o_web_path in the config table) and then clear the cache by deleting all .php files in the /cache directory.');    $form = array_map('_trim', $_POST['form']);    if ($form['board_title'] == '')
+        message('Bad HTTP_REFERER. If you have moved these forums from one location to another or switched domains, you need to update the Base URL manually in the database (look for o_web_path in the config table) and then clear the cache by deleting all .php files in the /cache directory.');
+    $form = array_map('_trim', $_POST['form']);
+    if ($form['board_title'] == '')
         message('You must enter a board title.');
     // Clean default_lang
-    $form['default_lang'] = preg_replace('#[\.\\\/]#', '', $form['default_lang']);    require SHELL_PATH . 'include/email.php';    $form['admin_email'] = strtolower($form['admin_email']);
+    $form['default_lang'] = preg_replace('#[\.\\\/]#', '', $form['default_lang']);
+    require SHELL_PATH . 'include/email.php';
+    $form['admin_email'] = strtolower($form['admin_email']);
     if (!is_valid_email($form['admin_email']))
-        message('The admin email address you entered is invalid.');    $form['webmaster_email'] = strtolower($form['webmaster_email']);
+        message('The admin email address you entered is invalid.');
+    $form['webmaster_email'] = strtolower($form['webmaster_email']);
     if (!is_valid_email($form['webmaster_email']))
-        message('The webmaster email address you entered is invalid.');    if ($form['mailing_list'] != '')
+        message('The webmaster email address you entered is invalid.');
+    if ($form['mailing_list'] != '')
         $form['mailing_list'] = strtolower(preg_replace('/[\s]/', '', $form['mailing_list']));
     // Make sure WEB_PATH doesn't end with a slash
     if (substr($form['WEB_PATH'], - 1) == '/')
@@ -22,26 +30,31 @@ require SHELL_PATH . 'include/common_admin.php';if ($_user['g_id'] != PUN_ADMIN)
     $form['avatars_dir'] = str_replace("\0", '', $form['avatars_dir']);
     // Make sure avatars_dir doesn't end with a slash
     if (substr($form['avatars_dir'], - 1) == '/')
-        $form['avatars_dir'] = substr($form['avatars_dir'], 0, - 1);    if ($form['additional_navlinks'] != '')
-        $form['additional_navlinks'] = trim(_linebreaks($form['additional_navlinks']));    if ($form['announcement_message'] != '')
+        $form['avatars_dir'] = substr($form['avatars_dir'], 0, - 1);
+    if ($form['additional_navlinks'] != '')
+        $form['additional_navlinks'] = trim(_linebreaks($form['additional_navlinks']));
+    if ($form['announcement_message'] != '')
         $form['announcement_message'] = _linebreaks($form['announcement_message']);
-    else
-    {
-        $form['announcement_message'] = 'Enter your announcement here.';        if ($form['announcement'] == '1')
+    else {
+        $form['announcement_message'] = 'Enter your announcement here.';
+        if ($form['announcement'] == '1')
             $form['announcement'] = '0';
-    }    if ($form['rules_message'] != '')
+    }
+    if ($form['rules_message'] != '')
         $form['rules_message'] = _linebreaks($form['rules_message']);
-    else
-    {
-        $form['rules_message'] = 'Enter your rules here.';        if ($form['rules'] == '1')
+    else {
+        $form['rules_message'] = 'Enter your rules here.';
+        if ($form['rules'] == '1')
             $form['rules'] = '0';
-    }    if ($form['maintenance_message'] != '')
+    }
+    if ($form['maintenance_message'] != '')
         $form['maintenance_message'] = _linebreaks($form['maintenance_message']);
-    else
-    {
-        $form['maintenance_message'] = 'The forums are temporarily down for maintenance. Please try again in a few minutes.\n\n/Administrator';        if ($form['maintenance'] == '1')
+    else {
+        $form['maintenance_message'] = 'The forums are temporarily down for maintenance. Please try again in a few minutes.\n\n/Administrator';
+        if ($form['maintenance'] == '1')
             $form['maintenance'] = '0';
-    }    $form['timeout_visit'] = intval($form['timeout_visit']);
+    }
+    $form['timeout_visit'] = intval($form['timeout_visit']);
     $form['timeout_online'] = intval($form['timeout_online']);
     $form['redirect_delay'] = intval($form['redirect_delay']);
     $form['topic_review'] = intval($form['topic_review']);
@@ -51,28 +64,32 @@ require SHELL_PATH . 'include/common_admin.php';if ($_user['g_id'] != PUN_ADMIN)
     $form['quote_depth'] = intval($form['quote_depth']);
     $form['avatars_width'] = intval($form['avatars_width']);
     $form['avatars_height'] = intval($form['avatars_height']);
-    $form['avatars_size'] = intval($form['avatars_size']);    if ($form['timeout_online'] >= $form['timeout_visit'])
-        message('The value of "Timeout online" must be smaller than the value of "Timeout visit".');    while (list($key, $input) = @each($form))
-    {
+    $form['avatars_size'] = intval($form['avatars_size']);
+    if ($form['timeout_online'] >= $form['timeout_visit'])
+        message('The value of "Timeout online" must be smaller than the value of "Timeout visit".');
+    while (list($key, $input) = @each($form)) {
         // Only update values that have changed
-        if (array_key_exists('o_' . $key, $_config) && $_config['o_' . $key] != $input)
-        {
+        if (array_key_exists('o_' . $key, $_config) && $_config['o_' . $key] != $input) {
             if ($input != '' || is_int($input))
                 $value = '\'' . $db->escape($input) . '\'';
             else
-                $value = 'NULL';            $db->setQuery('UPDATE forum_config SET conf_value=' . $value . ' WHERE conf_name=\'o_' . $db->escape($key) . '\'')->execute() or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+                $value = 'NULL';
+            $db->setQuery('UPDATE forum_config SET conf_value=' . $value . ' WHERE conf_name=\'o_' . $db->escape($key) . '\'')->execute() or error('Unable to update board config', __FILE__, __LINE__, $db->error());
         }
     }
     // Regenerate the config cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
-		redirect('admin_options.php', 'Options updated. Redirecting &hellip;');
-}$form_name = 'update_options';
-require SHELL_PATH . 'header.php';generate_admin_menu('options');?>
+    redirect('admin_options.php', 'Options updated. Redirecting &hellip;');
+}
+$form_name = 'update_options';
+require SHELL_PATH . 'header.php';
+generate_admin_menu('options');
+?>
 	<div class="blockform">
 		<h2><span>Options</span></h2>
 		<div class="box">
-			<?php echo _CHtml::form(array('admin_options','action'=>'foo'), 'POST');?>
+			<?php echo _CHtml::form(array('admin_options', 'action' => 'foo'), 'POST');?>
 				<p class="submittop"><input type="submit" name="save" value="Save changes" /></p>
 				<div class="inform">
 				<input type="hidden" name="form_sent" value="1" />
@@ -135,20 +152,21 @@ require SHELL_PATH . 'header.php';generate_admin_menu('options');?>
 									<th scope="row">Default language</th>
 									<td>
 										<select name="form[default_lang]">
-<?php        $languages = array();
-    $d = dir(SHELL_PATH . 'lang');
-    while (($entry = $d->read()) !== false)
-    {
-        if ($entry != '.' && $entry != '..' && is_dir(SHELL_PATH . 'lang/' . $entry) && file_exists(SHELL_PATH . 'lang/' . $entry . '/common.php'))
-            $languages[] = $entry;
-    }
-    $d->close();    @natsort($languages);    while (list(, $temp) = @each($languages))
-    {
-        if ($_config['o_default_lang'] == $temp)
-            echo "\t\t\t\t\t\t\t\t\t\t\t" . '<option value="' . $temp . '" selected="selected">' . $temp . '</option>' . "\n";
-        else
-            echo "\t\t\t\t\t\t\t\t\t\t\t" . '<option value="' . $temp . '">' . $temp . '</option>' . "\n";
-    }    ?>
+<?php $languages = array();
+                                                                                                                                                    $d = dir(SHELL_PATH . 'lang');
+                                                                                                                                                    while (($entry = $d->read()) !== false) {
+                                                                                                                                                        if ($entry != '.' && $entry != '..' && is_dir(SHELL_PATH . 'lang/' . $entry) && file_exists(SHELL_PATH . 'lang/' . $entry . '/common.php'))
+                                                                                                                                                            $languages[] = $entry;
+                                                                                                                                                    }
+                                                                                                                                                    $d->close();
+                                                                                                                                                    @natsort($languages);
+                                                                                                                                                    while (list(, $temp) = @each($languages)) {
+                                                                                                                                                        if ($_config['o_default_lang'] == $temp)
+                                                                                                                                                            echo "\t\t\t\t\t\t\t\t\t\t\t" . '<option value="' . $temp . '" selected="selected">' . $temp . '</option>' . "\n";
+                                                                                                                                                        else
+                                                                                                                                                            echo "\t\t\t\t\t\t\t\t\t\t\t" . '<option value="' . $temp . '">' . $temp . '</option>' . "\n";
+                                                                                                                                                    }
+                                                                                                                                                    ?>
 										</select>
 										<span>This is the default language style used if the visitor is a guest or a user that hasn't changed from the default in his/her profile. If you remove a language pack, this must be updated.</span>
 									</td>
@@ -157,20 +175,21 @@ require SHELL_PATH . 'header.php';generate_admin_menu('options');?>
 									<th scope="row">Default style</th>
 									<td>
 										<select name="form[default_style]">
-<?php    $styles = array();
-    $d = dir(SHELL_PATH . 'style');
-    while (($entry = $d->read()) !== false)
-    {
-        if (substr($entry, strlen($entry) - 4) == '.css')
-            $styles[] = substr($entry, 0, strlen($entry) - 4);
-    }
-    $d->close();    @natsort($styles);    while (list(, $temp) = @each($styles))
-    {
-        if ($_config['o_default_style'] == $temp)
-            echo "\t\t\t\t\t\t\t\t\t" . '<option value="' . $temp . '" selected="selected">' . str_replace('_', ' ', $temp) . '</option>' . "\n";
-        else
-            echo "\t\t\t\t\t\t\t\t\t" . '<option value="' . $temp . '">' . str_replace('_', ' ', $temp) . '</option>' . "\n";
-    }    ?>
+<?php $styles = array();
+                                                                                                                                                    $d = dir(SHELL_PATH . 'style');
+                                                                                                                                                    while (($entry = $d->read()) !== false) {
+                                                                                                                                                        if (substr($entry, strlen($entry) - 4) == '.css')
+                                                                                                                                                            $styles[] = substr($entry, 0, strlen($entry) - 4);
+                                                                                                                                                    }
+                                                                                                                                                    $d->close();
+                                                                                                                                                    @natsort($styles);
+                                                                                                                                                    while (list(, $temp) = @each($styles)) {
+                                                                                                                                                        if ($_config['o_default_style'] == $temp)
+                                                                                                                                                            echo "\t\t\t\t\t\t\t\t\t" . '<option value="' . $temp . '" selected="selected">' . str_replace('_', ' ', $temp) . '</option>' . "\n";
+                                                                                                                                                        else
+                                                                                                                                                            echo "\t\t\t\t\t\t\t\t\t" . '<option value="' . $temp . '">' . str_replace('_', ' ', $temp) . '</option>' . "\n";
+                                                                                                                                                    }
+                                                                                                                                                    ?>
 										</select>
 										<span>This is the default style used for guests and users who haven't changed from the default in their profile.</span></td>
 								</tr>
@@ -610,4 +629,4 @@ require SHELL_PATH . 'header.php';generate_admin_menu('options');?>
 	</div>
 	<div class="clearer"></div>
 </div>
-<?php                                                                            require SHELL_PATH . 'footer.php';
+<?php require SHELL_PATH . 'footer.php';

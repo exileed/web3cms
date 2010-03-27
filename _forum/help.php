@@ -7,6 +7,7 @@ if ($_user['g_read_board'] == '0')
 // Load the help.php language file
 require SHELL_PATH . 'lang/' . $_user['language'] . '/help.php';
 require SHELL_PATH . 'header.php';
+
 ?>
 <h2><?php echo $lang_common['BBCode'] ?></h2>
 <div class="box">
@@ -100,9 +101,13 @@ require SHELL_PATH . 'header.php';
 		<div class="postmsg">
 <?php
 // Display the smiley set
-require SHELL_PATH . 'include/parser.php';$smiley_groups = array();foreach ($smilies as $smiley_text => $smiley_img)
-$smiley_groups[$smiley_img][] = $smiley_text;foreach ($smiley_groups as $smiley_img => $smiley_texts)
-echo "\t\t\t" . '<p><code>' . implode('</code> ' . $lang_common['and'] . ' <code>', $smiley_texts) . '</code> <span>' . $lang_help['produces'] . '</span> <img src="img/smilies/' . $smiley_img . '" width="15" height="15" alt="' . $smiley_texts[0] . '" /></p>' . "\n";?>
+require SHELL_PATH . 'include/parser.php';
+$smiley_groups = array();
+foreach ($smilies as $smiley_text => $smiley_img)
+$smiley_groups[$smiley_img][] = $smiley_text;
+foreach ($smiley_groups as $smiley_img => $smiley_texts)
+echo "\t\t\t" . '<p><code>' . implode('</code> ' . $lang_common['and'] . ' <code>', $smiley_texts) . '</code> <span>' . $lang_help['produces'] . '</span> <img src="img/smilies/' . $smiley_img . '" width="15" height="15" alt="' . $smiley_texts[0] . '" /></p>' . "\n";
+?>
 		</div>
 	</div>
 </div>

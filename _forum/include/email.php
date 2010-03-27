@@ -1,6 +1,4 @@
 <?php
-
-
 // Make sure no one attempts to run this script "directly"
 if (!defined('PUN'))
     exit;
@@ -17,8 +15,7 @@ function is_banned_email($email)
 {
     global $db, $_bans;
 
-    foreach ($_bans as $cur_ban)
-    {
+    foreach ($_bans as $cur_ban) {
         if ($cur_ban['email'] != '' &&
             ($email == $cur_ban['email'] ||
                 (strpos($cur_ban['email'], '@') === false && stristr($email, '@' . $cur_ban['email']))))
@@ -47,8 +44,7 @@ function _mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '
 
     $headers = 'From: ' . $from . "\r\n" . 'Date: ' . gmdate('r') . "\r\n" . 'MIME-Version: 1.0' . "\r\n" . 'Content-transfer-encoding: 8bit' . "\r\n" . 'Content-type: text/plain; charset=utf-8' . "\r\n" . 'X-Mailer: FluxBB Mailer';
     // If we specified a reply-to email, we deal with it here
-    if (!empty($reply_to_email))
-    {
+    if (!empty($reply_to_email)) {
         $reply_to = "=?UTF-8?B?" . base64_encode($reply_to_name) . "?=" . ' <' . $reply_to_email . '>';
 
         $headers .= "\r\n" . 'Reply-To: ' . $reply_to;
@@ -58,8 +54,7 @@ function _mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '
 
     if ($_config['o_smtp_host'] != '')
         smtp_mail($to, $subject, $message, $headers);
-    else
-    {
+    else {
         // Change the linebreaks used in the headers according to OS
         if (strtoupper(substr(PHP_OS, 0, 3)) == 'MAC')
             $headers = str_replace("\r\n", "\r", $headers);
@@ -74,8 +69,7 @@ function _mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '
 function server_parse($socket, $expected_response)
 {
     $server_response = '';
-    while (substr($server_response, 3, 1) != ' ')
-    {
+    while (substr($server_response, 3, 1) != ' ') {
         if (!($server_response = fgets($socket, 256)))
             error('Couldn\'t get mail server response codes. Please contact the forum administrator.', __FILE__, __LINE__);
     }
@@ -96,8 +90,7 @@ function smtp_mail($to, $subject, $message, $headers = '')
     // Are we using port 25 or a custom port?
     if (strpos($_config['o_smtp_host'], ':') !== false)
         list($smtp_host, $smtp_port) = explode(':', $_config['o_smtp_host']);
-    else
-    {
+    else {
         $smtp_host = $_config['o_smtp_host'];
         $smtp_port = 25;
     }
@@ -110,8 +103,7 @@ function smtp_mail($to, $subject, $message, $headers = '')
 
     server_parse($socket, '220');
 
-    if ($_config['o_smtp_user'] != '' && $_config['o_smtp_pass'] != '')
-    {
+    if ($_config['o_smtp_user'] != '' && $_config['o_smtp_pass'] != '') {
         fwrite($socket, 'EHLO ' . $smtp_host . "\r\n");
         server_parse($socket, '250');
 
@@ -123,9 +115,7 @@ function smtp_mail($to, $subject, $message, $headers = '')
 
         fwrite($socket, base64_encode($_config['o_smtp_pass']) . "\r\n");
         server_parse($socket, '235');
-    }
-    else
-    {
+    }else {
         fwrite($socket, 'HELO ' . $smtp_host . "\r\n");
         server_parse($socket, '250');
     }
@@ -133,8 +123,7 @@ function smtp_mail($to, $subject, $message, $headers = '')
     fwrite($socket, 'MAIL FROM: <' . $_config['o_webmaster_email'] . '>' . "\r\n");
     server_parse($socket, '250');
 
-    while (list(, $email) = @each($recipients))
-    {
+    while (list(, $email) = @each($recipients)) {
         fwrite($socket, 'RCPT TO: <' . $email . '>' . "\r\n");
         server_parse($socket, '250');
     }

@@ -1,7 +1,9 @@
 <?php
 // Tell header.php to use the admin template
-define('PUN_ADMIN_CONSOLE', 1);require SHELL_PATH . 'include/common.php';
-require SHELL_PATH . 'include/common_admin.php';if (!$_user['is_admmod'])
+define('PUN_ADMIN_CONSOLE', 1);
+require SHELL_PATH . 'include/common.php';
+require SHELL_PATH . 'include/common_admin.php';
+if (!$_user['is_admmod'])
     message($lang_common['No permission']);
 // The plugin to load should be supplied via GET
 $plugin = isset($_GET['plugin']) ? $_GET['plugin'] : '';
@@ -16,7 +18,8 @@ if (!file_exists(SHELL_PATH . 'plugins/' . $plugin))
     message('There is no plugin called \'' . $plugin . '\' in the plugin directory.');
 // Construct REQUEST_URI if it isn't set
 if (!isset($_SERVER['REQUEST_URI']))
-    $_SERVER['REQUEST_URI'] = (isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : '') . '?' . (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '');require SHELL_PATH . 'header.php';
+    $_SERVER['REQUEST_URI'] = (isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : '') . '?' . (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '');
+require SHELL_PATH . 'header.php';
 // Attempt to load the plugin. We don't use here to supress error messages,
 // because if we did and a parse error occurred in the plugin, we would only
 // get the "blank page of death"

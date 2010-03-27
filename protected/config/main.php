@@ -37,7 +37,7 @@ $retval=array(
         'db'=>array(
             //'connectionString'=>'sqlite:'.dirname(__FILE__).'/../data/web3cms.db',
             // CREATE DATABASE `web3cms_r34` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-            'class'=>'application.components.DBLayer',
+            'class'=>'application.components._CDbConnection',
             'connectionString'=>'mysql:host=localhost;dbname=db',
             'username'=>'root', //'web3cmsuser'
             'password'=>'', //'web3cmspass'

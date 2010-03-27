@@ -64,4 +64,5 @@ $UTF8_BAD =
 	'|\xF0[\x90-\xBF][\x80-\xBF]{2}'.        # Planes 1-3
 	'|[\xF1-\xF3][\x80-\xBF]{3}'.            # Planes 4-15
 	'|\xF4[\x80-\x8F][\x80-\xBF]{2}'.        # Plane 16
-	'|(.{1}))';                              # Invalid byte
+	'|(.{1}))';
+          # Invalid byte

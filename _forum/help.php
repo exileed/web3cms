@@ -1,25 +1,12 @@
 <?php
-
-/*---
-
-	Copyright (C) 2008-2009 FluxBB.org
-	based on code copyright (C) 2002-2005 Rickard Andersson
-	License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
-
----*/
 // Tell header.php to use the help template
 define('PUN_HELP', 1);
-
 require SHELL_PATH . 'include/common.php';
-
-if ($pun_user['g_read_board'] == '0')
+if ($_user['g_read_board'] == '0')
     message($lang_common['No view']);
 // Load the help.php language file
-require SHELL_PATH . 'lang/' . $pun_user['language'] . '/help.php';
-
-$page_title = pun_htmlspecialchars($pun_config['o_board_title']) . ' / ' . $lang_help['Help'];
+require SHELL_PATH . 'lang/' . $_user['language'] . '/help.php';
 require SHELL_PATH . 'header.php';
-
 ?>
 <h2><?php echo $lang_common['BBCode'] ?></h2>
 <div class="box">
@@ -44,14 +31,14 @@ require SHELL_PATH . 'header.php';
 <div class="box">
 	<div class="inbox">
 		<p><?php echo $lang_help['Links info'] ?></p>
-		<p><code>[url=<?php echo $pun_config['o_WEB_PATH'] . '/' ?>]<?php echo pun_htmlspecialchars($pun_config['o_board_title']) ?>[/url]</code> <?php echo $lang_help['produces'] . CHtml::link(pun_htmlspecialchars($pun_config['o_board_title']), array('forum/'));?></p>
-		<p><code>[url]<?php echo $pun_config['o_WEB_PATH'] . '/' ?>[/url]</code> <?php echo $lang_help['produces'] . CHtml::link($pun_config['o_WEB_PATH'] . '/', array('forum/'));?></p>
-		<p><code>[email]myname@mydomain.com[/email]</code> <?php echo $lang_help['produces'] . CHtml::link('myname@mydomain.com', array('mailto:myname@mydomain.com'));?></p>
-		<p><code>[email=myname@mydomain.com]<?php echo $lang_help['My email address'] ?>[/email]</code> <?php echo $lang_help['produces'] . CHtml::link($lang_help['My email address'], array('mailto:myname@mydomain.com'));?></p>
+		<p><code>[url=<?php echo $_config['o_web_path'] . '/' ?>]<?php echo _CHtml::encode($this->PageTitle) ?>[/url]</code> <?php echo $lang_help['produces'] . _CHtml::link(_CHtml::encode($this->PageTitle), array('forum/'));?></p>
+		<p><code>[url]<?php echo $_config['o_web_path'] . '/' ?>[/url]</code> <?php echo $lang_help['produces'] . _CHtml::link($_config['o_web_path'] . '/', array('forum/'));?></p>
+		<p><code>[email]myname@mydomain.com[/email]</code> <?php echo $lang_help['produces'] . _CHtml::link('myname@mydomain.com', array('mailto:myname@mydomain.com'));?></p>
+		<p><code>[email=myname@mydomain.com]<?php echo $lang_help['My email address'] ?>[/email]</code> <?php echo $lang_help['produces'] . _CHtml::link($lang_help['My email address'], array('mailto:myname@mydomain.com'));?></p>
 	</div>
 	<div class="inbox">
 		<p><a name="img"></a><?php echo $lang_help['Images info'] ?></p>
-		<p><code>[img=FluxBB bbcode test]<?php echo $pun_config['o_WEB_PATH'] . '/' ?>img/test.png[/img]</code> <?php echo $lang_help['produces'] ?> <img src="<?php echo $pun_config['o_WEB_PATH'] . '/' ?>img/test.png" alt="FluxBB bbcode test" /></p>
+		<p><code>[img=FluxBB bbcode test]<?php echo $_config['o_web_path'] . '/' ?>img/test.png[/img]</code> <?php echo $lang_help['produces'] ?> <img src="<?php echo $_config['o_web_path'] . '/' ?>img/test.png" alt="FluxBB bbcode test" /></p>
 	</div>
 </div>
 <h2><?php echo $lang_help['Quotes'] ?></h2>
@@ -86,11 +73,7 @@ require SHELL_PATH . 'header.php';
 <h2><?php echo $lang_help['Lists'] ?></h2>
 <div class="box">
 	<div class="inbox">
-		<p><a name="lists"></a><?php echo $lang_help['List info'] ?></p>
-
-		<p><code>[list][*]<?php echo $lang_help['List text 1'] ?>[/*][*]<?php echo $lang_help['List text 2'] ?>[/*][*]<?php echo $lang_help['List text 3'] ?>[/*][/list]</code> <span><?php echo $lang_help['produces list'] ?></span></p>
-
-		<div class="postmsg">
+		<p><a name="lists"></a><?php echo $lang_help['List info'] ?></p>		<p><code>[list][*]<?php echo $lang_help['List text 1'] ?>[/*][*]<?php echo $lang_help['List text 2'] ?>[/*][*]<?php echo $lang_help['List text 3'] ?>[/*][/list]</code> <span><?php echo $lang_help['produces list'] ?></span></p>		<div class="postmsg">
 			<ul><li><?php echo $lang_help['List text 1'] ?></li><li><?php echo $lang_help['List text 2'] ?></li><li><?php echo $lang_help['List text 3'] ?></li></ul>
 		</div>
 		<p><code>[list=1][*]<?php echo $lang_help['List text 1'] ?>[/*][*]<?php echo $lang_help['List text 2'] ?>[/*][*]<?php echo $lang_help['List text 3'] ?>[/*][/list]</code> <span><?php echo $lang_help['produces decimal list'] ?></span></p>
@@ -117,20 +100,10 @@ require SHELL_PATH . 'header.php';
 		<div class="postmsg">
 <?php
 // Display the smiley set
-require SHELL_PATH . 'include/parser.php';
-
-$smiley_groups = array();
-
-foreach ($smilies as $smiley_text => $smiley_img)
-$smiley_groups[$smiley_img][] = $smiley_text;
-
-foreach ($smiley_groups as $smiley_img => $smiley_texts)
-echo "\t\t\t" . '<p><code>' . implode('</code> ' . $lang_common['and'] . ' <code>', $smiley_texts) . '</code> <span>' . $lang_help['produces'] . '</span> <img src="img/smilies/' . $smiley_img . '" width="15" height="15" alt="' . $smiley_texts[0] . '" /></p>' . "\n";
-
-?>
+require SHELL_PATH . 'include/parser.php';$smiley_groups = array();foreach ($smilies as $smiley_text => $smiley_img)
+$smiley_groups[$smiley_img][] = $smiley_text;foreach ($smiley_groups as $smiley_img => $smiley_texts)
+echo "\t\t\t" . '<p><code>' . implode('</code> ' . $lang_common['and'] . ' <code>', $smiley_texts) . '</code> <span>' . $lang_help['produces'] . '</span> <img src="img/smilies/' . $smiley_img . '" width="15" height="15" alt="' . $smiley_texts[0] . '" /></p>' . "\n";?>
 		</div>
 	</div>
 </div>
-<?php
-
-require SHELL_PATH . 'footer.php';
+<?php require SHELL_PATH . 'footer.php';

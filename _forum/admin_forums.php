@@ -1,19 +1,13 @@
 <?php
 
-/*---
 
-	Copyright (C) 2008-2009 FluxBB.org
-	based on code copyright (C) 2002-2005 Rickard Andersson
-	License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
-
----*/
 // Tell header.php to use the admin template
 define('PUN_ADMIN_CONSOLE', 1);
 
 require SHELL_PATH . 'include/common.php';
 require SHELL_PATH . 'include/common_admin.php';
 
-if ($pun_user['g_id'] != PUN_ADMIN)
+if ($_user['g_id'] != PUN_ADMIN)
     message($lang_common['No permission']);
 // Add a "default" forum
 if (isset($_POST['add_forum']))
@@ -24,7 +18,7 @@ if (isset($_POST['add_forum']))
     if ($add_to_cat < 1)
         message($lang_common['Bad request']);
 
-    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'forums (cat_id) VALUES(' . $add_to_cat . ')')->execute() or error('Unable to create forum', __FILE__, __LINE__, $db->error());
+    $db->setQuery('INSERT INTO forum_forums (cat_id) VALUES(' . $add_to_cat . ')')->execute() or error('Unable to create forum', __FILE__, __LINE__, $db->error());
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
@@ -48,7 +42,7 @@ else if (isset($_GET['del_forum']))
         // Prune all posts and topics
         prune($forum_id, 1, - 1);
         // Locate any "orphaned redirect topics" and delete them
-        $db->setQuery('SELECT t1.id FROM ' . $db->tablePrefix . 'topics AS t1 LEFT JOIN ' . $db->tablePrefix . 'topics AS t2 ON t1.moved_to=t2.id WHERE t2.id IS NULL AND t1.moved_to IS NOT NULL') or error('Unable to fetch redirect topics', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT t1.id FROM forum_topics AS t1 LEFT JOIN forum_topics AS t2 ON t1.moved_to=t2.id WHERE t2.id IS NULL AND t1.moved_to IS NOT NULL') or error('Unable to fetch redirect topics', __FILE__, __LINE__, $db->error());
         $num_orphans = $db->num_rows();
 
         if ($num_orphans)
@@ -56,11 +50,11 @@ else if (isset($_GET['del_forum']))
             for ($i = 0; $i < $num_orphans; ++$i)
             $orphans[] = $db->result($result, $i);
 
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'topics WHERE id IN(' . implode(',', $orphans) . ')')->execute() or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM forum_topics WHERE id IN(' . implode(',', $orphans) . ')')->execute() or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
         }
         // Delete the forum and any forum specific group permissions
-        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forums WHERE id=' . $forum_id)->execute() or error('Unable to delete forum', __FILE__, __LINE__, $db->error());
-        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forum_perms WHERE forum_id=' . $forum_id)->execute() or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM forum_forums WHERE id=' . $forum_id)->execute() or error('Unable to delete forum', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM forum_forum_perms WHERE forum_id=' . $forum_id)->execute() or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
         // Regenerate the quick jump cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
             require SHELL_PATH . 'include/cache.php';
@@ -71,19 +65,17 @@ else if (isset($_GET['del_forum']))
     }
     else // If the user hasn't confirmed the delete
         {
-            $db->setQuery('SELECT forum_name FROM ' . $db->tablePrefix . 'forums WHERE id=' . $forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
-        $forum_name = pun_htmlspecialchars($db->result($result));
+            $db->setQuery('SELECT forum_name FROM forum_forums WHERE id=' . $forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
+        $forum_name = _CHtml::encode($db->result());
 
-        $page_title = pun_htmlspecialchars($pun_config['o_board_title']) . ' / Admin / Forums';
         require SHELL_PATH . 'header.php';
-
         generate_admin_menu('forums');
 
         ?>
 	<div class="blockform">
 		<h2><span>Confirm delete forum</span></h2>
 		<div class="box">
-			<?php echo CHtml::form(array('admin_forums','del_forum'=>$forum_id), 'POST');?>
+			<?php echo _CHtml::form(array('admin_forums','del_forum'=>$forum_id), 'POST');?>
 				<div class="inform">
 					<fieldset>
 						<legend>Important! Read before deleting</legend>
@@ -93,7 +85,7 @@ else if (isset($_GET['del_forum']))
 						</div>
 					</fieldset>
 				</div>
-				<p><input type="submit" name="del_forum_comply" value="Delete" /><?php echo CHtml::link('javascript:history.go(-1);');?></p>
+				<p><input type="submit" name="del_forum_comply" value="Delete" /><?php echo _CHtml::link('javascript:history.go(-1);');?></p>
 			</form>
 		</div>
 	</div>
@@ -114,7 +106,7 @@ else if (isset($_POST['update_positions']))
         if (!@preg_match('#^\d+$#', $disp_position))
             message('Position must be a positive integer value.');
 
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET disp_position=' . $disp_position . ' WHERE id=' . intval($forum_id))->execute() or error('Unable to update forum', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE forum_forums SET disp_position=' . $disp_position . ' WHERE id=' . intval($forum_id))->execute() or error('Unable to update forum', __FILE__, __LINE__, $db->error());
     }
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -136,7 +128,7 @@ else if (isset($_GET['edit_forum']))
         confirm_referrer('admin_forums.php');
         // Start with the forum details
         $forum_name = trim($_POST['forum_name']);
-        $forum_desc = pun_linebreaks(trim($_POST['forum_desc']));
+        $forum_desc = _linebreaks(trim($_POST['forum_desc']));
         $cat_id = intval($_POST['cat_id']);
         $sort_by = intval($_POST['sort_by']);
         $redirect_url = isset($_POST['redirect_url']) ? trim($_POST['redirect_url']) : null;
@@ -150,11 +142,11 @@ else if (isset($_GET['edit_forum']))
         $forum_desc = ($forum_desc != '') ? '\'' . $db->escape($forum_desc) . '\'' : 'NULL';
         $redirect_url = ($redirect_url != '') ? '\'' . $db->escape($redirect_url) . '\'' : 'NULL';
 
-        $db->setQuery('UPDATE ' . $db->tablePrefix . 'forums SET forum_name=\'' . $db->escape($forum_name) . '\', forum_desc=' . $forum_desc . ', redirect_url=' . $redirect_url . ', sort_by=' . $sort_by . ', cat_id=' . $cat_id . ' WHERE id=' . $forum_id)->execute() or error('Unable to update forum', __FILE__, __LINE__, $db->error());
+        $db->setQuery('UPDATE forum_forums SET forum_name=\'' . $db->escape($forum_name) . '\', forum_desc=' . $forum_desc . ', redirect_url=' . $redirect_url . ', sort_by=' . $sort_by . ', cat_id=' . $cat_id . ' WHERE id=' . $forum_id)->execute() or error('Unable to update forum', __FILE__, __LINE__, $db->error());
         // Now let's deal with the permissions
         if (isset($_POST['read_forum_old']))
         {
-            $db->setQuery('SELECT g_id, g_read_board, g_post_replies, g_post_topics FROM ' . $db->tablePrefix . 'groups WHERE g_id!=' . PUN_ADMIN) or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+            $db->setQuery('SELECT g_id, g_read_board, g_post_replies, g_post_topics FROM forum_groups WHERE g_id!=' . PUN_ADMIN) or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
             while ($cur_group = $db->fetch_assoc())
             {
                 $read_forum_new = ($cur_group['g_read_board'] == '1') ? isset($_POST['read_forum_new'][$cur_group['g_id']]) ? '1' : '0' : intval($_POST['read_forum_old'][$cur_group['g_id']]);
@@ -165,13 +157,13 @@ else if (isset($_GET['edit_forum']))
                 {
                     // If the new settings are identical to the default settings for this group, delete it's row in forum_perms
                     if ($read_forum_new == '1' && $post_replies_new == $cur_group['g_post_replies'] && $post_topics_new == $cur_group['g_post_topics'])
-                        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forum_perms WHERE group_id=' . $cur_group['g_id'] . ' AND forum_id=' . $forum_id)->execute() or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('DELETE FROM forum_forum_perms WHERE group_id=' . $cur_group['g_id'] . ' AND forum_id=' . $forum_id)->execute() or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
                     else
                     {
                         // Run an UPDATE and see if it affected a row, if not, INSERT
-                        $db->setQuery('UPDATE ' . $db->tablePrefix . 'forum_perms SET read_forum=' . $read_forum_new . ', post_replies=' . $post_replies_new . ', post_topics=' . $post_topics_new . ' WHERE group_id=' . $cur_group['g_id'] . ' AND forum_id=' . $forum_id)->execute() or error('Unable to insert group forum permissions', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('UPDATE forum_forum_perms SET read_forum=' . $read_forum_new . ', post_replies=' . $post_replies_new . ', post_topics=' . $post_topics_new . ' WHERE group_id=' . $cur_group['g_id'] . ' AND forum_id=' . $forum_id)->execute() or error('Unable to insert group forum permissions', __FILE__, __LINE__, $db->error());
                         if (!$db->affected_rows())
-                            $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'forum_perms (group_id, forum_id, read_forum, post_replies, post_topics) VALUES(' . $cur_group['g_id'] . ', ' . $forum_id . ', ' . $read_forum_new . ', ' . $post_replies_new . ', ' . $post_topics_new . ')')->execute() or error('Unable to insert group forum permissions', __FILE__, __LINE__, $db->error());
+                            $db->setQuery('INSERT INTO forum_forum_perms (group_id, forum_id, read_forum, post_replies, post_topics) VALUES(' . $cur_group['g_id'] . ', ' . $forum_id . ', ' . $read_forum_new . ', ' . $post_replies_new . ', ' . $post_topics_new . ')')->execute() or error('Unable to insert group forum permissions', __FILE__, __LINE__, $db->error());
                     }
                 }
             }
@@ -188,7 +180,7 @@ else if (isset($_GET['edit_forum']))
     {
         confirm_referrer('admin_forums.php');
 
-        $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'forum_perms WHERE forum_id=' . $forum_id)->execute() or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
+        $db->setQuery('DELETE FROM forum_forum_perms WHERE forum_id=' . $forum_id)->execute() or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
         // Regenerate the quick jump cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
             require SHELL_PATH . 'include/cache.php';
@@ -198,13 +190,12 @@ else if (isset($_GET['edit_forum']))
         redirect('admin_forums.php?edit_forum=' . $forum_id, 'Permissions reverted to defaults. Redirecting &hellip;');
     }
     // Fetch forum info
-    $db->setQuery('SELECT id, forum_name, forum_desc, redirect_url, num_topics, sort_by, cat_id FROM ' . $db->tablePrefix . 'forums WHERE id=' . $forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT id, forum_name, forum_desc, redirect_url, num_topics, sort_by, cat_id FROM forum_forums WHERE id=' . $forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
     if (!$db->num_rows())
         message($lang_common['Bad request']);
 
     $cur_forum = $db->fetch_assoc();
 
-    $page_title = pun_htmlspecialchars($pun_config['o_board_title']) . ' / Admin / Forums';
     require SHELL_PATH . 'header.php';
 
     generate_admin_menu('forums');
@@ -213,7 +204,7 @@ else if (isset($_GET['edit_forum']))
 	<div class="blockform">
 		<h2><span>Edit forum</span></h2>
 		<div class="box">
-			<?php echo CHtml::form(array('admin_forums','edit_forum'=>$forum_id), 'POST', array('id'=>'edit_forum'));?>
+			<?php echo _CHtml::form(array('admin_forums','edit_forum'=>$forum_id), 'POST', array('id'=>'edit_forum'));?>
 				<p class="submittop"><input type="submit" name="save" value="Save changes" tabindex="6" /></p>
 				<div class="inform">
 					<fieldset>
@@ -222,11 +213,11 @@ else if (isset($_GET['edit_forum']))
 							<table class="aligntop" cellspacing="0">
 								<tr>
 									<th scope="row">Forum name</th>
-									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?>" tabindex="1" /></td>
+									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?php echo _CHtml::encode($cur_forum['forum_name']) ?>" tabindex="1" /></td>
 								</tr>
 								<tr>
 									<th scope="row">Description (HTML)</th>
-									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?php echo pun_htmlspecialchars($cur_forum['forum_desc']) ?></textarea></td>
+									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?php echo _CHtml::encode($cur_forum['forum_desc']) ?></textarea></td>
 								</tr>
 								<tr>
 									<th scope="row">Category</th>
@@ -234,11 +225,11 @@ else if (isset($_GET['edit_forum']))
 										<select name="cat_id" tabindex="3">
 <?php
 
-    $db->setQuery('SELECT id, cat_name FROM ' . $db->tablePrefix . 'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT id, cat_name FROM forum_categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
     while ($cur_cat = $db->fetch_assoc())
     {
         $selected = ($cur_cat['id'] == $cur_forum['cat_id']) ? ' selected="selected"' : '';
-        echo "\t\t\t\t\t\t\t\t\t\t\t" . '<option value="' . $cur_cat['id'] . '"' . $selected . '>' . pun_htmlspecialchars($cur_cat['cat_name']) . '</option>' . "\n";
+        echo "\t\t\t\t\t\t\t\t\t\t\t" . '<option value="' . $cur_cat['id'] . '"' . $selected . '>' . _CHtml::encode($cur_cat['cat_name']) . '</option>' . "\n";
     }
 
     ?>
@@ -256,7 +247,7 @@ else if (isset($_GET['edit_forum']))
 								</tr>
 								<tr>
 									<th scope="row">Redirect URL</th>
-									<td><?php echo ($cur_forum['num_topics']) ? 'Only available in empty forums' : '<input type="text" name="redirect_url" size="45" maxlength="100" value="' . pun_htmlspecialchars($cur_forum['redirect_url']) . '" tabindex="5" />'; ?></td>
+									<td><?php echo ($cur_forum['num_topics']) ? 'Only available in empty forums' : '<input type="text" name="redirect_url" size="45" maxlength="100" value="' . _CHtml::encode($cur_forum['redirect_url']) . '" tabindex="5" />'; ?></td>
 								</tr>
 							</table>
 						</div>
@@ -266,7 +257,7 @@ else if (isset($_GET['edit_forum']))
 					<fieldset>
 						<legend>Edit group permissions for this forum</legend>
 						<div class="infldset">
-							<p>In this form, you can set the forum specific permissions for the different user groups. If you haven't made any changes to this forums group permissions, what you see below is the default based on settings in <?php echo CHtml::link('User groups', array('forum/admin_groups'));?>. Administrators always have full permissions and are thus excluded. Permission settings that differ from the default permissions for the user group are marked red. The "Read forum" permission checkbox will be disabled if the group in question lacks the "Read board" permission. For redirect forums, only the "Read forum" permission is editable.</p>
+							<p>In this form, you can set the forum specific permissions for the different user groups. If you haven't made any changes to this forums group permissions, what you see below is the default based on settings in <?php echo _CHtml::link('User groups', array('forum/admin_groups'));?>. Administrators always have full permissions and are thus excluded. Permission settings that differ from the default permissions for the user group are marked red. The "Read forum" permission checkbox will be disabled if the group in question lacks the "Read board" permission. For redirect forums, only the "Read forum" permission is editable.</p>
 							<table id="forumperms" cellspacing="0">
 							<thead>
 								<tr>
@@ -279,7 +270,7 @@ else if (isset($_GET['edit_forum']))
 							<tbody>
 <?php
 
-        $db->setQuery('SELECT g.g_id, g.g_title, g.g_read_board, g.g_post_replies, g.g_post_topics, fp.read_forum, fp.post_replies, fp.post_topics FROM ' . $db->tablePrefix . 'groups AS g LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (g.g_id=fp.group_id AND fp.forum_id=' . $forum_id . ') WHERE g.g_id!=' . PUN_ADMIN . ' ORDER BY g.g_id') or error('Unable to fetch group forum permission list', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT g.g_id, g.g_title, g.g_read_board, g.g_post_replies, g.g_post_topics, fp.read_forum, fp.post_replies, fp.post_topics FROM forum_groups AS g LEFT JOIN forum_forum_perms AS fp ON (g.g_id=fp.group_id AND fp.forum_id=' . $forum_id . ') WHERE g.g_id!=' . PUN_ADMIN . ' ORDER BY g.g_id') or error('Unable to fetch group forum permission list', __FILE__, __LINE__, $db->error());
 
         while ($cur_perm = $db->fetch_assoc())
         {
@@ -293,7 +284,7 @@ else if (isset($_GET['edit_forum']))
 
             ?>
 								<tr>
-									<th class="atcl"><?php echo pun_htmlspecialchars($cur_perm['g_title']) ?></th>
+									<th class="atcl"><?php echo _CHtml::encode($cur_perm['g_title']) ?></th>
 									<td<?php if (!$read_forum_def) echo ' class="nodefault"'; ?>>
 										<input type="hidden" name="read_forum_old[<?php echo $cur_perm['g_id'] ?>]" value="<?php echo ($read_forum) ? '1' : '0'; ?>" />
 										<input type="checkbox" name="read_forum_new[<?php echo $cur_perm['g_id'] ?>]" value="1"<?php echo ($read_forum) ? ' checked="checked"' : ''; ?><?php echo ($cur_perm['g_read_board'] == '0') ? ' disabled="disabled"' : ''; ?> />
@@ -330,16 +321,14 @@ else if (isset($_GET['edit_forum']))
         require SHELL_PATH . 'footer.php';
     }
 
-    $page_title = pun_htmlspecialchars($pun_config['o_board_title']) . ' / Admin / Forums';
     require SHELL_PATH . 'header.php';
-
     generate_admin_menu('forums');
 
     ?>
 	<div class="blockform">
 		<h2><span>Add forum</span></h2>
 		<div class="box">
-			<?php echo CHtml::form(array('admin_forums','action'=>'adddel'), 'POST');?>
+			<?php echo _CHtml::form(array('admin_forums','action'=>'adddel'), 'POST');?>
 				<div class="inform">
 					<fieldset>
 						<legend>Create a new forum</legend>
@@ -351,11 +340,11 @@ else if (isset($_GET['edit_forum']))
 										<select name="add_to_cat" tabindex="1">
 <?php
 
-    $db->setQuery('SELECT id, cat_name FROM ' . $db->tablePrefix . 'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT id, cat_name FROM forum_categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
     if ($db->num_rows() > 0)
     {
         while ($cur_cat = $db->fetch_assoc())
-        echo "\t\t\t\t\t\t\t\t\t" . '<option value="' . $cur_cat['id'] . '">' . pun_htmlspecialchars($cur_cat['cat_name']) . '</option>' . "\n";
+        echo "\t\t\t\t\t\t\t\t\t" . '<option value="' . $cur_cat['id'] . '">' . _CHtml::encode($cur_cat['cat_name']) . '</option>' . "\n";
     }
     else
         echo "\t\t\t\t\t\t\t\t\t" . '<option value="0" disabled="disabled">No categories exist</option>' . "\n";
@@ -373,13 +362,13 @@ else if (isset($_GET['edit_forum']))
 		</div>
 <?php
     // Display all the categories and forums
-    $db->setQuery('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.disp_position FROM ' . $db->tablePrefix . 'categories AS c INNER JOIN ' . $db->tablePrefix . 'forums AS f ON c.id=f.cat_id ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.disp_position FROM forum_categories AS c INNER JOIN forum_forums AS f ON c.id=f.cat_id ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 
     if ($db->num_rows() > 0)
     {?>
 		<h2 class="block2"><span>Edit forums</span></h2>
 		<div class="box">
-			<?php echo CHtml::form(array('admin_forums','action'=>'edit'), 'POST', array('id'=>'edforum'));?>
+			<?php echo _CHtml::form(array('admin_forums','action'=>'edit'), 'POST', array('id'=>'edforum'));?>
 				<p class="submittop"><input type="submit" name="update_positions" value="Update positions" tabindex="3" /></p>
 <?php
 
@@ -396,7 +385,7 @@ else if (isset($_GET['edit_forum']))
                     ?>
 				<div class="inform">
 					<fieldset>
-						<legend>Category: <?php echo pun_htmlspecialchars($cur_forum['cat_name']) ?></legend>
+						<legend>Category: <?php echo _CHtml::encode($cur_forum['cat_name']) ?></legend>
 						<div class="infldset">
 							<table cellspacing="0">
 <?php
@@ -406,9 +395,9 @@ else if (isset($_GET['edit_forum']))
 
                 ?>
 								<tr>
-									<th><?php echo CHtml::link('Edit', array('forum/admin_forums', 'edit_forum' => $cur_forum['fid'])) . ' - ' . CHtml::link('Delete', array('forum/admin_forums', 'del_forum' => $cur_forum['fid']));?></th>
+									<th><?php echo _CHtml::link('Edit', array('forum/admin_forums', 'edit_forum' => $cur_forum['fid'])) . ' - ' . _CHtml::link('Delete', array('forum/admin_forums', 'del_forum' => $cur_forum['fid']));?></th>
 									<td>Position&nbsp;&nbsp;<input type="text" name="position[<?php echo $cur_forum['fid'] ?>]" size="3" maxlength="3" value="<?php echo $cur_forum['disp_position'] ?>" tabindex="<?php echo $tabindex_count ?>" />
-									&nbsp;&nbsp;<strong><?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?></strong></td>
+									&nbsp;&nbsp;<strong><?php echo _CHtml::encode($cur_forum['forum_name']) ?></strong></td>
 								</tr>
 <?php
 

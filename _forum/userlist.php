@@ -1,82 +1,53 @@
 <?php
-
-/*---
-
-	Copyright (C) 2008-2009 FluxBB.org
-	based on code copyright (C) 2002-2005 Rickard Andersson
-	License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
-
----*/
-
-require SHELL_PATH . 'include/common.php';
-
-if ($pun_user['g_read_board'] == '0')
+require SHELL_PATH . 'include/common.php';if ($_user['g_read_board'] == '0')
     message($lang_common['No view']);
-else if ($pun_user['g_view_users'] == '0')
+else if ($_user['g_view_users'] == '0')
     message($lang_common['No permission']);
 // Load the userlist.php language file
-require SHELL_PATH . 'lang/' . $pun_user['language'] . '/userlist.php';
+require SHELL_PATH . 'lang/' . $_user['language'] . '/userlist.php';
 // Load the search.php language file
-require SHELL_PATH . 'lang/' . $pun_user['language'] . '/search.php';
+require SHELL_PATH . 'lang/' . $_user['language'] . '/search.php';
 // Determine if we are allowed to view post counts
-$show_post_count = ($pun_config['o_show_post_count'] == '1' || $pun_user['is_admmod']) ? true : false;
-
-$username = (isset($_GET['username']) && $pun_user['g_search_users'] == '1') ? pun_trim($_GET['username']) : '';
+$show_post_count = ($_config['o_show_post_count'] == '1' || $_user['is_admmod']) ? true : false;$username = (isset($_GET['username']) && $_user['g_search_users'] == '1') ? _trim($_GET['username']) : '';
 $show_group = !isset($_GET['show_group']) ? - 1 : intval($_GET['show_group']);
 $sort_by = (!isset($_GET['sort_by']) || $_GET['sort_by'] != 'username' && $_GET['sort_by'] != 'registered' && ($_GET['sort_by'] != 'num_posts' || !$show_post_count)) ? 'username' : $_GET['sort_by'];
 $sort_dir = (!isset($_GET['sort_dir']) || $_GET['sort_dir'] != 'ASC' && $_GET['sort_dir'] != 'DESC') ? 'ASC' : utf8_strtoupper($_GET['sort_dir']);
 // Create any SQL for the WHERE clause
 $where_sql = array();
-$like_command = ($db_type == 'pgsql') ? 'ILIKE' : 'LIKE';
-
-if ($pun_user['g_search_users'] == '1' && $username != '')
+$like_command = ($db->type == 'pgsql') ? 'ILIKE' : 'LIKE';if ($_user['g_search_users'] == '1' && $username != '')
     $where_sql[] = 'u.username ' . $like_command . ' \'' . $db->escape(str_replace('*', '%', $username)) . '\'';
 if ($show_group > - 1)
     $where_sql[] = 'u.group_id=' . $show_group;
 // Fetch user count
-$db->setQuery('SELECT COUNT(id) FROM ' . $db->tablePrefix . 'users AS u WHERE u.id>1 AND u.group_id!=' . PUN_UNVERIFIED . (!empty($where_sql) ? ' AND ' . implode(' AND ', $where_sql) : '')) or error('Unable to fetch user list count', __FILE__, __LINE__, $db->error());
-$num_users = $db->result($result);
+$db->setQuery('SELECT COUNT(id) FROM forum_userprofiles AS u WHERE u.id>1 AND u.group_id!=' . PUN_UNVERIFIED . (!empty($where_sql) ? ' AND ' . implode(' AND ', $where_sql) : '')) or error('Unable to fetch user list count', __FILE__, __LINE__, $db->error());
+$num_users = $db->result();
 // Determine the user offset (based on $_GET['p'])
-$num_pages = ceil($num_users / 50);
-
-$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
-$start_from = 50 * ($p - 1);
-
-$page_title = pun_htmlspecialchars($pun_config['o_board_title']) . ' / ' . $lang_common['User list'];
-if ($pun_user['g_search_users'] == '1')
+$num_pages = ceil($num_users / 50);$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+$start_from = 50 * ($p - 1);$page_title = _CHtml::encode($this->PageTitle) . ' / ' . $lang_common['User list'];
+if ($_user['g_search_users'] == '1')
     $focus_element = array('userlist', 'username');
 // Generate paging links
-$paging_links = $lang_common['Pages'] . ': ' . paginate($num_pages, $p, 'userlist.php?username=' . urlencode($username) . '&amp;show_group=' . $show_group . '&amp;sort_by=' . $sort_by . '&amp;sort_dir=' . strtoupper($sort_dir));
-
-define('PUN_ALLOW_INDEX', 1);
-require SHELL_PATH . 'header.php';
-
-?>
+$paging_links = $lang_common['Pages'] . ': ' . paginate($num_pages, $p, 'userlist.php?username=' . urlencode($username) . '&amp;show_group=' . $show_group . '&amp;sort_by=' . $sort_by . '&amp;sort_dir=' . strtoupper($sort_dir));define('PUN_ALLOW_INDEX', 1);
+require SHELL_PATH . 'header.php';?>
 <div class="blockform">
 	<h2><span><?php echo $lang_search['User search'] ?></span></h2>
 	<div class="box">
-		<?php echo CHtml::form('userlist', 'GET', array('id'=>'userlist'));?>
+		<?php echo _CHtml::form('userlist', 'GET', array('id'=>'userlist'));?>
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_ul['User find legend'] ?></legend>
 					<div class="infldset">
-<?php if ($pun_user['g_search_users'] == '1'): ?>						<label class="conl"><?php echo $lang_common['Username'] ?><br /><input type="text" name="username" value="<?php echo pun_htmlspecialchars($username) ?>" size="25" maxlength="25" /><br /></label>
+<?php if ($_user['g_search_users'] == '1'): ?>						<label class="conl"><?php echo $lang_common['Username'] ?><br /><input type="text" name="username" value="<?php echo _CHtml::encode($username) ?>" size="25" maxlength="25" /><br /></label>
 <?php endif; ?>						<label class="conl"><?php echo $lang_ul['User group'] . "\n" ?>
 						<br /><select name="show_group">
 							<option value="-1"<?php if ($show_group == - 1) echo ' selected="selected"' ?>><?php echo $lang_ul['All users'] ?></option>
-<?php
-
-    $db->setQuery('SELECT g_id, g_title FROM ' . $db->tablePrefix . 'groups WHERE g_id!=' . PUN_GUEST . ' ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
-
-while ($cur_group = $db->fetch_assoc())
+<?php    $db->setQuery('SELECT g_id, g_title FROM forum_groups WHERE g_id!=' . PUN_GUEST . ' ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());while ($cur_group = $db->fetch_assoc())
 {
     if ($cur_group['g_id'] == $show_group)
-        echo "\t\t\t\t\t\t\t" . '<option value="' . $cur_group['g_id'] . '" selected="selected">' . pun_htmlspecialchars($cur_group['g_title']) . '</option>' . "\n";
+        echo "\t\t\t\t\t\t\t" . '<option value="' . $cur_group['g_id'] . '" selected="selected">' . _CHtml::encode($cur_group['g_title']) . '</option>' . "\n";
     else
-        echo "\t\t\t\t\t\t\t" . '<option value="' . $cur_group['g_id'] . '">' . pun_htmlspecialchars($cur_group['g_title']) . '</option>' . "\n";
-}
-
-?>
+        echo "\t\t\t\t\t\t\t" . '<option value="' . $cur_group['g_id'] . '">' . _CHtml::encode($cur_group['g_title']) . '</option>' . "\n";
+}?>
 						</select>
 						<br /></label>
 						<label class="conl"><?php echo $lang_search['Sort by'] . "\n" ?>
@@ -99,16 +70,12 @@ while ($cur_group = $db->fetch_assoc())
 			<p class="buttons"><input type="submit" name="search" value="<?php echo $lang_common['Submit'] ?>" accesskey="s" /></p>
 		</form>
 	</div>
-</div>
-
-<div class="linkst">
+</div><div class="linkst">
 	<div class="inbox">
 		<p class="pagelink"><?php echo $paging_links ?></p>
 		<div class="clearer"></div>
 	</div>
-</div>
-
-<div id="users1" class="blocktable">
+</div><div id="users1" class="blocktable">
 	<h2><span><?php echo $lang_common['User list'] ?></span></h2>
 	<div class="box">
 		<div class="inbox">
@@ -124,41 +91,33 @@ while ($cur_group = $db->fetch_assoc())
 		<tbody>
 <?php
                     // Grab the users
-                    $db->setQuery('SELECT u.id, u.username, u.title, u.num_posts, u.registered, g.g_id, g.g_user_title FROM ' . $db->tablePrefix . 'users AS u LEFT JOIN ' . $db->tablePrefix . 'groups AS g ON g.g_id=u.group_id WHERE u.id>1 AND u.group_id!=' . PUN_UNVERIFIED . (!empty($where_sql) ? ' AND ' . implode(' AND ', $where_sql) : '') . ' ORDER BY ' . $sort_by . ' ' . $sort_dir . ', u.id ASC LIMIT ' . $start_from . ', 50') or error('Unable to fetch user list', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('SELECT u.id, u.username, u.title, u.num_posts, u.registered, g.g_id, g.g_user_title FROM forum_userprofiles AS u LEFT JOIN forum_groups AS g ON g.g_id=u.group_id WHERE u.id>1 AND u.group_id!=' . PUN_UNVERIFIED . (!empty($where_sql) ? ' AND ' . implode(' AND ', $where_sql) : '') . ' ORDER BY ' . $sort_by . ' ' . $sort_dir . ', u.id ASC LIMIT ' . $start_from . ', 50') or error('Unable to fetch user list', __FILE__, __LINE__, $db->error());
                     if ($db->num_rows())
                     {
                         while ($user_data = $db->fetch_assoc())
                         {
                             $user_title_field = get_title($user_data);
-
-                            ?>
+        ?>
 			<tr>
-				<td class="tcl"><?php echo CHtml::link(pun_htmlspecialchars($user_data['username']), array('forum/profile', 'id' => $user_data['id']));?></td>
+				<td class="tcl"><?php echo _CHtml::link(_CHtml::encode($user_data['username']), array('forum/profile', 'id' => $user_data['id']));?></td>
 				<td class="tc2"><?php echo $user_title_field ?></td>
 <?php if ($show_post_count): ?>				<td class="tc3"><?php echo forum_number_format($user_data['num_posts']) ?></td>
 <?php endif; ?>
-				<td class="tcr"><?php echo format_time($user_data['registered'], true) ?></td>
+				<td class="tcr"><?php echo MDate::format($user_data['registered'], true) ?></td>
 			</tr>
-<?php
-
-                        }
+<?php                        }
                     }
                     else
                         echo "\t\t\t" . '<tr>' . "\n\t\t\t\t\t" . '<td class="tcl" colspan="' . (($show_post_count) ? 4 : 3) . '">' . $lang_search['No hits'] . '</td></tr>' . "\n";
-
-                    ?>
+?>
 			</tbody>
 			</table>
 		</div>
 	</div>
-</div>
-
-<div class="linksb">
+</div><div class="linksb">
 	<div class="inbox">
 		<p class="pagelink"><?php echo $paging_links ?></p>
 		<div class="clearer"></div>
 	</div>
 </div>
-<?php
-
-                    require SHELL_PATH . 'footer.php';
+<?php                    require SHELL_PATH . 'footer.php';

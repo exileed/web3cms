@@ -1,12 +1,6 @@
 <?php
 
-/*---
 
-	Copyright (C) 2008-2009 FluxBB.org
-	based on code copyright (C) 2002-2005 Rickard Andersson
-	License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
-
----*/
 // Make sure no one attempts to run this script "directly"
 if (!defined('PUN'))
     exit;
@@ -21,9 +15,9 @@ function is_valid_email($email)
 // Check if $email is banned
 function is_banned_email($email)
 {
-    global $db, $pun_bans;
+    global $db, $_bans;
 
-    foreach ($pun_bans as $cur_ban)
+    foreach ($_bans as $cur_ban)
     {
         if ($cur_ban['email'] != '' &&
             ($email == $cur_ban['email'] ||
@@ -34,19 +28,19 @@ function is_banned_email($email)
     return false;
 }
 // Wrapper for PHP's mail()
-function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
+function _mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
 {
-    global $pun_config, $lang_common;
+    global $_config, $lang_common;
     // Default sender/return address
-    $from_name = str_replace('"', '', $pun_config['o_board_title'] . ' ' . $lang_common['Mailer']);
-    $from_email = $pun_config['o_webmaster_email'];
+    $from_name = str_replace('"', '', $this->pageTitle . ' ' . $lang_common['Mailer']);
+    $from_email = $_config['o_webmaster_email'];
     // Do a little spring cleaning
-    $to = pun_trim(preg_replace('#[\n\r]+#s', '', $to));
-    $subject = pun_trim(preg_replace('#[\n\r]+#s', '', $subject));
-    $from_email = pun_trim(preg_replace('#[\n\r:]+#s', '', $from_email));
-    $from_name = pun_trim(preg_replace('#[\n\r:]+#s', '', str_replace('"', '', $from_name)));
-    $reply_to_email = pun_trim(preg_replace('#[\n\r:]+#s', '', $reply_to_email));
-    $reply_to_name = pun_trim(preg_replace('#[\n\r:]+#s', '', str_replace('"', '', $reply_to_name)));
+    $to = _trim(preg_replace('#[\n\r]+#s', '', $to));
+    $subject = _trim(preg_replace('#[\n\r]+#s', '', $subject));
+    $from_email = _trim(preg_replace('#[\n\r:]+#s', '', $from_email));
+    $from_name = _trim(preg_replace('#[\n\r:]+#s', '', str_replace('"', '', $from_name)));
+    $reply_to_email = _trim(preg_replace('#[\n\r:]+#s', '', $reply_to_email));
+    $reply_to_name = _trim(preg_replace('#[\n\r:]+#s', '', str_replace('"', '', $reply_to_name)));
     // Set up some headers to take advantage of UTF-8
     $from = "=?UTF-8?B?" . base64_encode($from_name) . "?=" . ' <' . $from_email . '>';
     $subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
@@ -60,9 +54,9 @@ function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name 
         $headers .= "\r\n" . 'Reply-To: ' . $reply_to;
     }
     // Make sure all linebreaks are CRLF in message (and strip out any NULL bytes)
-    $message = str_replace(array("\n", "\0"), array("\r\n", ''), pun_linebreaks($message));
+    $message = str_replace(array("\n", "\0"), array("\r\n", ''), _linebreaks($message));
 
-    if ($pun_config['o_smtp_host'] != '')
+    if ($_config['o_smtp_host'] != '')
         smtp_mail($to, $subject, $message, $headers);
     else
     {
@@ -93,30 +87,30 @@ function server_parse($socket, $expected_response)
 // They deserve all the credit for writing it. I made small modifications for it to suit PunBB and it's coding standards.
 function smtp_mail($to, $subject, $message, $headers = '')
 {
-    global $pun_config;
+    global $_config;
 
     $recipients = explode(',', $to);
     // Sanitize the message
     $message = str_replace("\r\n.", "\r\n..", $message);
     $message = (substr($message, 0, 1) == '.' ? '.' . $message : $message);
     // Are we using port 25 or a custom port?
-    if (strpos($pun_config['o_smtp_host'], ':') !== false)
-        list($smtp_host, $smtp_port) = explode(':', $pun_config['o_smtp_host']);
+    if (strpos($_config['o_smtp_host'], ':') !== false)
+        list($smtp_host, $smtp_port) = explode(':', $_config['o_smtp_host']);
     else
     {
-        $smtp_host = $pun_config['o_smtp_host'];
+        $smtp_host = $_config['o_smtp_host'];
         $smtp_port = 25;
     }
 
-    if ($pun_config['o_smtp_ssl'] == '1')
+    if ($_config['o_smtp_ssl'] == '1')
         $smtp_host = 'ssl://' . $smtp_host;
 
     if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15)))
-        error('Could not connect to smtp host "' . $pun_config['o_smtp_host'] . '" (' . $errno . ') (' . $errstr . ')', __FILE__, __LINE__);
+        error('Could not connect to smtp host "' . $_config['o_smtp_host'] . '" (' . $errno . ') (' . $errstr . ')', __FILE__, __LINE__);
 
     server_parse($socket, '220');
 
-    if ($pun_config['o_smtp_user'] != '' && $pun_config['o_smtp_pass'] != '')
+    if ($_config['o_smtp_user'] != '' && $_config['o_smtp_pass'] != '')
     {
         fwrite($socket, 'EHLO ' . $smtp_host . "\r\n");
         server_parse($socket, '250');
@@ -124,10 +118,10 @@ function smtp_mail($to, $subject, $message, $headers = '')
         fwrite($socket, 'AUTH LOGIN' . "\r\n");
         server_parse($socket, '334');
 
-        fwrite($socket, base64_encode($pun_config['o_smtp_user']) . "\r\n");
+        fwrite($socket, base64_encode($_config['o_smtp_user']) . "\r\n");
         server_parse($socket, '334');
 
-        fwrite($socket, base64_encode($pun_config['o_smtp_pass']) . "\r\n");
+        fwrite($socket, base64_encode($_config['o_smtp_pass']) . "\r\n");
         server_parse($socket, '235');
     }
     else
@@ -136,7 +130,7 @@ function smtp_mail($to, $subject, $message, $headers = '')
         server_parse($socket, '250');
     }
 
-    fwrite($socket, 'MAIL FROM: <' . $pun_config['o_webmaster_email'] . '>' . "\r\n");
+    fwrite($socket, 'MAIL FROM: <' . $_config['o_webmaster_email'] . '>' . "\r\n");
     server_parse($socket, '250');
 
     while (list(, $email) = @each($recipients))

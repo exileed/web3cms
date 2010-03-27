@@ -1,22 +1,14 @@
-<pun_head>
-</head>
-<body>
+<_head>
 <div id="punwrap">
-<div id="pun<pun_page>" class="pun">
+<div id="pun<_page>" class="pun">
 <div id="brdheader" class="block">
 	<div class="box">
-		<div id="brdtitle" class="inbox">
-			<pun_title>
-			<pun_desc>
-		</div>
-		<pun_navlinks>
-		<pun_status>
+		<_navlinks>
+		<_status>
 	</div>
 </div>
-<pun_announcement>
-<pun_main>
-<pun_footer>
+<_announcement>
+<_main>
+<_footer>
 </div>
 </div>
-</body>
-</html>

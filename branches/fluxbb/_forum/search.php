@@ -1,23 +1,17 @@
 <?php
 
-/*---
 
-	Copyright (C) 2008-2009 FluxBB.org
-	based on code copyright (C) 2002-2005 Rickard Andersson
-	License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
-
----*/
 // The contents of this file are very much inspired by the file search.php
 // from the phpBB Group forum software phpBB2 (http://www.phpbb.com)
 require SHELL_PATH . 'include/common.php';
 // Load the search.php language file
-require SHELL_PATH . 'lang/' . $pun_user['language'] . '/search.php';
-require SHELL_PATH . 'lang/' . $pun_user['language'] . '/forum.php';
+require SHELL_PATH . 'lang/' . $_user['language'] . '/search.php';
+require SHELL_PATH . 'lang/' . $_user['language'] . '/forum.php';
 Yii::app()->getClientScript()->registerScript('focus','document.getElementById(\'search\').keywords.focus()',POS_LOAD);
 
-if ($pun_user['g_read_board'] == '0')
+if ($_user['g_read_board'] == '0')
     message($lang_common['No view']);
-else if ($pun_user['g_search'] == '0')
+else if ($_user['g_search'] == '0')
     message($lang_search['No search permission']);
 // Figure out what to do :-)
 if (isset($_GET['action']) || isset($_GET['search_id']))
@@ -69,9 +63,9 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
     // If a valid search_id was supplied we attempt to fetch the search results from the db
     if (isset($search_id))
     {
-        $ident = ($pun_user['is_guest']) ? get_remote_address() : $pun_user['username'];
+        $ident = ($_user['is_guest']) ? get_remote_address() : $_user['username'];
 
-        $db->setQuery('SELECT search_data FROM ' . $db->tablePrefix . 'search_cache WHERE id=' . $search_id . ' AND ident=\'' . $db->escape($ident) . '\'') or error('Unable to fetch search results', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT search_data FROM forum_search_cache WHERE id=' . $search_id . ' AND ident=\'' . $db->escape($ident) . '\'') or error('Unable to fetch search results', __FILE__, __LINE__, $db->error());
         if ($row = $db->fetch_assoc())
         {
             $temp = unserialize($row['search_data']);
@@ -91,27 +85,27 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
     {
         $keyword_results = $author_results = array();
         // Search a specific forum?
-        $forum_sql = ($forum != - 1 || ($forum == - 1 && $pun_config['o_search_all_forums'] == '0' && !$pun_user['is_admmod'])) ? ' AND t.forum_id = ' . $forum : '';
+        $forum_sql = ($forum != - 1 || ($forum == - 1 && $_config['o_search_all_forums'] == '0' && !$_user['is_admmod'])) ? ' AND t.forum_id = ' . $forum : '';
 
         if (!empty($author) || !empty($keywords))
         {
             // Flood protection
-            if ($pun_user['last_search'] && (time() - $pun_user['last_search']) < $pun_user['g_search_flood'] && (time() - $pun_user['last_search']) >= 0)
-                message(sprintf($lang_search['Search flood'], $pun_user['g_search_flood']));
+            if ($_user['last_search'] && (time() - $_user['last_search']) < $_user['g_search_flood'] && (time() - $_user['last_search']) >= 0)
+                message(sprintf($lang_search['Search flood'], $_user['g_search_flood']));
 
-            if (!$pun_user['is_guest'])
+            if (!$_user['is_guest'])
             {
-                $db->setQuery('UPDATE ' . $db->tablePrefix . 'users SET last_search=' . time() . ' WHERE id=' . $pun_user['id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE forum_userprofiles SET last_search=' . time() . ' WHERE id=' . $_user['id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
             }
             else
             {
-                $db->setQuery('UPDATE ' . $db->tablePrefix . 'online SET last_search=' . time() . ' WHERE ident=\'' . $db->escape(get_remote_address()) . '\'') or error('Unable to update user', __FILE__, __LINE__, $db->error());
+                $db->setQuery('UPDATE forum_online SET last_search=' . time() . ' WHERE ident=\'' . $db->escape(get_remote_address()) . '\'') or error('Unable to update user', __FILE__, __LINE__, $db->error());
             }
             // If it's a search for keywords
             if ($keywords)
             {
-                $stopwords = (array)@file(SHELL_PATH . 'lang/' . $pun_user['language'] . '/stopwords.txt');
-                $stopwords = array_map('pun_trim', $stopwords);
+                $stopwords = (array)@file(SHELL_PATH . 'lang/' . $_user['language'] . '/stopwords.txt');
+                $stopwords = array_map('_trim', $stopwords);
                 // Remove any apostrophes which aren't part of words
                 $keywords = substr(preg_replace('((?<=\W)\'|\'(?=\W))', '', ' ' . $keywords . ' '), 1, - 1);
                 // Remove symbols and multiple whitespace
@@ -124,7 +118,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
                 while (list($i, $word) = @each($keywords_array))
                 {
-                    $num_chars = pun_strlen($word);
+                    $num_chars = _strlen($word);
 
                     if ($word !== 'or' && ($num_chars < 3 || $num_chars > 20 || in_array($word, $stopwords)))
                         unset($keywords_array[$i]);
@@ -148,7 +142,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
                         default:
                             {
-                                $db->setQuery('SELECT m.post_id FROM ' . $db->tablePrefix . 'search_words AS w INNER JOIN ' . $db->tablePrefix . 'search_matches AS m ON m.word_id = w.id WHERE w.word LIKE \'' . str_replace('*', '%', $cur_word) . '\'' . $search_in_cond, true) or error('Unable to search for posts', __FILE__, __LINE__, $db->error());
+                                $db->setQuery('SELECT m.post_id FROM forum_search_words AS w INNER JOIN forum_search_matches AS m ON m.word_id = w.id WHERE w.word LIKE \'' . str_replace('*', '%', $cur_word) . '\'' . $search_in_cond, true) or error('Unable to search for posts', __FILE__, __LINE__, $db->error());
 
                                 $row = array();
                                 while ($temp = $db->fetch_row())
@@ -191,14 +185,14 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             // If it's a search for author name (and that author name isn't Guest)
             if ($author && strcasecmp($author, 'Guest') && strcasecmp($author, $lang_common['Guest']))
             {
-                switch ($db_type)
+                switch ($db->type)
                 {
                     case 'pgsql':
-                        $db->setQuery('SELECT id FROM ' . $db->tablePrefix . 'users WHERE username ILIKE \'' . $db->escape($author) . '\'') or error('Unable to fetch users', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('SELECT id FROM forum_userprofiles WHERE username ILIKE \'' . $db->escape($author) . '\'') or error('Unable to fetch users', __FILE__, __LINE__, $db->error());
                         break;
 
                     default:
-                        $db->setQuery('SELECT id FROM ' . $db->tablePrefix . 'users WHERE username LIKE \'' . $db->escape($author) . '\'') or error('Unable to fetch users', __FILE__, __LINE__, $db->error());
+                        $db->setQuery('SELECT id FROM forum_userprofiles WHERE username LIKE \'' . $db->escape($author) . '\'') or error('Unable to fetch users', __FILE__, __LINE__, $db->error());
                         break;
                 }
 
@@ -208,7 +202,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
                     while ($row = $db->fetch_row())
                     $user_ids .= (($user_ids != '') ? ',' : '') . $row[0];
 
-                    $db->setQuery('SELECT id FROM ' . $db->tablePrefix . 'posts WHERE poster_id IN(' . $user_ids . ')') or error('Unable to fetch matched posts list', __FILE__, __LINE__, $db->error());
+                    $db->setQuery('SELECT id FROM forum_posts WHERE poster_id IN(' . $user_ids . ')') or error('Unable to fetch matched posts list', __FILE__, __LINE__, $db->error());
 
                     $search_ids = array();
                     while ($row = $db->fetch_row())
@@ -234,7 +228,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
             if ($show_as == 'topics')
             {
-                $db->setQuery('SELECT t.id FROM ' . $db->tablePrefix . 'posts AS p INNER JOIN ' . $db->tablePrefix . 'topics AS t ON t.id=p.topic_id INNER JOIN ' . $db->tablePrefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id IN(' . implode(',', $search_ids) . ')' . $forum_sql . ' GROUP BY t.id', true) or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT t.id FROM forum_posts AS p INNER JOIN forum_topics AS t ON t.id=p.topic_id INNER JOIN forum_forums AS f ON f.id=t.forum_id LEFT JOIN forum_forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id IN(' . implode(',', $search_ids) . ')' . $forum_sql . ' GROUP BY t.id', true) or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
                 $search_ids = array();
                 while ($row = $db->fetch_row())
                 $search_ids[] = $row[0];
@@ -242,7 +236,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             }
             else
             {
-                $db->setQuery('SELECT p.id FROM ' . $db->tablePrefix . 'posts AS p INNER JOIN ' . $db->tablePrefix . 'topics AS t ON t.id=p.topic_id INNER JOIN ' . $db->tablePrefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id IN(' . implode(',', $search_ids) . ')' . $forum_sql, true) or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT p.id FROM forum_posts AS p INNER JOIN forum_topics AS t ON t.id=p.topic_id INNER JOIN forum_forums AS f ON f.id=t.forum_id LEFT JOIN forum_forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id IN(' . implode(',', $search_ids) . ')' . $forum_sql, true) or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
 
                 $search_ids = array();
                 while ($row = $db->fetch_row())
@@ -255,10 +249,10 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             // If it's a search for new posts
             if ($action == 'show_new')
             {
-                if ($pun_user['is_guest'])
+                if ($_user['is_guest'])
                     message($lang_common['No permission']);
 
-                $db->setQuery('SELECT t.id FROM ' . $db->tablePrefix . 'topics AS t INNER JOIN ' . $db->tablePrefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>' . $pun_user['last_visit'] . ' AND t.moved_to IS NULL') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT t.id FROM forum_topics AS t INNER JOIN forum_forums AS f ON f.id=t.forum_id LEFT JOIN forum_forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>' . $_user['last_visit'] . ' AND t.moved_to IS NULL') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
                 $num_hits = $db->num_rows();
 
                 if (!$num_hits)
@@ -267,7 +261,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             // If it's a search for todays posts
             else if ($action == 'show_24h')
             {
-                $db->setQuery('SELECT t.id FROM ' . $db->tablePrefix . 'topics AS t INNER JOIN ' . $db->tablePrefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>' . (time() - 86400) . ' AND t.moved_to IS NULL') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT t.id FROM forum_topics AS t INNER JOIN forum_forums AS f ON f.id=t.forum_id LEFT JOIN forum_forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>' . (time() - 86400) . ' AND t.moved_to IS NULL') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
                 $num_hits = $db->num_rows();
 
                 if (!$num_hits)
@@ -276,7 +270,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             // If it's a search for posts by a specific user ID
             else if ($action == 'show_user')
             {
-                $db->setQuery('SELECT t.id FROM ' . $db->tablePrefix . 'topics AS t INNER JOIN ' . $db->tablePrefix . 'posts AS p ON t.id=p.topic_id INNER JOIN ' . $db->tablePrefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id=' . $user_id . ' GROUP BY t.id') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT t.id FROM forum_topics AS t INNER JOIN forum_posts AS p ON t.id=p.topic_id INNER JOIN forum_forums AS f ON f.id=t.forum_id LEFT JOIN forum_forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id=' . $user_id . ' GROUP BY t.id') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
                 $num_hits = $db->num_rows();
 
                 if (!$num_hits)
@@ -285,10 +279,10 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             // If it's a search for subscribed topics
             else if ($action == 'show_subscriptions')
             {
-                if ($pun_user['is_guest'])
+                if ($_user['is_guest'])
                     message($lang_common['Bad request']);
 
-                $db->setQuery('SELECT t.id FROM ' . $db->tablePrefix . 'topics AS t INNER JOIN ' . $db->tablePrefix . 'subscriptions AS s ON (t.id=s.topic_id AND s.user_id=' . $pun_user['id'] . ') INNER JOIN ' . $db->tablePrefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1)') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT t.id FROM forum_topics AS t INNER JOIN forum_subscriptions AS s ON (t.id=s.topic_id AND s.user_id=' . $_user['id'] . ') INNER JOIN forum_forums AS f ON f.id=t.forum_id LEFT JOIN forum_forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1)') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
                 $num_hits = $db->num_rows();
 
                 if (!$num_hits)
@@ -297,7 +291,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             // If it's a search for unanswered posts
             else
             {
-                $db->setQuery('SELECT t.id FROM ' . $db->tablePrefix . 'topics AS t INNER JOIN ' . $db->tablePrefix . 'forums AS f ON f.id=t.forum_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.num_replies=0 AND t.moved_to IS NULL') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
+                $db->setQuery('SELECT t.id FROM forum_topics AS t INNER JOIN forum_forums AS f ON f.id=t.forum_id LEFT JOIN forum_forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.num_replies=0 AND t.moved_to IS NULL') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
                 $num_hits = $db->num_rows();
 
                 if (!$num_hits)
@@ -314,14 +308,14 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             message($lang_common['Bad request']);
         // Prune "old" search results
         $old_searches = array();
-        $db->setQuery('SELECT ident FROM ' . $db->tablePrefix . 'online') or error('Unable to fetch online list', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT ident FROM forum_online') or error('Unable to fetch online list', __FILE__, __LINE__, $db->error());
 
         if ($db->num_rows())
         {
             while ($row = $db->fetch_row())
             $old_searches[] = '\'' . $db->escape($row[0]) . '\'';
 
-            $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'search_cache WHERE ident NOT IN(' . implode(',', $old_searches) . ')')->execute() or error('Unable to delete search results', __FILE__, __LINE__, $db->error());
+            $db->setQuery('DELETE FROM forum_search_cache WHERE ident NOT IN(' . implode(',', $old_searches) . ')')->execute() or error('Unable to delete search results', __FILE__, __LINE__, $db->error());
         }
         // Final search results
         $search_results = implode(',', $search_ids);
@@ -334,9 +328,9 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
         $temp = serialize($temp);
         $search_id = mt_rand(1, 2147483647);
 
-        $ident = ($pun_user['is_guest']) ? get_remote_address() : $pun_user['username'];
+        $ident = ($_user['is_guest']) ? get_remote_address() : $_user['username'];
 
-        $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'search_cache (id, ident, search_data) VALUES(' . $search_id . ', \'' . $db->escape($ident) . '\', \'' . $db->escape($temp) . '\')')->execute() or error('Unable to insert search results', __FILE__, __LINE__, $db->error());
+        $db->setQuery('INSERT INTO forum_search_cache (id, ident, search_data) VALUES(' . $search_id . ', \'' . $db->escape($ident) . '\', \'' . $db->escape($temp) . '\')')->execute() or error('Unable to insert search results', __FILE__, __LINE__, $db->error());
 
         if ($action != 'show_new' && $action != 'show_24h')
         {
@@ -373,12 +367,12 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
         if ($show_as == 'posts')
         {
-            $sql = 'SELECT p.id AS pid, p.poster AS pposter, p.posted AS pposted, p.poster_id, p.message, p.hide_smilies, t.id AS tid, t.poster, t.subject, t.last_post, t.last_post_id, t.last_poster, t.num_replies, t.forum_id FROM ' . $db->tablePrefix . 'posts AS p INNER JOIN ' . $db->tablePrefix . 'topics AS t ON t.id=p.topic_id WHERE p.id IN(' . $search_results . ') ORDER BY ' . $sort_by_sql;
+            $sql = 'SELECT p.id AS pid, p.poster AS pposter, p.posted AS pposted, p.poster_id, p.message, p.hide_smilies, t.id AS tid, t.poster, t.subject, t.last_post, t.last_post_id, t.last_poster, t.num_replies, t.forum_id FROM forum_posts AS p INNER JOIN forum_topics AS t ON t.id=p.topic_id WHERE p.id IN(' . $search_results . ') ORDER BY ' . $sort_by_sql;
         }
         else
-            $sql = 'SELECT t.id AS tid, t.poster, t.subject, t.last_post, t.last_post_id, t.last_poster, t.num_replies, t.closed, t.sticky, t.forum_id FROM ' . $db->tablePrefix . 'topics AS t WHERE t.id IN(' . $search_results . ') ORDER BY ' . $sort_by_sql;
+            $sql = 'SELECT t.id AS tid, t.poster, t.subject, t.last_post, t.last_post_id, t.last_poster, t.num_replies, t.closed, t.sticky, t.forum_id FROM forum_topics AS t WHERE t.id IN(' . $search_results . ') ORDER BY ' . $sort_by_sql;
         // Determine the topic or post offset (based on $_GET['p'])
-        $per_page = ($show_as == 'posts') ? $pun_user['disp_posts'] : $pun_user['disp_topics'];
+        $per_page = ($show_as == 'posts') ? $_user['disp_posts'] : $_user['disp_topics'];
         $num_pages = ceil($num_hits / $per_page);
 
         $p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
@@ -393,7 +387,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
         $search_set = array();
         while ($row = $db->fetch_assoc())
         $search_set[] = $row;
-        $page_title = pun_htmlspecialchars($pun_config['o_board_title']) . ' / ' . $lang_search['Search results'];
+        $page_title = _CHtml::encode($this->PageTitle) . ' / ' . $lang_search['Search results'];
         require SHELL_PATH . 'header.php';
 
         ?>
@@ -411,7 +405,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
         if ($show_as == 'topics')
         {
             // Get topic/forum tracking data
-            if (!$pun_user['is_guest'])
+            if (!$_user['is_guest'])
                 $tracked_topics = get_tracked_topics();
 
             ?>
@@ -439,7 +433,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             $post_count = 0;
         }
         // Fetch the list of forums
-        $db->setQuery('SELECT id, forum_name FROM ' . $db->tablePrefix . 'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT id, forum_name FROM forum_forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 
         $forum_list = array();
         while ($forum_list[] = $db->fetch_row());
@@ -451,31 +445,31 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
             while (list(, $temp) = @each($forum_list))
             {
                 if ($temp[0] == $search_set[$i]['forum_id'])
-                    $forum = CHtml::link(pun_htmlspecialchars($temp[1]), array('forum/viewforum', 'id' => $temp[0]));
+                    $forum = _CHtml::link(_CHtml::encode($temp[1]), array('forum/viewforum', 'id' => $temp[0]));
             }
 
-            if ($pun_config['o_censoring'] == '1')
+            if ($_config['o_censoring'] == '1')
                 $search_set[$i]['subject'] = censor_words($search_set[$i]['subject']);
 
             if ($show_as == 'posts')
             {
                 ++$post_count;
                 $icon = '<div class="icon"><div class="nosize">' . $lang_common['Normal icon'] . '</div></div>' . "\n";
-                $subject = CHtml::link(pun_htmlspecialchars($search_set[$i]['subject']), array('forum/viewtopic', 'id' => $search_set[$i]['tid']));
+                $subject = _CHtml::link(_CHtml::encode($search_set[$i]['subject']), array('forum/viewtopic', 'id' => $search_set[$i]['tid']));
 
-                if (!$pun_user['is_guest'] && $search_set[$i]['last_post'] > $pun_user['last_visit'])
+                if (!$_user['is_guest'] && $search_set[$i]['last_post'] > $_user['last_visit'])
                     $icon = '<div class="icon inew"><div class="nosize">' . $lang_common['New icon'] . '</div></div>' . "\n";
 
-                if ($pun_config['o_censoring'] == '1')
+                if ($_config['o_censoring'] == '1')
                     $search_set[$i]['message'] = censor_words($search_set[$i]['message']);
 
                 $message = parse_message($search_set[$i]['message'], $search_set[$i]['hide_smilies']);
-                $pposter = pun_htmlspecialchars($search_set[$i]['pposter']);
+                $pposter = _CHtml::encode($search_set[$i]['pposter']);
 
                 if ($search_set[$i]['poster_id'] > 1)
                 {
-                    if ($pun_user['g_view_users'] == '1')
-                        $pposter = '<strong>' . CHtml::link($pposter, array('forum/profile', 'id' => $search_set[$i]['poster_id'])) . '</strong>';
+                    if ($_user['g_view_users'] == '1')
+                        $pposter = '<strong>' . _CHtml::link($pposter, array('forum/profile', 'id' => $search_set[$i]['poster_id'])) . '</strong>';
                     else
                         $pposter = '<strong>' . $pposter . '</strong>';
                 }
@@ -485,7 +479,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
                 ?>
 <div class="blockpost<?php echo ($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?>">
 	<h2><span><?php echo $forum ?></span> <span>&raquo;&nbsp;<?php echo $subject ?></span> <span>&raquo;&nbsp;
-	<?php echo CHtml::link(format_time($search_set[$i]['pposted']), array('forum/viewtopic', 'pid' => $search_set[$i]['pid'] . '#p' . $search_set[$i]['pid']));?></a></span></h2>
+	<?php echo _CHtml::link(MDate::format($search_set[$i]['pposted']), array('forum/viewtopic', 'pid' => $search_set[$i]['pid'] . '#p' . $search_set[$i]['pid']));?></a></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<div class="postbody">
@@ -507,8 +501,8 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 		<div class="inbox">
 			<div class="postfoot clearb">
 				<div class="postfootright"><ul><li>
-				<?php echo CHtml::link($lang_search['Go to topic'], array('forum/viewtopic', 'id' => $search_set[$i]['tid']));
-                echo $lang_common['Link separator'] ?></li><li><?php echo CHtml::link($lang_search['Go to post'], array('forum/viewtopic', 'pid' => $search_set[$i]['pid'] . '#p' . $search_set[$i]['pid']));?></li></ul></div>
+				<?php echo _CHtml::link($lang_search['Go to topic'], array('forum/viewtopic', 'id' => $search_set[$i]['tid']));
+                echo $lang_common['Link separator'] ?></li><li><?php echo _CHtml::link($lang_search['Go to post'], array('forum/viewtopic', 'pid' => $search_set[$i]['pid'] . '#p' . $search_set[$i]['pid']));?></li></ul></div>
 			</div>
 		</div>
 	</div>
@@ -524,7 +518,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
                 $item_status = '';
                 $icon_type = 'icon';
 
-                $subject = CHtml::link(pun_htmlspecialchars($search_set[$i]['subject']), array('forum/viewtopic', 'id' => $search_set[$i]['tid'])) . '<span class="byuser">' . $lang_common['by'] . '&nbsp;' . pun_htmlspecialchars($search_set[$i]['poster']) . '</span>';
+                $subject = _CHtml::link(_CHtml::encode($search_set[$i]['subject']), array('forum/viewtopic', 'id' => $search_set[$i]['tid'])) . '<span class="byuser">' . $lang_common['by'] . '&nbsp;' . _CHtml::encode($search_set[$i]['poster']) . '</span>';
 
                 if ($search_set[$i]['closed'] != '0')
                 {
@@ -532,13 +526,13 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
                     $item_status = 'iclosed';
                 }
 
-                if (!$pun_user['is_guest'] && $search_set[$i]['last_post'] > $pun_user['last_visit'] && (!isset($tracked_topics['topics'][$search_set[$i]['tid']]) || $tracked_topics['topics'][$search_set[$i]['tid']] < $search_set[$i]['last_post']) && (!isset($tracked_topics['forums'][$search_set[$i]['forum_id']]) || $tracked_topics['forums'][$search_set[$i]['forum_id']] < $search_set[$i]['last_post']))
+                if (!$_user['is_guest'] && $search_set[$i]['last_post'] > $_user['last_visit'] && (!isset($tracked_topics['topics'][$search_set[$i]['tid']]) || $tracked_topics['topics'][$search_set[$i]['tid']] < $search_set[$i]['last_post']) && (!isset($tracked_topics['forums'][$search_set[$i]['forum_id']]) || $tracked_topics['forums'][$search_set[$i]['forum_id']] < $search_set[$i]['last_post']))
                 {
                     $icon_text .= ' ' . $lang_common['New icon'];
                     $item_status .= ' inew';
                     $icon_type = 'icon inew';
                     $subject = '<strong>' . $subject . '</strong>';
-                    $subject_new_posts = '<span class="newtext">[ ' . CHtml::link($lang_common['New posts'], array('forum/viewtopic', 'id' => $search_set[$i]['tid'], 'action' => 'new'), array('title' => $lang_common['New posts info'])).' ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ ' . _CHtml::link($lang_common['New posts'], array('forum/viewtopic', 'id' => $search_set[$i]['tid'], 'action' => 'new'), array('title' => $lang_common['New posts info'])).' ]</span>';
                 }
                 else
                     $subject_new_posts = null;
@@ -550,7 +544,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
                     $icon_text .= ' ' . $lang_forum['Sticky'];
                 }
 
-                $num_pages_topic = ceil(($search_set[$i]['num_replies'] + 1) / $pun_user['disp_posts']);
+                $num_pages_topic = ceil(($search_set[$i]['num_replies'] + 1) / $_user['disp_posts']);
 
                 if ($num_pages_topic > 1)
                     $subject_multipage = '<span class="pagestext">[ ' . paginate($num_pages_topic, - 1, 'viewtopic.php?id=' . $search_set[$i]['tid']) . ' ]</span>';
@@ -575,7 +569,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 					</td>
 					<td class="tc2"><?php echo $forum ?></td>
 					<td class="tc3"><?php echo forum_number_format($search_set[$i]['num_replies']) ?></td>
-					<td class="tcr"><?php echo CHtml::link(format_time($search_set[$i]['last_post']), array('forum/viewtopic', 'pid' => $search_set[$i]['last_post_id'] . '#p' . $search_set[$i]['last_post_id'])) . ' ' . $lang_common['by'] . '&nbsp;' . pun_htmlspecialchars($search_set[$i]['last_poster']) ?></td>
+					<td class="tcr"><?php echo _CHtml::link(MDate::format($search_set[$i]['last_post']), array('forum/viewtopic', 'pid' => $search_set[$i]['last_post_id'] . '#p' . $search_set[$i]['last_post_id'])) . ' ' . $lang_common['by'] . '&nbsp;' . _CHtml::encode($search_set[$i]['last_poster']) ?></td>
 				</tr>
 <?php
 
@@ -603,7 +597,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
 else
 {
-    $page_title = pun_htmlspecialchars($pun_config['o_board_title']) . ' / ' . $lang_search['Search'];
+    $page_title = _CHtml::encode($this->PageTitle) . ' / ' . $lang_search['Search'];
     $focus_element = array('search', 'keywords');
     require SHELL_PATH . 'header.php';
 
@@ -611,7 +605,7 @@ else
 <div id="searchform" class="blockform">
 	<h2><span><?php echo $lang_search['Search'] ?></span></h2>
 	<div class="box">
-		<?php echo CHtml::form(array('forum/search'), 'GET',array('id'=>'search'));?>
+		<?php echo _CHtml::form(array('forum/search'), 'GET',array('id'=>'search'));?>
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_search['Search criteria legend'] ?></legend>
@@ -631,10 +625,10 @@ else
 						<br /><select id="forum" name="forum">
 <?php
 
-    if ($pun_config['o_search_all_forums'] == '1' || $pun_user['is_admmod'])
+    if ($_config['o_search_all_forums'] == '1' || $_user['is_admmod'])
         echo "\t\t\t\t\t\t\t" . '<option value="-1">' . $lang_search['All forums'] . '</option>' . "\n";
 
-    $db->setQuery('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.redirect_url FROM ' . $db->tablePrefix . 'categories AS c INNER JOIN ' . $db->tablePrefix . 'forums AS f ON c.id=f.cat_id LEFT JOIN ' . $db->tablePrefix . 'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $pun_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.redirect_url FROM forum_categories AS c INNER JOIN forum_forums AS f ON c.id=f.cat_id LEFT JOIN forum_forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id=' . $_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 
     $cur_category = 0;
     while ($cur_forum = $db->fetch_assoc())
@@ -644,11 +638,11 @@ else
                 if ($cur_category)
                     echo "\t\t\t\t\t\t\t" . '</optgroup>' . "\n";
 
-                echo "\t\t\t\t\t\t\t" . '<optgroup label="' . pun_htmlspecialchars($cur_forum['cat_name']) . '">' . "\n";
+                echo "\t\t\t\t\t\t\t" . '<optgroup label="' . _CHtml::encode($cur_forum['cat_name']) . '">' . "\n";
                 $cur_category = $cur_forum['cid'];
             }
 
-            echo "\t\t\t\t\t\t\t\t" . '<option value="' . $cur_forum['fid'] . '">' . pun_htmlspecialchars($cur_forum['forum_name']) . '</option>' . "\n";
+            echo "\t\t\t\t\t\t\t\t" . '<option value="' . $cur_forum['fid'] . '">' . _CHtml::encode($cur_forum['forum_name']) . '</option>' . "\n";
         }
 
         ?>

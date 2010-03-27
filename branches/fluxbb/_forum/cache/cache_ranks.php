@@ -2,7 +2,7 @@
 
 define('PUN_RANKS_LOADED', 1);
 
-$pun_ranks = array (
+$_ranks = array (
   0 => 
   array (
     'id' => '1',

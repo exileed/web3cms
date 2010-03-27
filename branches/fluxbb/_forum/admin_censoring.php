@@ -1,79 +1,38 @@
 <?php
-
-/*---
-
-	Copyright (C) 2008-2009 FluxBB.org
-	based on code copyright (C) 2002-2005 Rickard Andersson
-	License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
-
----*/
 // Tell header.php to use the admin template
 define('PUN_ADMIN_CONSOLE', 1);
 require SHELL_PATH . 'include/common.php';
-require SHELL_PATH . 'include/common_admin.php';
-
-if (!$pun_user['is_admmod'])
+require SHELL_PATH . 'include/common_admin.php';if (!$_user['is_admmod'])
     message($lang_common['No permission']);
 // Add a censor word
 if (isset($_POST['add_word']))
 {
-    confirm_referrer('admin_censoring.php');
-
-    $search_for = trim($_POST['new_search_for']);
-    $replace_with = trim($_POST['new_replace_with']);
-
-    if ($search_for == '' || $replace_with == '')
-        message('You must enter both a word to censor and text to replace it with.');
-
-    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'censoring (search_for, replace_with) VALUES (\'' . $db->escape($search_for) . '\', \'' . $db->escape($replace_with) . '\')')->execute() or error('Unable to add censor word', __FILE__, __LINE__, $db->error());
-
-    redirect('admin_censoring.php', 'Censor word added. Redirecting &hellip;');
+    confirm_referrer('admin_censoring.php');    $search_for = trim($_POST['new_search_for']);
+    $replace_with = trim($_POST['new_replace_with']);    if ($search_for == '' || $replace_with == '')
+        message('You must enter both a word to censor and text to replace it with.');    $db->setQuery('INSERT INTO forum_censoring (search_for, replace_with) VALUES (\'' . $db->escape($search_for) . '\', \'' . $db->escape($replace_with) . '\')')->execute() or error('Unable to add censor word', __FILE__, __LINE__, $db->error());    redirect('admin_censoring.php', 'Censor word added. Redirecting &hellip;');
 }
 // Update a censor word
 else if (isset($_POST['update']))
 {
-    confirm_referrer('admin_censoring.php');
-
-    $id = intval(key($_POST['update']));
-
-    $search_for = trim($_POST['search_for'][$id]);
-    $replace_with = trim($_POST['replace_with'][$id]);
-
-    if ($search_for == '' || $replace_with == '')
-        message('You must enter both text to search for and text to replace with.');
-
-    $db->setQuery('UPDATE ' . $db->tablePrefix . 'censoring SET search_for=\'' . $db->escape($search_for) . '\', replace_with=\'' . $db->escape($replace_with) . '\' WHERE id=' . $id)->execute() or error('Unable to update censor word', __FILE__, __LINE__, $db->error());
-
-    redirect('admin_censoring.php', 'Censor word updated. Redirecting &hellip;');
+    confirm_referrer('admin_censoring.php');    $id = intval(key($_POST['update']));    $search_for = trim($_POST['search_for'][$id]);
+    $replace_with = trim($_POST['replace_with'][$id]);    if ($search_for == '' || $replace_with == '')
+        message('You must enter both text to search for and text to replace with.');    $db->setQuery('UPDATE forum_censoring SET search_for=\'' . $db->escape($search_for) . '\', replace_with=\'' . $db->escape($replace_with) . '\' WHERE id=' . $id)->execute() or error('Unable to update censor word', __FILE__, __LINE__, $db->error());    redirect('admin_censoring.php', 'Censor word updated. Redirecting &hellip;');
 }
 // Remove a censor word
 else if (isset($_POST['remove']))
 {
-    confirm_referrer('admin_censoring.php');
-
-    $id = intval(key($_POST['remove']));
-
-    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'censoring WHERE id=' . $id)->execute() or error('Unable to delete censor word', __FILE__, __LINE__, $db->error());
-
-    redirect('admin_censoring.php', 'Censor word removed. Redirecting &hellip;');
-}
-
-$page_title = pun_htmlspecialchars($pun_config['o_board_title']) . ' / Admin / Censoring';
-$focus_element = array('censoring', 'new_search_for');
-require SHELL_PATH . 'header.php';
-
-generate_admin_menu('censoring');
-
-?>
+    confirm_referrer('admin_censoring.php');    $id = intval(key($_POST['remove']));    $db->setQuery('DELETE FROM forum_censoring WHERE id=' . $id)->execute() or error('Unable to delete censor word', __FILE__, __LINE__, $db->error());    redirect('admin_censoring.php', 'Censor word removed. Redirecting &hellip;');
+}$focus_element = array('censoring', 'new_search_for');
+require SHELL_PATH . 'header.php';generate_admin_menu('censoring');?>
 	<div class="blockform">
 		<h2><span>Censoring</span></h2>
 		<div class="box">
-			<?php echo CHtml::form(array('admin_censoring','action'=>'foo'), 'POST', array('id'=>'censoring'));?>
+			<?php echo _CHtml::form(array('admin_censoring','action'=>'foo'), 'POST', array('id'=>'censoring'));?>
 				<div class="inform">
 					<fieldset>
 						<legend>Add word</legend>
 						<div class="infldset">
-							<p>Enter a word that you want to censor and the replacement text for this word. Wildcards are accepted (i.e. *some* would match somewhere and lonesome). Censor words also affect usernames. New users will not be able to register with usernames containing any censored words. The search is case-insensitive. <strong>Censor words must be enabled in <?php echo CHtml::link('Options', array('forum/admin_options#censoring'));?> for this to have any effect.</strong></p>
+							<p>Enter a word that you want to censor and the replacement text for this word. Wildcards are accepted (i.e. *some* would match somewhere and lonesome). Censor words also affect usernames. New users will not be able to register with usernames containing any censored words. The search is case-insensitive. <strong>Censor words must be enabled in <?php echo _CHtml::link('Options', array('forum/admin_options#censoring'));?> for this to have any effect.</strong></p>
 							<table cellspacing="0">
 							<thead>
 								<tr>
@@ -98,8 +57,7 @@ generate_admin_menu('censoring');
 						<legend>Edit/remove words</legend>
 						<div class="infldset">
 <?php
-
-$db->setQuery('SELECT id, search_for, replace_with FROM ' . $db->tablePrefix . 'censoring ORDER BY id') or error('Unable to fetch censor word list', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT id, search_for, replace_with FROM forum_censoring ORDER BY id') or error('Unable to fetch censor word list', __FILE__, __LINE__, $db->error());
 if ($db->num_rows())
 {?>
 							<table cellspacing="0" >
@@ -111,21 +69,13 @@ if ($db->num_rows())
 								</tr>
 							</thead>
 							<tbody>
-<?php
-
-    while ($cur_word = $db->fetch_assoc())
-    echo "\t\t\t\t\t\t\t\t" . '<tr><td><input type="text" name="search_for[' . $cur_word['id'] . ']" value="' . pun_htmlspecialchars($cur_word['search_for']) . '" size="24" maxlength="60" /></td><td><input type="text" name="replace_with[' . $cur_word['id'] . ']" value="' . pun_htmlspecialchars($cur_word['replace_with']) . '" size="24" maxlength="60" /></td><td><input type="submit" name="update[' . $cur_word['id'] . ']" value="Update" />&nbsp;<input type="submit" name="remove[' . $cur_word['id'] . ']" value="Remove" /></td></tr>' . "\n";
-
-    ?>
+<?php    while ($cur_word = $db->fetch_assoc())
+    echo "\t\t\t\t\t\t\t\t" . '<tr><td><input type="text" name="search_for[' . $cur_word['id'] . ']" value="' . _CHtml::encode($cur_word['search_for']) . '" size="24" maxlength="60" /></td><td><input type="text" name="replace_with[' . $cur_word['id'] . ']" value="' . _CHtml::encode($cur_word['replace_with']) . '" size="24" maxlength="60" /></td><td><input type="submit" name="update[' . $cur_word['id'] . ']" value="Update" />&nbsp;<input type="submit" name="remove[' . $cur_word['id'] . ']" value="Remove" /></td></tr>' . "\n";    ?>
 							</tbody>
 							</table>
-<?php
-
-}
+<?php }
 else
-    echo "\t\t\t\t\t\t\t" . '<p>No censor words in list.</p>' . "\n";
-
-?>
+    echo "\t\t\t\t\t\t\t" . '<p>No censor words in list.</p>' . "\n";?>
 						</div>
 					</fieldset>
 				</div>
@@ -135,5 +85,4 @@ else
 	<div class="clearer"></div>
 </div>
 <?php
-
 require SHELL_PATH . 'footer.php';

@@ -1,109 +1,57 @@
 <?php
-
-/*---
-
-	Copyright (C) 2008-2009 FluxBB.org
-	based on code copyright (C) 2002-2005 Rickard Andersson
-	License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
-
----*/
 // Tell header.php to use the admin template
-define('PUN_ADMIN_CONSOLE', 1);
-
-require SHELL_PATH . 'include/common.php';
-require SHELL_PATH . 'include/common_admin.php';
-
-if ($pun_user['g_id'] != PUN_ADMIN)
+define('PUN_ADMIN_CONSOLE', 1);require SHELL_PATH . 'include/common.php';
+require SHELL_PATH . 'include/common_admin.php';if ($_user['g_id'] != PUN_ADMIN)
     message($lang_common['No permission']);
 // Add a rank
 if (isset($_POST['add_rank']))
 {
-    confirm_referrer('admin_ranks.php');
-
-    $rank = trim($_POST['new_rank']);
-    $min_posts = $_POST['new_min_posts'];
-
-    if ($rank == '')
-        message('You must enter a rank title.');
-
-    if (!@preg_match('#^\d+$#', $min_posts))
+    confirm_referrer('admin_ranks.php');    $rank = trim($_POST['new_rank']);
+    $min_posts = $_POST['new_min_posts'];    if ($rank == '')
+        message('You must enter a rank title.');    if (!@preg_match('#^\d+$#', $min_posts))
         message('Minimum posts must be a positive integer value.');
     // Make sure there isn't already a rank with the same min_posts value
-    $db->setQuery('SELECT 1 FROM ' . $db->tablePrefix . 'ranks WHERE min_posts=' . $min_posts) or error('Unable to fetch rank info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT 1 FROM forum_ranks WHERE min_posts=' . $min_posts) or error('Unable to fetch rank info', __FILE__, __LINE__, $db->error());
     if ($db->num_rows())
-        message('There is already a rank with a minimun posts value of ' . $min_posts . '.');
-
-    $db->setQuery('INSERT INTO ' . $db->tablePrefix . 'ranks (rank, min_posts) VALUES(\'' . $db->escape($rank) . '\', ' . $min_posts . ')')->execute() or error('Unable to add rank', __FILE__, __LINE__, $db->error());
+        message('There is already a rank with a minimun posts value of ' . $min_posts . '.');    $db->setQuery('INSERT INTO forum_ranks (rank, min_posts) VALUES(\'' . $db->escape($rank) . '\', ' . $min_posts . ')')->execute() or error('Unable to add rank', __FILE__, __LINE__, $db->error());
     // Regenerate the ranks cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
-        require SHELL_PATH . 'include/cache.php';
-
-    generate_ranks_cache();
-
-    redirect('admin_ranks.php', 'Rank added. Redirecting &hellip;');
+        require SHELL_PATH . 'include/cache.php';    generate_ranks_cache();    redirect('admin_ranks.php', 'Rank added. Redirecting &hellip;');
 }
 // Update a rank
 else if (isset($_POST['update']))
 {
-    confirm_referrer('admin_ranks.php');
-
-    $id = intval(key($_POST['update']));
-
-    $rank = trim($_POST['rank'][$id]);
-    $min_posts = trim($_POST['min_posts'][$id]);
-
-    if ($rank == '')
-        message('You must enter a rank title.');
-
-    if (!@preg_match('#^\d+$#', $min_posts))
+    confirm_referrer('admin_ranks.php');    $id = intval(key($_POST['update']));    $rank = trim($_POST['rank'][$id]);
+    $min_posts = trim($_POST['min_posts'][$id]);    if ($rank == '')
+        message('You must enter a rank title.');    if (!@preg_match('#^\d+$#', $min_posts))
         message('Minimum posts must be a positive integer value.');
     // Make sure there isn't already a rank with the same min_posts value
-    $db->setQuery('SELECT 1 FROM ' . $db->tablePrefix . 'ranks WHERE id!=' . $id . ' AND min_posts=' . $min_posts) or error('Unable to fetch rank info', __FILE__, __LINE__, $db->error());
+    $db->setQuery('SELECT 1 FROM forum_ranks WHERE id!=' . $id . ' AND min_posts=' . $min_posts) or error('Unable to fetch rank info', __FILE__, __LINE__, $db->error());
     if ($db->num_rows())
-        message('There is already a rank with a minimun posts value of ' . $min_posts . '.');
-
-    $db->setQuery('UPDATE ' . $db->tablePrefix . 'ranks SET rank=\'' . $db->escape($rank) . '\', min_posts=' . $min_posts . ' WHERE id=' . $id)->execute() or error('Unable to update rank', __FILE__, __LINE__, $db->error());
+        message('There is already a rank with a minimun posts value of ' . $min_posts . '.');    $db->setQuery('UPDATE forum_ranks SET rank=\'' . $db->escape($rank) . '\', min_posts=' . $min_posts . ' WHERE id=' . $id)->execute() or error('Unable to update rank', __FILE__, __LINE__, $db->error());
     // Regenerate the ranks cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
-        require SHELL_PATH . 'include/cache.php';
-
-    generate_ranks_cache();
-
-    redirect('admin_ranks.php', 'Rank updated. Redirecting &hellip;');
+        require SHELL_PATH . 'include/cache.php';    generate_ranks_cache();    redirect('admin_ranks.php', 'Rank updated. Redirecting &hellip;');
 }
 // Remove a rank
 else if (isset($_POST['remove']))
 {
-    confirm_referrer('admin_ranks.php');
-
-    $id = intval(key($_POST['remove']));
-
-    $db->setQuery('DELETE FROM ' . $db->tablePrefix . 'ranks WHERE id=' . $id)->execute() or error('Unable to delete rank', __FILE__, __LINE__, $db->error());
+    confirm_referrer('admin_ranks.php');    $id = intval(key($_POST['remove']));    $db->setQuery('DELETE FROM forum_ranks WHERE id=' . $id)->execute() or error('Unable to delete rank', __FILE__, __LINE__, $db->error());
     // Regenerate the ranks cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
-        require SHELL_PATH . 'include/cache.php';
-
-    generate_ranks_cache();
-
-    redirect('admin_ranks.php', 'Rank removed. Redirecting &hellip;');
-}
-
-$page_title = pun_htmlspecialchars($pun_config['o_board_title']) . ' / Admin / Ranks';
-$focus_element = array('ranks', 'new_rank');
+        require SHELL_PATH . 'include/cache.php';    generate_ranks_cache();    redirect('admin_ranks.php', 'Rank removed. Redirecting &hellip;');
+}$focus_element = array('ranks', 'new_rank');
 require SHELL_PATH . 'header.php';
-
-generate_admin_menu('ranks');
-
-?>
+generate_admin_menu('ranks');?>
 	<div class="blockform">
 		<h2><span>Ranks</span></h2>
 		<div class="box">
-			<?php echo CHtml::form(array('admin_ranks','action'=>'foo'), 'POST', array('id'=>'ranks'));?>
+			<?php echo _CHtml::form(array('admin_ranks','action'=>'foo'), 'POST', array('id'=>'ranks'));?>
 				<div class="inform">
 					<fieldset>
 						<legend>Add rank</legend>
 						<div class="infldset">
-							<p>Enter a rank and the minimum number of posts that a user has to have to aquire the rank. Different ranks cannot have the same value for minimum posts. If a title is set for a user, the title will be displayed instead of any rank. <strong>User ranks must be enabled in <?php echo CHtml::link('Options', array('forum/admin_options#ranks'));?> for this to have any effect.</strong></p>
+							<p>Enter a rank and the minimum number of posts that a user has to have to aquire the rank. Different ranks cannot have the same value for minimum posts. If a title is set for a user, the title will be displayed instead of any rank. <strong>User ranks must be enabled in <?php echo _CHtml::link('Options', array('forum/admin_options#ranks'));?> for this to have any effect.</strong></p>
 							<table cellspacing="0">
 							<thead>
 								<tr>
@@ -127,9 +75,7 @@ generate_admin_menu('ranks');
 					<fieldset>
 						<legend>Edit/remove ranks</legend>
 						<div class="infldset">
-<?php
-
-$db->setQuery('SELECT id, rank, min_posts FROM ' . $db->tablePrefix . 'ranks ORDER BY min_posts') or error('Unable to fetch rank list', __FILE__, __LINE__, $db->error());
+<?php $db->setQuery('SELECT id, rank, min_posts FROM forum_ranks ORDER BY min_posts') or error('Unable to fetch rank list', __FILE__, __LINE__, $db->error());
 if ($db->num_rows())
 {?>
 							<table cellspacing="0">
@@ -141,21 +87,13 @@ if ($db->num_rows())
 								</tr>
 							</thead>
 							<tbody>
-<?php
-
-    while ($cur_rank = $db->fetch_assoc())
-    echo "\t\t\t\t\t\t\t\t" . '<tr><td><input type="text" name="rank[' . $cur_rank['id'] . ']" value="' . pun_htmlspecialchars($cur_rank['rank']) . '" size="24" maxlength="50" /></td><td><input type="text" name="min_posts[' . $cur_rank['id'] . ']" value="' . $cur_rank['min_posts'] . '" size="7" maxlength="7" /></td><td><input type="submit" name="update[' . $cur_rank['id'] . ']" value="Update" />&nbsp;<input type="submit" name="remove[' . $cur_rank['id'] . ']" value="Remove" /></td></tr>' . "\n";
-
-    ?>
+<?php    while ($cur_rank = $db->fetch_assoc())
+    echo "\t\t\t\t\t\t\t\t" . '<tr><td><input type="text" name="rank[' . $cur_rank['id'] . ']" value="' . _CHtml::encode($cur_rank['rank']) . '" size="24" maxlength="50" /></td><td><input type="text" name="min_posts[' . $cur_rank['id'] . ']" value="' . $cur_rank['min_posts'] . '" size="7" maxlength="7" /></td><td><input type="submit" name="update[' . $cur_rank['id'] . ']" value="Update" />&nbsp;<input type="submit" name="remove[' . $cur_rank['id'] . ']" value="Remove" /></td></tr>' . "\n";    ?>
 							</tbody>
 							</table>
-<?php
-
-}
+<?php }
 else
-    echo "\t\t\t\t\t\t\t" . '<p>No ranks in list.</p>' . "\n";
-
-?>
+    echo "\t\t\t\t\t\t\t" . '<p>No ranks in list.</p>' . "\n";?>
 						</div>
 					</fieldset>
 				</div>
@@ -164,6 +102,4 @@ else
 	</div>
 	<div class="clearer"></div>
 </div>
-<?php
-
-require SHELL_PATH . 'footer.php';
+<?php require SHELL_PATH . 'footer.php';

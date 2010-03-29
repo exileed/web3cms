@@ -27,7 +27,7 @@ if ($action == 'rules') {
     $db->setQuery('UPDATE w3_user SET last_visit=' . $_user['logged'] . ' WHERE id=' . $_user['id'])->execute() or error('Unable to update user last visit data', __FILE__, __LINE__, $db->error());
     // Reset tracked topics
     set_tracked_topics(null);
-    redirect('index.php', $lang_misc['Mark read redirect']);
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/'));
 }
 // Mark the topics/posts in a forum as read?
 else if ($action == 'markforumread') {
@@ -39,7 +39,7 @@ else if ($action == 'markforumread') {
     $tracked_topics = get_tracked_topics();
     $tracked_topics['forums'][$fid] = time();
     set_tracked_topics($tracked_topics);
-    redirect('viewforum.php?id=' . $fid, $lang_misc['Mark forum read redirect']);
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewforum', array('id' => $fid)));
 } else if (isset($_GET['email'])) {
     if ($_user['is_guest'] || $_user['g_send_email'] == '0')
         message($lang_common['No permission']);
@@ -78,7 +78,7 @@ else if ($action == 'markforumread') {
         require_once SHELL_PATH . 'include/email.php';
         _mail($recipient_email, $mail_subject, $mail_message, $_user['email'], $_user['username']);
         $db->setQuery('UPDATE w3_user SET last_email_sent=' . time() . ' WHERE id=' . $_user['id'])->execute() or error('Unable to update user', __FILE__, __LINE__, $db->error());
-        redirect(htmlspecialchars($_POST['redirect_url']), $lang_misc['Email sent redirect']);
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/', array('' => )));redirect(htmlspecialchars($_POST['redirect_url']), $lang_misc['Email sent redirect']);
     }
     // Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to the users profile after the email is sent)
     $redirect_url = (isset($_SERVER['HTTP_REFERER']) && preg_match('#^' . preg_quote($_config['o_web_path']) . '/(.*?)\.php#i', $_SERVER['HTTP_REFERER'])) ? htmlspecialchars($_SERVER['HTTP_REFERER']) : 'index.php';
@@ -149,7 +149,7 @@ else if ($action == 'markforumread') {
             }
         }
         $db->setQuery('UPDATE w3_user SET last_email_sent=' . time() . ' WHERE id=' . $_user['id'])->execute() or error('Unable to update user', __FILE__, __LINE__, $db->error());
-        redirect('viewtopic.php?pid=' . $post_id . '#p' . $post_id, $lang_misc['Report redirect']);
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('pid' => $post_id . '#p' . $post_id)));
     }
     $required_fields = array('req_reason' => $lang_misc['Reason']);
     $focus_element = array('report', 'req_reason');
@@ -188,7 +188,7 @@ else if ($action == 'markforumread') {
     if ($db->num_rows())
         message($lang_misc['Already subscribed']);
     $db->setQuery('INSERT INTO forum_subscriptions (user_id, topic_id) VALUES(' . $_user['id'] . ' ,' . $topic_id . ')')->execute() or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
-    redirect('viewtopic.php?id=' . $topic_id, $lang_misc['Subscribe redirect']);
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('id' => $topic_id)));
 } else if (isset($_GET['unsubscribe'])) {
     if ($_user['is_guest'] || $_config['o_subscriptions'] != '1')
         message($lang_common['No permission']);
@@ -199,6 +199,6 @@ else if ($action == 'markforumread') {
     if (!$db->num_rows())
         message($lang_misc['Not subscribed']);
     $db->setQuery('DELETE FROM forum_subscriptions WHERE user_id=' . $_user['id'] . ' AND topic_id=' . $topic_id)->execute() or error('Unable to remove subscription', __FILE__, __LINE__, $db->error());
-    redirect('viewtopic.php?id=' . $topic_id, $lang_misc['Unsubscribe redirect']);
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('id' => $topic_id)));
 } else
     message($lang_common['Bad request']);

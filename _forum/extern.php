@@ -193,7 +193,7 @@ if ($action == 'feed') {
             'type' => 'posts'
             );
         // Fetch $show posts
-        $db->setQuery('SELECT p.id, p.poster, p.message, p.hide_smilies, p.posted, p.poster_id, u.email_setting, u.email, p.poster_email FROM forum_posts AS p INNER JOIN w3_user AS u ON u.id=p.poster_id WHERE p.topic_id=' . $tid . ' ORDER BY p.posted DESC LIMIT ' . $show) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT p.id, p.poster, p.message, p.hide_smilies, p.posted, p.poster_id, ud.email_setting, u.email, p.poster_email FROM forum_posts AS p INNER JOIN w3_user AS u ON u.id=p.poster_id WHERE p.topic_id=' . $tid . ' ORDER BY p.posted DESC LIMIT ' . $show) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
         while ($cur_post = $db->fetch_assoc()) {
             $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
             $item = array(
@@ -249,7 +249,7 @@ if ($action == 'feed') {
             'type' => 'topics'
             );
         // Fetch $show topics
-        $db->setQuery('SELECT t.id, t.poster, t.subject, t.posted, t.last_post, t.last_poster, p.message, p.hide_smilies, u.email_setting, u.email, p.poster_id, p.poster_email FROM forum_topics AS t INNER JOIN forum_posts AS p ON p.id=' . ($order_posted ? 't.first_post_id' : 't.last_post_id') . ' INNER JOIN w3_user AS u ON u.id=p.poster_id LEFT JOIN forum_forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id=' . $_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL' . $forum_sql . ' ORDER BY ' . ($order_posted ? 't.posted' : 't.last_post') . ' DESC LIMIT ' . $show) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+        $db->setQuery('SELECT t.id, t.poster, t.subject, t.posted, t.last_post, t.last_poster, p.message, p.hide_smilies, ud.email_setting, u.email, p.poster_id, p.poster_email FROM forum_topics AS t INNER JOIN forum_posts AS p ON p.id=' . ($order_posted ? 't.first_post_id' : 't.last_post_id') . ' INNER JOIN w3_user AS u ON u.id=p.poster_id LEFT JOIN forum_forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id=' . $_user['g_id'] . ') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL' . $forum_sql . ' ORDER BY ' . ($order_posted ? 't.posted' : 't.last_post') . ' DESC LIMIT ' . $show) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
         while ($cur_topic = $db->fetch_assoc()) {
             $cur_topic['message'] = parse_message($cur_topic['message'], $cur_topic['hide_smilies']);
             if ($_config['o_censoring'] == '1')

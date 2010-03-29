@@ -34,7 +34,7 @@ if (isset($_GET['action']) || isset($_POST['prune']) || isset($_POST['prune_comp
             $orphans[] = $db->result($result, $i);
             $db->setQuery('DELETE FROM forum_topics WHERE id IN(' . implode(',', $orphans) . ')')->execute() or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
         }
-        redirect('admin_prune.php', 'Posts pruned. Redirecting &hellip;');
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_prune'));
     }
     $prune_days = $_POST['req_prune_days'];
     if (!@preg_match('#^\d+$#', $prune_days))

@@ -13,7 +13,7 @@ if (isset($_POST['zap_id'])) {
     $zapped = $db->result();
     if ($zapped == '')
         $db->setQuery('UPDATE forum_reports SET zapped=' . time() . ', zapped_by=' . $_user['id'] . ' WHERE id=' . $zap_id)->execute() or error('Unable to zap report', __FILE__, __LINE__, $db->error());
-    redirect('admin_reports.php', 'Report zapped. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_reports'));
 }
 require SHELL_PATH . 'header.php';
 generate_admin_menu('reports');

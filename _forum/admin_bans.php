@@ -187,7 +187,7 @@ else if (isset($_POST['add_edit_ban'])) {
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
     generate_bans_cache();
-    redirect('admin_bans.php', 'Ban ' . (($_POST['mode'] == 'edit') ? 'edited' : 'added') . '. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_bans'));
 }
 // Remove a ban
 else if (isset($_GET['del_ban'])) {
@@ -200,7 +200,7 @@ else if (isset($_GET['del_ban'])) {
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
     generate_bans_cache();
-    redirect('admin_bans.php', 'Ban removed. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_bans'));
 }
 $focus_element = array('bans', 'new_ban_user');
 require SHELL_PATH . 'header.php';

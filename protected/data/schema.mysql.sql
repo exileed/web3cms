@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Serveur: localhost
--- Généré le : Sam 27 Mars 2010 à 12:36
+-- Généré le : Lun 29 Mars 2010 à 19:39
 -- Version du serveur: 5.1.41
 -- Version de PHP: 5.3.1
 
@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `forum_forums` (
 --
 
 INSERT INTO `forum_forums` (`id`, `forum_name`, `forum_desc`, `redirect_url`, `moderators`, `num_topics`, `num_posts`, `last_post`, `last_post_id`, `last_poster`, `sort_by`, `disp_position`, `cat_id`) VALUES
-(1, 'Test forum', 'This is just a test forum', NULL, NULL, 1, 1, 1266056098, 1, 'admin', 0, 1, 1);
+(1, 'Test forum', 'This is just a test forum', NULL, NULL, 1, 1, 1269708063, 24, 'admin', 0, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -284,6 +284,8 @@ CREATE TABLE IF NOT EXISTS `forum_online` (
 -- Contenu de la table `forum_online`
 --
 
+INSERT INTO `forum_online` (`user_id`, `ident`, `logged`, `idle`, `last_post`, `last_search`) VALUES
+(1, '::1', 1269884320, 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -306,14 +308,14 @@ CREATE TABLE IF NOT EXISTS `forum_posts` (
   PRIMARY KEY (`id`),
   KEY `forum_posts_topic_id_idx` (`topic_id`),
   KEY `forum_posts_multi_idx` (`poster_id`,`topic_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=25 ;
 
 --
 -- Contenu de la table `forum_posts`
 --
 
 INSERT INTO `forum_posts` (`id`, `poster`, `poster_id`, `poster_ip`, `poster_email`, `message`, `hide_smilies`, `posted`, `edited`, `edited_by`, `topic_id`) VALUES
-(1, 'admin', 2, '127.0.0.1', NULL, 'If you are looking at this (which I guess you are), the install of FluxBB appears to have worked! Now log in and head over to the administration control panel to configure your forum.', 0, 1266056098, NULL, NULL, 1);
+(24, 'admin', 1, '::1', 'fdgfdgfd@fr.fr', 'fffff', 0, 1269708063, NULL, NULL, 2);
 
 -- --------------------------------------------------------
 
@@ -380,7 +382,9 @@ CREATE TABLE IF NOT EXISTS `forum_search_cache` (
 --
 
 INSERT INTO `forum_search_cache` (`id`, `ident`, `search_data`) VALUES
-(707887104, '::1', 'a:5:{s:14:"search_results";s:0:"";s:8:"num_hits";i:0;s:7:"sort_by";i:4;s:8:"sort_dir";s:4:"DESC";s:7:"show_as";s:6:"topics";}');
+(1797846327, '::1', 'a:5:{s:14:"search_results";s:0:"";s:8:"num_hits";i:0;s:7:"sort_by";i:4;s:8:"sort_dir";s:4:"DESC";s:7:"show_as";s:6:"topics";}'),
+(1295302208, '::1', 'a:5:{s:14:"search_results";s:0:"";s:8:"num_hits";i:0;s:7:"sort_by";i:4;s:8:"sort_dir";s:4:"DESC";s:7:"show_as";s:6:"topics";}'),
+(688245386, '::1', 'a:5:{s:14:"search_results";s:0:"";s:8:"num_hits";i:0;s:7:"sort_by";i:4;s:8:"sort_dir";s:4:"DESC";s:7:"show_as";s:6:"topics";}');
 
 -- --------------------------------------------------------
 
@@ -400,6 +404,9 @@ CREATE TABLE IF NOT EXISTS `forum_search_matches` (
 -- Contenu de la table `forum_search_matches`
 --
 
+INSERT INTO `forum_search_matches` (`post_id`, `word_id`, `subject_match`) VALUES
+(24, 10, 1),
+(24, 9, 0);
 
 -- --------------------------------------------------------
 
@@ -412,12 +419,16 @@ CREATE TABLE IF NOT EXISTS `forum_search_words` (
   `word` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
   PRIMARY KEY (`word`),
   KEY `forum_search_words_id_idx` (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 --
 -- Contenu de la table `forum_search_words`
 --
 
+INSERT INTO `forum_search_words` (`id`, `word`) VALUES
+(10, 'fgfff'),
+(9, 'fffff'),
+(8, 'tgstegfdsg');
 
 -- --------------------------------------------------------
 
@@ -462,75 +473,14 @@ CREATE TABLE IF NOT EXISTS `forum_topics` (
   KEY `forum_topics_moved_to_idx` (`moved_to`),
   KEY `forum_topics_last_post_idx` (`last_post`),
   KEY `forum_topics_first_post_id_idx` (`first_post_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Contenu de la table `forum_topics`
 --
 
 INSERT INTO `forum_topics` (`id`, `poster`, `subject`, `posted`, `first_post_id`, `last_post`, `last_post_id`, `last_poster`, `num_views`, `num_replies`, `closed`, `sticky`, `moved_to`, `forum_id`) VALUES
-(1, 'admin', 'Test post', 1266056098, 1, 1266056098, 1, 'admin', 6, 0, 0, 0, NULL, 1);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `forum_userprofiles`
---
-
-CREATE TABLE IF NOT EXISTS `forum_userprofiles` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `group_id` int(10) unsigned NOT NULL DEFAULT '3',
-  `username` varchar(200) NOT NULL DEFAULT '',
-  `password` varchar(40) NOT NULL DEFAULT '',
-  `email` varchar(80) NOT NULL DEFAULT '',
-  `title` varchar(50) DEFAULT NULL,
-  `realname` varchar(40) DEFAULT NULL,
-  `url` varchar(100) DEFAULT NULL,
-  `jabber` varchar(80) DEFAULT NULL,
-  `icq` varchar(12) DEFAULT NULL,
-  `msn` varchar(80) DEFAULT NULL,
-  `aim` varchar(30) DEFAULT NULL,
-  `yahoo` varchar(30) DEFAULT NULL,
-  `location` varchar(30) DEFAULT NULL,
-  `signature` text,
-  `disp_topics` tinyint(3) unsigned DEFAULT NULL,
-  `disp_posts` tinyint(3) unsigned DEFAULT NULL,
-  `email_setting` tinyint(1) NOT NULL DEFAULT '1',
-  `notify_with_post` tinyint(1) NOT NULL DEFAULT '0',
-  `auto_notify` tinyint(1) NOT NULL DEFAULT '0',
-  `show_smilies` tinyint(1) NOT NULL DEFAULT '1',
-  `show_img` tinyint(1) NOT NULL DEFAULT '1',
-  `show_img_sig` tinyint(1) NOT NULL DEFAULT '1',
-  `show_avatars` tinyint(1) NOT NULL DEFAULT '1',
-  `show_sig` tinyint(1) NOT NULL DEFAULT '1',
-  `timezone` float NOT NULL DEFAULT '0',
-  `dst` tinyint(1) NOT NULL DEFAULT '0',
-  `time_format` tinyint(1) NOT NULL DEFAULT '0',
-  `date_format` tinyint(1) NOT NULL DEFAULT '0',
-  `language` varchar(25) NOT NULL DEFAULT 'English',
-  `style` varchar(25) NOT NULL DEFAULT 'Oxygen',
-  `num_posts` int(10) unsigned NOT NULL DEFAULT '0',
-  `last_post` int(10) unsigned DEFAULT NULL,
-  `last_search` int(10) unsigned DEFAULT NULL,
-  `last_email_sent` int(10) unsigned DEFAULT NULL,
-  `registered` int(10) unsigned NOT NULL DEFAULT '0',
-  `registration_ip` varchar(39) NOT NULL DEFAULT '0.0.0.0',
-  `last_visit` int(10) unsigned NOT NULL DEFAULT '0',
-  `admin_note` varchar(30) DEFAULT NULL,
-  `activate_string` varchar(80) DEFAULT NULL,
-  `activate_key` varchar(8) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `test_users_registered_idx` (`registered`),
-  KEY `test_users_username_idx` (`username`(8))
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
-
---
--- Contenu de la table `forum_userprofiles`
---
-
-INSERT INTO `forum_userprofiles` (`id`, `group_id`, `username`, `password`, `email`, `title`, `realname`, `url`, `jabber`, `icq`, `msn`, `aim`, `yahoo`, `location`, `signature`, `disp_topics`, `disp_posts`, `email_setting`, `notify_with_post`, `auto_notify`, `show_smilies`, `show_img`, `show_img_sig`, `show_avatars`, `show_sig`, `timezone`, `dst`, `time_format`, `date_format`, `language`, `style`, `num_posts`, `last_post`, `last_search`, `last_email_sent`, `registered`, `registration_ip`, `last_visit`, `admin_note`, `activate_string`, `activate_key`) VALUES
-(1, 3, 'Guest', 'Guest', 'Guest', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 'English', 'Oxygen', 0, NULL, NULL, NULL, 0, '0.0.0.0', 0, NULL, NULL, NULL),
-(2, 1, 'admin', '39dfa55283318d31afe5a3ff4a0e3253e2045e43', 'admin@yopmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 'English', 'Oxygen', 1, 1269152503, NULL, NULL, 1269152503, '127.0.0.1', 1269152503, NULL, NULL, NULL);
+(2, 'admin', 'fgfff', 1269708063, 24, 1269708063, 24, 'admin', 3, 0, 0, 0, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -561,7 +511,7 @@ CREATE TABLE IF NOT EXISTS `w3_user` (
 --
 
 INSERT INTO `w3_user` (`id`, `username`, `password`, `salt`, `email`, `screenName`, `language`, `interface`, `accessType`, `accessLevel`, `isActive`, `createTime`) VALUES
-(1, 'admin', '21232f297a57a5a743894a0e4a801fc3', '', 'admin@example.com', 'Administrator', 'en', 'excite-bike', 'administrator', 5, '1', 1268390230),
+(1, 'admin', '21232f297a57a5a743894a0e4a801fc3', '', 'admin@example.com', 'Administrator', 'en', 'le-frog', 'administrator', 5, '1', 1268390230),
 (2, 'demo', 'fe01ce2a7fbac8fafaed7c982a04e229', '', 'demo@example.com', 'Demo Member', 'en', NULL, 'member', 1, '1', 1268390230);
 
 -- --------------------------------------------------------
@@ -625,7 +575,7 @@ CREATE TABLE IF NOT EXISTS `w3_user_details` (
 --
 
 INSERT INTO `w3_user_details` (`userId`, `passwordHint`, `isEmailConfirmed`, `emailConfirmationKey`, `isEmailVisible`, `isScreenNameEditable`, `deactivationTime`, `firstName`, `middleName`, `lastName`, `initials`, `occupation`, `gender`, `birthDate`, `textStatus`, `lastLoginTime`, `lastVisitTime`, `totalTimeLoggedIn`, `secretQuestion`, `secretAnswer`, `administratorNote`, `updateTime`, `forumGroupId`, `title`, `url`, `jabber`, `icq`, `msn`, `aim`, `yahoo`, `location`, `signature`, `disp_topics`, `disp_posts`, `email_setting`, `notify_with_post`, `auto_notify`, `show_smilies`, `show_img`, `show_img_sig`, `show_avatars`, `show_sig`, `num_posts`, `last_post`, `last_search`, `last_email_sent`) VALUES
-(1, NULL, '0', 'fbc07066a1a79166a9098664821869d1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1269672258, 1269672258, 240, NULL, NULL, NULL, 1269674771, 1, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 1, 1, 1, 1, 1, 0, NULL, NULL, NULL),
+(1, NULL, '0', 'fbc07066a1a79166a9098664821869d1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1269689901, 1269689901, 300, NULL, NULL, NULL, 1269689925, 1, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 1, 1, 1, 1, 1, 0, NULL, NULL, NULL),
 (2, NULL, '0', 'fbc07066a1a79166a9098664821869d1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 3, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 1, 1, 1, 1, 1, 0, NULL, NULL, NULL);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

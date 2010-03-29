@@ -80,7 +80,7 @@ if (isset($_POST['form_sent'])) {
     // Regenerate the config cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
-    redirect('admin_options.php', 'Options updated. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_options'));
 }
 $form_name = 'update_options';
 require SHELL_PATH . 'header.php';

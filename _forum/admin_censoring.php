@@ -13,7 +13,7 @@ if (isset($_POST['add_word'])) {
     if ($search_for == '' || $replace_with == '')
         message('You must enter both a word to censor and text to replace it with.');
     $db->setQuery('INSERT INTO forum_censoring (search_for, replace_with) VALUES (\'' . $db->escape($search_for) . '\', \'' . $db->escape($replace_with) . '\')')->execute() or error('Unable to add censor word', __FILE__, __LINE__, $db->error());
-    redirect('admin_censoring.php', 'Censor word added. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_censoring'));
 }
 // Update a censor word
 else if (isset($_POST['update'])) {
@@ -24,14 +24,14 @@ else if (isset($_POST['update'])) {
     if ($search_for == '' || $replace_with == '')
         message('You must enter both text to search for and text to replace with.');
     $db->setQuery('UPDATE forum_censoring SET search_for=\'' . $db->escape($search_for) . '\', replace_with=\'' . $db->escape($replace_with) . '\' WHERE id=' . $id)->execute() or error('Unable to update censor word', __FILE__, __LINE__, $db->error());
-    redirect('admin_censoring.php', 'Censor word updated. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_censoring'));
 }
 // Remove a censor word
 else if (isset($_POST['remove'])) {
     confirm_referrer('admin_censoring.php');
     $id = intval(key($_POST['remove']));
     $db->setQuery('DELETE FROM forum_censoring WHERE id=' . $id)->execute() or error('Unable to delete censor word', __FILE__, __LINE__, $db->error());
-    redirect('admin_censoring.php', 'Censor word removed. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_censoring'));
 }
 $focus_element = array('censoring', 'new_search_for');
 require SHELL_PATH . 'header.php';

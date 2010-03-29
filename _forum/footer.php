@@ -51,7 +51,7 @@ if ($footer_style == 'index' || $footer_style == 'search') {
         if ($cur_topic['closed'] == '1')
             echo "\t\t\t" . '<dd>' . _CHtml::link($lang_common['Open topic'], array('forum/moderate', 'fid' => $forum_id, 'open' => $id)) . '</dd>' . "\n";
         else
-            echo "\t\t\t" . '<dd>' . _CHtml::link($lang_common['Close topic'], array('forummoderate/', 'fid' => $forum_id, 'close' => $id)) . '</dd>' . "\n";
+            echo "\t\t\t" . '<dd>' . _CHtml::link($lang_common['Close topic'], array('forum/moderate', 'fid' => $forum_id, 'close' => $id)) . '</dd>' . "\n";
         if ($cur_topic['sticky'] == '1')
             echo "\t\t\t" . '<dd>' . _CHtml::link($lang_common['Unstick topic'], array('forum/moderate', 'fid' => $forum_id, 'unstick' => $id)) . '</dd></dl>' . "\n";
         else

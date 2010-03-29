@@ -116,7 +116,7 @@ require SHELL_PATH . 'header.php';
 </div><?php
 require SHELL_PATH . 'include/parser.php';
 $post_count = 0; // Keep track of post numbers// Retrieve the posts (and their respective poster/online status)
-$db->setQuery('SELECT u.email, ud.title, u.url, u.location, u.signature, u.email_setting, ud.num_posts, u.createTime, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, g.g_id, g.g_user_title, o.user_id AS is_online FROM forum_posts AS p INNER JOIN w3_user AS u ON u.id=p.poster_id INNER JOIN forum_groups AS g ON g.g_id=ud.forumGroupId LEFT JOIN forum_online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.topic_id=' . $id . ' ORDER BY p.id LIMIT ' . $start_from . ',' . $_user['disp_posts'], true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT u.email, ud.title, ud.url, ud.location, ud.signature, ud.email_setting, ud.num_posts, u.createTime, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, g.g_id, g.g_user_title, o.user_id AS is_online FROM forum_posts AS p INNER JOIN w3_user AS u ON u.id=p.poster_id INNER JOIN w3_user_details AS ud INNER JOIN forum_groups AS g ON g.g_id=ud.forumGroupId LEFT JOIN forum_online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.topic_id=' . $id . ' ORDER BY p.id LIMIT ' . $start_from . ',' . $_user['disp_posts'], true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 while ($cur_post = $db->fetch_assoc()) {
     $post_count++;
     $user_avatar = '';

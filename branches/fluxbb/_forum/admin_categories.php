@@ -12,7 +12,7 @@ if (isset($_POST['add_cat'])) {
     if ($new_cat_name == '')
         message('You must enter a name for the category.');
     $db->setQuery('INSERT INTO forum_categories (cat_name) VALUES(\'' . $db->escape($new_cat_name) . '\')')->execute() or error('Unable to create category', __FILE__, __LINE__, $db->error());
-    redirect('admin_categories.php', 'Category added. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_categories'));
 }
 // Delete a category
 else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply'])) {
@@ -45,7 +45,7 @@ else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply'])) {
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
             require SHELL_PATH . 'include/cache.php';
         generate_quickjump_cache();
-        redirect('admin_categories.php', 'Category deleted. Redirecting &hellip;');
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_categories'));
     }else { // If the user hasn't comfirmed the delete
             $db->setQuery('SELECT cat_name FROM forum_categories WHERE id=' . $cat_to_delete) or error('Unable to fetch category info', __FILE__, __LINE__, $db->error());
         $cat_name = $db->result();
@@ -92,7 +92,7 @@ else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply'])) {
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
     generate_quickjump_cache();
-    redirect('admin_categories.php', 'Categories updated. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_categories'));
 }
 // Generate an array with all categories
 $db->setQuery('SELECT id, cat_name, disp_position FROM forum_categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());

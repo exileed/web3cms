@@ -22,7 +22,7 @@ if (isset($_POST['add_forum'])) {
 
     generate_quickjump_cache();
 
-    redirect('admin_forums.php', 'Forum added. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_forums'));
 }
 // Delete a forum
 else if (isset($_GET['del_forum'])) {
@@ -55,7 +55,7 @@ else if (isset($_GET['del_forum'])) {
 
         generate_quickjump_cache();
 
-        redirect('admin_forums.php', 'Forum deleted. Redirecting &hellip;');
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_forums'));
     }else { // If the user hasn't confirmed the delete
             $db->setQuery('SELECT forum_name FROM forum_forums WHERE id=' . $forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
         $forum_name = _CHtml::encode($db->result());
@@ -104,7 +104,7 @@ else if (isset($_POST['update_positions'])) {
 
     generate_quickjump_cache();
 
-    redirect('admin_forums.php', 'Forums updated. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_forums'));
 }else if (isset($_GET['edit_forum'])) {
     $forum_id = intval($_GET['edit_forum']);
     if ($forum_id < 1)
@@ -156,7 +156,7 @@ else if (isset($_POST['update_positions'])) {
 
         generate_quickjump_cache();
 
-        redirect('admin_forums.php', 'Forum updated. Redirecting &hellip;');
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_forums'));
     }else if (isset($_POST['revert_perms'])) {
         confirm_referrer('admin_forums.php');
 
@@ -167,7 +167,7 @@ else if (isset($_POST['update_positions'])) {
 
         generate_quickjump_cache();
 
-        redirect('admin_forums.php?edit_forum=' . $forum_id, 'Permissions reverted to defaults. Redirecting &hellip;');
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_forums', array('edit_forum' => $forum_id)));
     }
     // Fetch forum info
     $db->setQuery('SELECT id, forum_name, forum_desc, redirect_url, num_topics, sort_by, cat_id FROM forum_forums WHERE id=' . $forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());

@@ -61,7 +61,7 @@ if (isset($_POST['form_sent'])) {
             update_search_index('edit', $id, $message);
         // Update the post
         $db->setQuery('UPDATE forum_posts SET message=\'' . $db->escape($message) . '\', hide_smilies=' . $hide_smilies . $edited_sql . ' WHERE id=' . $id)->execute() or error('Unable to update post', __FILE__, __LINE__, $db->error());
-        redirect('viewtopic.php?pid=' . $id . '#p' . $id, $lang_post['Edit redirect']);
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('pid' => $id . '#p' . $id)));
     }
 }
 $required_fields = array('req_subject' => $lang_common['Subject'], 'req_message' => $lang_common['Message']);

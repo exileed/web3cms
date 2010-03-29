@@ -23,7 +23,7 @@ if (isset($_POST['add_rank'])) {
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
     generate_ranks_cache();
-    redirect('admin_ranks.php', 'Rank added. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_ranks'));
 }
 // Update a rank
 else if (isset($_POST['update'])) {
@@ -44,7 +44,7 @@ else if (isset($_POST['update'])) {
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
     generate_ranks_cache();
-    redirect('admin_ranks.php', 'Rank updated. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_ranks'));
 }
 // Remove a rank
 else if (isset($_POST['remove'])) {
@@ -55,7 +55,7 @@ else if (isset($_POST['remove'])) {
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
         require SHELL_PATH . 'include/cache.php';
     generate_ranks_cache();
-    redirect('admin_ranks.php', 'Rank removed. Redirecting &hellip;');
+   	Yii::app()->request->redirect(Yii::app()->createUrl('forum/admin_ranks'));
 }
 $focus_element = array('ranks', 'new_rank');
 require SHELL_PATH . 'header.php';

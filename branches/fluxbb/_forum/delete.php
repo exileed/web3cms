@@ -28,12 +28,12 @@ if (isset($_POST['delete'])) {
         // Delete the topic and all of it's posts
         delete_topic($cur_post['tid']);
         update_forum($cur_post['fid']);
-        redirect('viewforum.php?id=' . $cur_post['fid'], $lang_delete['Topic del redirect']);
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewforum', array('id' => $cur_post['fid'])));
     }else {
         // Delete just this one post
         delete_post($id, $cur_post['tid']);
         update_forum($cur_post['fid']);
-        redirect('viewtopic.php?id=' . $cur_post['tid'], $lang_delete['Post del redirect']);
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('id' => $cur_post['tid'])));
     }
 }
 require SHELL_PATH . 'header.php';

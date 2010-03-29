@@ -68,7 +68,7 @@ if (isset($_GET['tid'])) {
             // Update the topic
             $db->setQuery('UPDATE forum_topics SET last_post=' . $last_post['posted'] . ', last_post_id=' . $last_post['id'] . ', last_poster=\'' . $db->escape($last_post['poster']) . '\', num_replies=num_replies-' . $num_posts_deleted . ' WHERE id=' . $tid)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
             update_forum($fid);
-            redirect('viewtopic.php?id=' . $tid, $lang_misc['Delete posts redirect']);
+           	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('id' => $tid)));
         }
         $page_title = _CHtml::encode($this->PageTitle) . ' / ' . $lang_misc['Moderate'];
         require SHELL_PATH . 'header.php';
@@ -131,7 +131,7 @@ if (isset($_GET['tid'])) {
             $last_post_data = $db->fetch_assoc();
             $db->setQuery('UPDATE forum_topics SET last_post=' . $last_post_data['posted'] . ', last_post_id=' . $last_post_data['id'] . ', last_poster=\'' . $db->escape($last_post_data['poster']) . '\', num_replies=' . ($num_posts_splitted - 1) . ' WHERE id=' . $new_tid)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
             update_forum($fid);
-            redirect('viewtopic.php?id=' . $new_tid, $lang_misc['Split posts redirect']);
+           	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('id' => $new_tid)));
         }
         $page_title = _CHtml::encode($this->PageTitle) . ' / ' . $lang_misc['Moderate'];
         $focus_element = array('subject', 'new_subject');
@@ -277,8 +277,8 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to'])) {
             }
         }
         update_forum($fid); // Update the forum FROM which the topic was moved
-        update_forum($move_to_forum); // Update the forum TO which the topic was moved        $redirect_msg = (count($topics) > 1) ? $lang_misc['Move topics redirect'] : $lang_misc['Move topic redirect'];
-        redirect('viewforum.php?id=' . $move_to_forum, $redirect_msg);
+        update_forum($move_to_forum); // Update the forum TO which the topic was moved        
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewforum', array('id' => $move_to_forum)));
     }
     if (isset($_POST['move_topics'])) {
         $topics = isset($_POST['topics']) ? $_POST['topics'] : array();
@@ -376,7 +376,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to'])) {
             $db->setQuery('UPDATE forum_topics SET num_replies=' . $num_replies . ', last_post=' . $last_post . ', last_post_id=' . $last_post_id . ', last_poster=\'' . $db->escape($last_poster) . '\' WHERE id=' . $merge_to_tid)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
             // Update the forum FROM which the topic was moved and redirect
             update_forum($fid);
-            redirect('viewforum.php?id=' . $fid, $lang_misc['Merge topics redirect']);
+           	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewforum', array('id' => $fid)));
         }
         $topics = isset($_POST['topics']) ? $_POST['topics'] : array();
         if (count($topics) < 2)
@@ -434,7 +434,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to'])) {
             // Delete posts
             $db->setQuery('DELETE FROM forum_posts WHERE topic_id IN(' . $topics . ')')->execute() or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
             update_forum($fid);
-            redirect('viewforum.php?id=' . $fid, $lang_misc['Delete topics redirect']);
+           	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewforum', array('id' => $fid)));
         }
         $page_title = _CHtml::encode($this->PageTitle) . ' / ' . $lang_misc['Moderate'];
         require SHELL_PATH . 'header.php';
@@ -469,8 +469,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to'])) {
             if (empty($topics))
                 message($lang_misc['No topics selected']);
             $db->setQuery('UPDATE forum_topics SET closed=' . $action . ' WHERE id IN(' . implode(',', $topics) . ') AND forum_id=' . $fid)->execute() or error('Unable to close topics', __FILE__, __LINE__, $db->error());
-            $redirect_msg = ($action) ? $lang_misc['Close topics redirect'] : $lang_misc['Open topics redirect'];
-            redirect('moderate.php?fid=' . $fid, $redirect_msg);
+           	Yii::app()->request->redirect(Yii::app()->createUrl('forum/moderate', array('fid' => $fid)));
         }
         // Or just one in $_GET
         else {
@@ -479,8 +478,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to'])) {
             if ($topic_id < 1)
                 message($lang_common['Bad request']);
             $db->setQuery('UPDATE forum_topics SET closed=' . $action . ' WHERE id=' . $topic_id . ' AND forum_id=' . $fid)->execute() or error('Unable to close topic', __FILE__, __LINE__, $db->error());
-            $redirect_msg = ($action) ? $lang_misc['Close topic redirect'] : $lang_misc['Open topic redirect'];
-            redirect('viewtopic.php?id=' . $topic_id, $redirect_msg);
+           	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('id' => $topic_id)));
         }
     }
     // Stick a topic
@@ -490,7 +488,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to'])) {
         if ($stick < 1)
             message($lang_common['Bad request']);
         $db->setQuery('UPDATE forum_topics SET sticky=\'1\' WHERE id=' . $stick . ' AND forum_id=' . $fid)->execute() or error('Unable to stick topic', __FILE__, __LINE__, $db->error());
-        redirect('viewtopic.php?id=' . $stick, $lang_misc['Stick topic redirect']);
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('id' => $stick)));
     }
     // Unstick a topic
     else if (isset($_GET['unstick'])) {
@@ -499,7 +497,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to'])) {
         if ($unstick < 1)
             message($lang_common['Bad request']);
         $db->setQuery('UPDATE forum_topics SET sticky=\'0\' WHERE id=' . $unstick . ' AND forum_id=' . $fid)->execute() or error('Unable to unstick topic', __FILE__, __LINE__, $db->error());
-        redirect('viewtopic.php?id=' . $unstick, $lang_misc['Unstick topic redirect']);
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('id' => $unstick)));
     }
     // No specific forum moderation action was specified in the query string, so we'll display the moderator forum
     // Load the viewforum.php language file

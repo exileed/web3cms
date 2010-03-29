@@ -72,7 +72,7 @@ if ($action == 'change_pass') {
         if ($_user['id'] == $id) {
             _setcookie($_user['id'], $new_password_hash, time() + $_config['o_timeout_visit']);
         }
-        redirect('profile.php?section=essentials&amp;id=' . $id, $lang_profile['Pass updated redirect']);
+       	Yii::app()->request->redirect(Yii::app()->createUrl('forum/profile', array('section' => '')));redirect('.php?=essentials&amp;id=' . $id, $lang_profile['Pass updated redirect']);
     }
     $page_title = _CHtml::encode($this->PageTitle) . ' / ' . $lang_common['Profile'];
     $required_fields = array('req_old_password' => $lang_profile['Old pass'], 'req_new_password1' => $lang_profile['New pass'], 'req_new_password2' => $lang_profile['Confirm new pass']);
@@ -270,7 +270,7 @@ if ($action == 'change_pass') {
             @chmod($_config['o_avatars_dir'] . '/' . $id . $extension, 0644);
         }else
             message($lang_profile['Unknown failure']);
-        redirect('profile.php?section=personality&amp;id=' . $id, $lang_profile['Avatar upload redirect']);
+       	redirect('profile.php?section=personality&amp;id=' . $id, $lang_profile['Avatar upload redirect']);
     }
     $page_title = _CHtml::encode($this->PageTitle) . ' / ' . $lang_common['Profile'];
     $required_fields = array('req_file' => $lang_profile['File']);
@@ -302,7 +302,7 @@ if ($action == 'change_pass') {
         message($lang_common['No permission']);
     confirm_referrer('profile.php');
     delete_avatar($id);
-    redirect('profile.php?section=personality&amp;id=' . $id, $lang_profile['Avatar deleted redirect']);
+   	redirect('profile.php?section=personality&amp;id=' . $id, $lang_profile['Avatar deleted redirect']);
 } else if (isset($_POST['update_group_membership'])) {
     if ($_user['g_id'] > PUN_ADMIN)
         message($lang_common['No permission']);
@@ -324,7 +324,7 @@ if ($action == 'change_pass') {
             }
         }
     }
-    redirect('profile.php?section=admin&amp;id=' . $id, $lang_profile['Group membership redirect']);
+   	redirect('profile.php?section=admin&amp;id=' . $id, $lang_profile['Group membership redirect']);
 } else if (isset($_POST['update_forums'])) {
     if ($_user['g_id'] > PUN_ADMIN)
         message($lang_common['No permission']);
@@ -350,11 +350,11 @@ if ($action == 'change_pass') {
             $db->setQuery('UPDATE forum_forums SET moderators=' . $cur_moderators . ' WHERE id=' . $cur_forum['id'])->execute() or error('Unable to update forum', __FILE__, __LINE__, $db->error());
         }
     }
-    redirect('profile.php?section=admin&amp;id=' . $id, $lang_profile['Update forums redirect']);
+   	redirect('profile.php?section=admin&amp;id=' . $id, $lang_profile['Update forums redirect']);
 } else if (isset($_POST['ban'])) {
     if ($_user['g_id'] != PUN_ADMIN && ($_user['g_moderator'] != '1' || $_user['g_mod_ban_users'] == '0'))
         message($lang_common['No permission']);
-    redirect('admin_bans.php?add_ban=' . $id, $lang_profile['Ban redirect']);
+   	redirect('admin_bans.php?add_ban=' . $id, $lang_profile['Ban redirect']);
 } else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply'])) {
     if ($_user['g_id'] > PUN_ADMIN)
         message($lang_common['No permission']);
@@ -407,7 +407,7 @@ if ($action == 'change_pass') {
         $db->setQuery('DELETE FROM w3_user INNER JOIN w3_user_details AS ud WHERE id=' . $id)->execute() or error('Unable to delete user', __FILE__, __LINE__, $db->error());
         // Delete user avatar
         delete_avatar($id);
-        redirect('index.php', $lang_profile['User delete redirect']);
+       	redirect('index.php', $lang_profile['User delete redirect']);
     }
     $page_title = _CHtml::encode($this->PageTitle) . ' / ' . $lang_common['Profile'];
     require SHELL_PATH . 'header.php';
@@ -613,9 +613,9 @@ if ($action == 'change_pass') {
             }
         }
     }
-    redirect('profile.php?section=' . $section . '&amp;id=' . $id, $lang_profile['Profile redirect']);
+   	redirect('profile.php?section=' . $section . '&amp;id=' . $id, $lang_profile['Profile redirect']);
 }
-$db->setQuery('SELECT u.username, u.email, ud.title, u.realname, u.url, u.jabber, u.icq, u.msn, u.aim, u.yahoo, u.location, u.signature, u.disp_topics, u.disp_posts, u.email_setting, ud.notify_with_post, u.auto_notify, u.show_smilies, u.show_img, u.show_img_sig, u.show_avatars, u.show_sig, u.timezone, u.dst, u.language, u.style, ud.num_posts, u.last_post, u.createTime, u.registration_ip, u.date_format, u.time_format, g.g_id, g.g_user_title, g.g_moderator FROM w3_user AS u INNER JOIN w3_user_details AS ud LEFT JOIN forum_groups AS g ON g.g_id=ud.forumGroupId WHERE u.id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+$db->setQuery('SELECT u.username, u.email, ud.title, ud.url, ud.jabber, ud.icq, ud.msn, ud.aim, ud.yahoo, ud.location, ud.signature, ud.disp_topics, ud.disp_posts, ud.email_setting, ud.notify_with_post, ud.auto_notify, ud.show_smilies, ud.show_img, ud.show_img_sig, ud.show_avatars, ud.show_sig, u.timezone, u.dst, u.language, u.style, ud.num_posts, u.last_post, u.createTime, u.registration_ip, u.date_format, u.time_format, g.g_id, g.g_user_title, g.g_moderator FROM w3_user AS u INNER JOIN w3_user_details AS ud LEFT JOIN forum_groups AS g ON g.g_id=ud.forumGroupId WHERE u.id=' . $id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 if (!$db->num_rows())
     message($lang_common['Bad request']);
 $user = $db->fetch_assoc();
@@ -670,8 +670,6 @@ if ($_user['id'] != $id &&
 							<dd><?php echo _CHtml::encode($user['username']) ?></dd>
 							<dt><?php echo $lang_common['Title'] ?>: </dt>
 							<dd><?php echo ($_config['o_censoring'] == '1') ? censor_words($user_title_field) : $user_title_field; ?></dd>
-							<dt><?php echo $lang_profile['Realname'] ?>: </dt>
-							<dd><?php echo ($user['realname'] != '') ? _CHtml::encode(($_config['o_censoring'] == '1') ? censor_words($user['realname']) : $user['realname']) : $lang_profile['Unknown']; ?></dd>
 							<dt><?php echo $lang_profile['Location'] ?>: </dt>
 							<dd><?php echo ($user['location'] != '') ? _CHtml::encode(($_config['o_censoring'] == '1') ? censor_words($user['location']) : $user['location']) : $lang_profile['Unknown']; ?></dd>
 							<dt><?php echo $lang_profile['Website'] ?>: </dt>
@@ -921,8 +919,8 @@ if ($_user['id'] != $id &&
 						<legend><?php echo $lang_profile['Personal details legend'] ?></legend>
 						<div class="infldset">
 							<input type="hidden" name="form_sent" value="1" />
-							<label><?php echo $lang_profile['Realname'] ?><br /><input type="text" name="form[realname]" value="<?php echo _CHtml::encode($user['realname']) ?>" size="40" maxlength="40" /><br /></label>
-<?php if (isset($title_field)): ?>							<?php echo $title_field ?>
+							<?php if (isset($title_field)): ?>
+							<?php echo $title_field ?>
 <?php endif; ?>							<label><?php echo $lang_profile['Location'] ?><br /><input type="text" name="form[location]" value="<?php echo _CHtml::encode($user['location']) ?>" size="30" maxlength="30" /><br /></label>
 							<label><?php echo $lang_profile['Website'] ?><br /><input type="text" name="form[url]" value="<?php echo _CHtml::encode($user['url']) ?>" size="50" maxlength="80" /><br /></label>
 						</div>

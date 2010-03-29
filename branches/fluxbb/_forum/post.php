@@ -138,7 +138,7 @@ if (isset($_POST['form_sent'])) {
             }
             // Count number of replies in the topic
             $db->setQuery('SELECT COUNT(id) FROM forum_posts WHERE topic_id=' . $tid) or error('Unable to fetch post count for topic', __FILE__, __LINE__, $db->error());
-            $num_replies = $db->result($result, 0) - 1;
+            $num_replies = $db->result(0,0) - 1;
             // Update topic
             $db->setQuery('UPDATE forum_topics SET num_replies=' . $num_replies . ', last_post=' . $now . ', last_post_id=' . $new_pid . ', last_poster=\'' . $db->escape($username) . '\' WHERE id=' . $tid)->execute() or error('Unable to update topic', __FILE__, __LINE__, $db->error());
             update_search_index('post', $new_pid, $message);
@@ -239,7 +239,7 @@ if (isset($_POST['form_sent'])) {
         }else {
             $db->setQuery('UPDATE forum_online SET last_post=' . $now . ' WHERE ident=\'' . $db->escape(get_remote_address()) . '\'')->execute() or error('Unable to update user', __FILE__, __LINE__, $db->error());
         }
-        redirect('viewtopic.php?pid=' . $new_pid . '#p' . $new_pid, $lang_post['Post redirect']);
+        Yii::app()->request->redirect(Yii::app()->createUrl('forum/viewtopic', array('pid' => $new_pid . '#p' . $new_pid)));
     }
 }
 // If a topic ID was specified in the url (it's a reply)

@@ -11,6 +11,7 @@ $retval=array(
     'Email address {email} has been successfully confirmed.' => 'Email address {email} has been successfully confirmed.',
     'Email address {email} was confirmed earlier.' => 'Email address {email} was confirmed earlier.',
     'Error! Email address {email} could not be confirmed.' => 'Error! Email address {email} could not be confirmed.',
+    'Error! Necessary data was not passed.' => 'Error! Necessary data was not passed.',
     'Error! {screenName}, new user interface could not be applied.' => 'Error! {screenName}, new user interface could not be applied.',
     'Error! {screenName}, your profile could not be updated.' => 'Error! {screenName}, your profile could not be updated.',
     'Error! The expense record number {id} could not be deleted.' => 'Error! The expense record number {id} could not be deleted.',

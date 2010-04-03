@@ -96,7 +96,7 @@ class UserController extends _CController
                         // was confirmed earlier
                         MUserFlash::setTopInfo(Yii::t('hint',
                             'Email address {email} was confirmed earlier.',
-                            array('{email}'=>'<strong>'.$user->email.'</strong>')
+                            array('{email}'=>MHtml::wrapInTag($user->email,'strong'))
                         ));
                     else
                     {
@@ -105,8 +105,8 @@ class UserController extends _CController
                             MUserFlash::setTopError(Yii::t('hint',
                                 'We are sorry, but email address {email} has a different confirmation key. You provided: {emailConfirmationKey}.',
                                 array(
-                                    '{email}'=>'<strong>'.$user->email.'</strong>',
-                                    '{emailConfirmationKey}'=>'<strong>'.$model->emailConfirmationKey.'</strong>',
+                                    '{email}'=>MHtml::wrapInTag($user->email,'strong'),
+                                    '{emailConfirmationKey}'=>MHtml::wrapInTag($model->emailConfirmationKey,'strong'),
                                 )
                             ));
                         else
@@ -117,7 +117,7 @@ class UserController extends _CController
                                 // set success message
                                 MUserFlash::setTopSuccess(Yii::t('hint',
                                     'Email address {email} has been successfully confirmed.',
-                                    array('{email}'=>'<strong>'.$user->email.'</strong>')
+                                    array('{email}'=>MHtml::wrapInTag($user->email,'strong'))
                                 ));
                                 // renew key in db
                                 $user->details->saveAttributes(array('emailConfirmationKey'=>$user->details->generateConfirmationKey()));
@@ -131,7 +131,7 @@ class UserController extends _CController
                                 // set error message
                                 MUserFlash::setTopError(Yii::t('hint',
                                     'Error! Email address {email} could not be confirmed.',
-                                    array('{email}'=>'<strong>'.$user->email.'</strong>')
+                                    array('{email}'=>MHtml::wrapInTag($user->email,'strong'))
                                 ));
                                 Yii::log(W3::t('system',
                                     'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.',
@@ -159,7 +159,7 @@ class UserController extends _CController
                 // email is not registered?
                 MUserFlash::setTopInfo(Yii::t('hint',
                     'A member account with email address {email} could not be found.',
-                    array('{email}'=>'<strong>'.$model->email.'</strong>')
+                    array('{email}'=>MHtml::wrapInTag($model->email,'strong'))
                 ));
                 // pay visitor attention to the 'email' field
                 $model->addError('email','');
@@ -208,7 +208,7 @@ class UserController extends _CController
                 // set success message
                 MUserFlash::setTopSuccess(Yii::t('hint',
                     'The new "{screenName}" member record has been successfully created.',
-                    array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
+                    array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                 ));
                 // go to the 'show' page
                 $this->redirect(array('show','id'=>$model->id));
@@ -252,7 +252,7 @@ class UserController extends _CController
                 // set the welcome message
                 MUserFlash::setTopSuccess(Yii::t('hint',
                     '{screenName}, you have been successfully logged in.',
-                    array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
+                    array('{screenName}'=>MHtml::wrapInTag(Yii::app()->user->screenName,'strong'))
                 ));
                 // user was just authenticated, but let's check anyway
                 if(!Yii::app()->user->isGuest)
@@ -281,7 +281,7 @@ class UserController extends _CController
             // warn user if already logged in
             MUserFlash::setTopInfo(Yii::t('hint',
                 '{screenName}, this action will log you out from your current account.',
-                array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
+                array('{screenName}'=>MHtml::wrapInTag(Yii::app()->user->screenName,'strong'))
             ));
         // display the login form
         $this->render($this->action->id,array('form'=>$form));
@@ -306,7 +306,7 @@ class UserController extends _CController
             // set the goodbye message
             MUserFlash::setTopInfo(Yii::t('hint',
                 '{screenName}, you have been successfully logged out.',
-                array('{screenName}'=>'<strong>'.$screenName.'</strong>')
+                array('{screenName}'=>MHtml::wrapInTag($screenName,'strong'))
             ));
         }
         $this->redirect($this->getGotoUrl());
@@ -359,7 +359,7 @@ class UserController extends _CController
                     // set success message
                     MUserFlash::setTopSuccess(Yii::t('hint',
                         '{screenName}, your member account has been successfully created.',
-                        array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
+                        array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                     ));
                     // send welcome email
                     $headers="From: ".MParams::getAdminEmailAddress()."\r\nReply-To: ".MParams::getAdminEmailAddress();
@@ -392,7 +392,7 @@ class UserController extends _CController
             // warn user if already logged in
             MUserFlash::setTopInfo(Yii::t('hint',
                 '{screenName}, this action will log you out from your current account.',
-                array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
+                array('{screenName}'=>MHtml::wrapInTag(Yii::app()->user->screenName,'strong'))
             ));
         if(!isset($model->details))
             // new associated user details
@@ -509,7 +509,7 @@ class UserController extends _CController
                                     '{screenName}, your profile has been updated.' :
                                     'The member account "{screenName}" has been updated.'
                                 ,
-                                array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
+                                array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                             ));
                             // go to 'show' page
                             $this->redirect($me ? array('show') : array('show','id'=>$model->id));
@@ -522,7 +522,7 @@ class UserController extends _CController
                                     'Error! {screenName}, your profile could not be updated.' :
                                     'Error! The member account "{screenName}" could not be updated.'
                                 ,
-                                array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
+                                array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                             ));
                             Yii::log(W3::t('system',
                                 'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.',
@@ -540,7 +540,7 @@ class UserController extends _CController
                         'Error! {screenName}, your profile could not be updated.' :
                         'Error! The member account "{screenName}" could not be updated.'
                     ,
-                    array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
+                    array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                 ));
                 Yii::log(W3::t('system',
                     'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.',
@@ -604,7 +604,7 @@ class UserController extends _CController
                         '{screenName}, new user interface has been applied.' :
                         'The user interface for member account "{screenName}" has been updated.'
                     ,
-                    array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
+                    array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                 ));
                 // go to 'show' page
                 $this->redirect($me ? array('show') : array('show','id'=>$model->id));
@@ -617,7 +617,7 @@ class UserController extends _CController
                         'Error! {screenName}, new user interface could not be applied.' :
                         'Error! The user interface for member account "{screenName}" could not be updated.'
                     ,
-                    array('{screenName}'=>'<strong>'.$model->screenName.'</strong>')
+                    array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                 ));
                 Yii::log(W3::t('system',
                     'Could not save attributes of the {model} model. Model ID: {modelId}. Method called: {method}.',

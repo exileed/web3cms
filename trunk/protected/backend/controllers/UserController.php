@@ -87,7 +87,7 @@ class UserController extends _CController
                 // set the welcome message
                 MUserFlash::setTopSuccess(Yii::t('hint',
                     '{screenName}, you have been successfully logged in.',
-                    array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
+                    array('{screenName}'=>MHtml::wrapInTag(Yii::app()->user->screenName,'strong'))
                 ));
                 // user was just authenticated, but let's check anyway
                 if(!Yii::app()->user->isGuest)
@@ -118,7 +118,7 @@ class UserController extends _CController
             // warn user if already logged in
             MUserFlash::setTopInfo(Yii::t('hint',
                 '{screenName}, this action will log you out from your current account.',
-                array('{screenName}'=>'<strong>'.Yii::app()->user->screenName.'</strong>')
+                array('{screenName}'=>MHtml::wrapInTag(Yii::app()->user->screenName,'strong'))
             ));
         // display the login form
         $this->render($this->action->id,array('form'=>$form));
@@ -143,7 +143,7 @@ class UserController extends _CController
             // set the goodbye message
             MUserFlash::setTopInfo(Yii::t('hint',
                 '{screenName}, you have been successfully logged out.',
-                array('{screenName}'=>'<strong>'.$screenName.'</strong>')
+                array('{screenName}'=>MHtml::wrapInTag($screenName,'strong'))
             ));
         }
         // go to home page

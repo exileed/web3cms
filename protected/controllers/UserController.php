@@ -673,38 +673,38 @@ class UserController extends _CController
         $criteria=new CDbCriteria;
         if($accessType===(string)User::MEMBER)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:member";
-            $criteria->params=array_merge($criteria->params,array(':member'=>User::MEMBER));
+            $criteria->addCondition("`t`.`accessType`=:member");
+            $criteria->params[':member']=User::MEMBER;
         }
         else if($accessType===(string)User::CLIENT)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:client";
-            $criteria->params=array_merge($criteria->params,array(':client'=>User::CLIENT));
+            $criteria->addCondition("`t`.`accessType`=:client");
+            $criteria->params[':client']=User::CLIENT;
         }
         else if($accessType===(string)User::CONSULTANT)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:consultant";
-            $criteria->params=array_merge($criteria->params,array(':consultant'=>User::CONSULTANT));
+            $criteria->addCondition("`t`.`accessType`=:consultant");
+            $criteria->params[':consultant']=User::CONSULTANT;
         }
         else if($accessType===(string)User::MANAGER)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:manager";
-            $criteria->params=array_merge($criteria->params,array(':manager'=>User::MANAGER));
+            $criteria->addCondition("`t`.`accessType`=:manager");
+            $criteria->params[':manager']=User::MANAGER;
         }
         else if($accessType===(string)User::ADMINISTRATOR)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:administrator";
-            $criteria->params=array_merge($criteria->params,array(':administrator'=>User::ADMINISTRATOR));
+            $criteria->addCondition("`t`.`accessType`=:administrator");
+            $criteria->params[':administrator']=User::ADMINISTRATOR;
         }
         if($state==='active')
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."(`t`.`isActive` IS NULL OR `t`.`isActive`!=:isNotActive)";
-            $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
+            $criteria->addCondition("(`t`.`isActive` IS NULL OR `t`.`isActive`!=:isNotActive)");
+            $criteria->params[':isNotActive']=User::IS_NOT_ACTIVE;
         }
         else if($state==='inactive')
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`isActive`=:isNotActive";
-            $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
+            $criteria->addCondition("`t`.`isActive`=:isNotActive");
+            $criteria->params[':isNotActive']=User::IS_NOT_ACTIVE;
         }
 
         // pagination
@@ -935,38 +935,38 @@ class UserController extends _CController
         }
         if($accessType===(string)User::MEMBER)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:member";
-            $criteria->params=array_merge($criteria->params,array(':member'=>User::MEMBER));
+            $criteria->addCondition("`t`.`accessType`=:member");
+            $criteria->params[':member']=User::MEMBER;
         }
         else if($accessType===(string)User::CLIENT)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:client";
-            $criteria->params=array_merge($criteria->params,array(':client'=>User::CLIENT));
+            $criteria->addCondition("`t`.`accessType`=:client");
+            $criteria->params[':client']=User::CLIENT;
         }
         else if($accessType===(string)User::CONSULTANT)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:consultant";
-            $criteria->params=array_merge($criteria->params,array(':consultant'=>User::CONSULTANT));
+            $criteria->addCondition("`t`.`accessType`=:consultant");
+            $criteria->params[':consultant']=User::CONSULTANT;
         }
         else if($accessType===(string)User::MANAGER)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:manager";
-            $criteria->params=array_merge($criteria->params,array(':manager'=>User::MANAGER));
+            $criteria->addCondition("`t`.`accessType`=:manager");
+            $criteria->params[':manager']=User::MANAGER;
         }
         else if($accessType===(string)User::ADMINISTRATOR)
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`accessType`=:administrator";
-            $criteria->params=array_merge($criteria->params,array(':administrator'=>User::ADMINISTRATOR));
+            $criteria->addCondition("`t`.`accessType`=:administrator");
+            $criteria->params[':administrator']=User::ADMINISTRATOR;
         }
         if($state==='active')
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."(`t`.`isActive` IS NULL OR `t`.`isActive`!=:isNotActive)";
-            $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
+            $criteria->addCondition("(`t`.`isActive` IS NULL OR `t`.`isActive`!=:isNotActive)");
+            $criteria->params[':isNotActive']=User::IS_NOT_ACTIVE;
         }
         else if($state==='inactive')
         {
-            $criteria->condition.=($criteria->condition==='' ? '' : ' AND ')."`t`.`isActive`=:isNotActive";
-            $criteria->params=array_merge($criteria->params,array(':isNotActive'=>User::IS_NOT_ACTIVE));
+            $criteria->addCondition("`t`.`isActive`=:isNotActive");
+            $criteria->params[':isNotActive']=User::IS_NOT_ACTIVE;
         }
 
         // pagination

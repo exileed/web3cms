@@ -1,17 +1,17 @@
 <?php
 
-// i18n - Russian Language Pack (Payment)
+// i18n - Russian Original Language Pack (Payment)
 $retval=array(
-    'Balance' => 'Р‘Р°Р»Р°РЅСЃ',
-    'Cash' => 'РќР°Р»РёС‡РЅС‹Рµ',
-    'Check' => 'Р§РµРє',
-    'Credit card' => 'РљСЂРµРґРёС‚РЅР°СЏ РєР°СЂС‚РѕС‡РєР°',
-    'Credit[accounting]' => 'РљСЂРµРґРёС‚',
-    'Debit' => 'Р”РµР±РµС‚',
-    'Method' => 'РЎРїРѕСЃРѕР±',
-    'Number' => 'РќРѕРјРµСЂ',
+    'Balance' => 'Баланс',
+    'Cash' => 'Наличные',
+    'Check' => 'Чек',
+    'Credit card' => 'Кредитная карточка',
+    'Credit[accounting]' => 'Кредит',
+    'Debit' => 'Дебет',
+    'Method' => 'Способ',
+    'Number' => 'Номер',
     'Paypal' => 'Paypal',
-    'Wire' => 'РџРµСЂРµРІРѕРґ',
+    'Wire' => 'Перевод',
 );
 $myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
 return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

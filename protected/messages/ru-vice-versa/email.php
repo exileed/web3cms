@@ -1,17 +1,17 @@
 <?php
 
-// i18n - Russian Language Pack (Emails)
+// i18n - Russian Original Language Pack (Emails)
 $retval=array(
-    'New member account' => 'РќРѕРІР°СЏ СѓС‡С‘С‚РЅР°СЏ Р·Р°РїРёСЃСЊ',
-    'Content(New member account)' => 'Р”РѕР±СЂРѕ РїРѕР¶Р°Р»РѕРІР°С‚СЊ Рє {siteTitle}
+    'New member account' => 'Новая учётная запись',
+    'Content(New member account)' => 'Добро пожаловать к {siteTitle}
 
-РќРѕРІР°СЏ СѓС‡С‘С‚РЅР°СЏ Р·Р°РїРёСЃСЊ "{screenName}" Р±С‹Р»Р° СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅР°.
+Новая учётная запись "{screenName}" была успешно создана.
 
 --------------------------------------------------
-РљР»СЋС‡ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ: {emailConfirmationKey}
+Ключ подтверждения: {emailConfirmationKey}
 --------------------------------------------------
 
-Р§С‚РѕР±С‹ РїРѕРґС‚РІРµСЂРґРёС‚СЊ РІР°С€ РµРјР°Р№Р» Р°РґСЂРµСЃ, РїРѕР¶Р°Р»СѓР№СЃС‚Р° РїРѕСЃРµС‚РёС‚Рµ СЃР»РµРґСѓСЋС‰СѓСЋ СЃСЃС‹Р»РєСѓ
+Чтобы подтвердить ваш емайл адрес, пожалуйста посетите следующую ссылку
 {emailConfirmationLink}',
 );
 $myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);

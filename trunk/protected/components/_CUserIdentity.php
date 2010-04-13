@@ -1,8 +1,8 @@
 <?php
 /**
- * _CUserIdentity represents the data needed to identity a user.
+ * _CUserIdentity represents the data needed to create identity of a user.
  * It contains the authentication method that checks if the provided
- * data can identity the user.
+ * data can create identity of the user.
  */
 class _CUserIdentity extends CUserIdentity
 {
@@ -50,10 +50,12 @@ class _CUserIdentity extends CUserIdentity
             // do not store password or other sensitive data in the persistent storage
             // when (config/main.php) allowAutoLogin is true, because
             // all these data will be stored in cookie = it is readable
-            $this->setState('email', $user->email);
-            $this->setState('interface', $user->interface);
-            $this->setState('language', $user->language);
-            $this->setState('screenName', $user->screenName);
+            $this->setState('email',$user->email);
+            $this->setState('interface',$user->interface);
+            $this->setState('language',$user->language);
+            $this->setState('screenName',$user->screenName);
+            // init rbac
+            $this->authorize($user);
         }
         return $this->errorCode==self::ERROR_NONE;
     }
@@ -77,11 +79,105 @@ class _CUserIdentity extends CUserIdentity
             // do not store password or other sensitive data in the persistent storage
             // when (config/main.php) allowAutoLogin is true, because
             // all these data will be stored in cookie = it is readable
-            $this->setState('email', $user->email);
-            $this->setState('interface', $user->interface);
-            $this->setState('language', $user->language);
-            $this->setState('screenName', $user->screenName);
+            $this->setState('email',$user->email);
+            $this->setState('interface',$user->interface);
+            $this->setState('language',$user->language);
+            $this->setState('screenName',$user->screenName);
+            // init rbac
+            $this->authorize($user);
         }
         return !$this->errorCode;
+    }
+
+    /**
+     * Initialize Role-Based Access Control (RBAC).
+     * @param User model
+     */
+    private function authorize($user)
+    {
+        $auth=Yii::app()->authManager;
+        // first step. destroy rbac object from previous save
+        $auth->clearAll();
+        // describe existing operations
+        $auth->createOperation('company/grid','browse company grid');
+        $auth->createOperation('company/gridData','data for company grid');
+        $auth->createOperation('company/list','browse company list');
+        $auth->createOperation('companyPayment/grid','browse company payment grid');
+        $auth->createOperation('companyPayment/gridData','data for company payment grid');
+        $auth->createOperation('companyPayment/list','browse company payment list');
+        $auth->createOperation('expense/grid','browse expense grid');
+        $auth->createOperation('expense/gridData','data for expense grid');
+        $auth->createOperation('expense/list','browse expense list');
+        $auth->createOperation('invoice/grid','browse invoice grid');
+        $auth->createOperation('invoice/gridData','data for invoice grid');
+        $auth->createOperation('invoice/list','browse invoice list');
+        $auth->createOperation('project/grid','browse project grid');
+        $auth->createOperation('project/gridData','data for project grid');
+        $auth->createOperation('project/list','browse project list');
+        $auth->createOperation('task/grid','browse task grid');
+        $auth->createOperation('task/gridData','data for task grid');
+        $auth->createOperation('task/list','browse task list');
+        $auth->createOperation('time/grid','browse time grid');
+        $auth->createOperation('time/gridData','data for time grid');
+        $auth->createOperation('time/list','browse time list');
+        $auth->createOperation('user/grid','browse user grid');
+        $auth->createOperation('user/gridData','data for user grid');
+        $auth->createOperation('user/list','browse user list');
+        // set relations between roles, tasks, operations
+        $role=$auth->createRole(User::CLIENT);
+        $role->addChild('company/grid');
+        $role->addChild('company/gridData');
+        $role->addChild('company/list');
+        $role->addChild('companyPayment/grid');
+        $role->addChild('companyPayment/gridData');
+        $role->addChild('companyPayment/list');
+        $role->addChild('expense/grid');
+        $role->addChild('expense/gridData');
+        $role->addChild('expense/list');
+        $role->addChild('invoice/grid');
+        $role->addChild('invoice/gridData');
+        $role->addChild('invoice/list');
+        $role->addChild('project/grid');
+        $role->addChild('project/gridData');
+        $role->addChild('project/list');
+        $role->addChild('task/grid');
+        $role->addChild('task/gridData');
+        $role->addChild('task/list');
+        $role->addChild('time/grid');
+        $role->addChild('time/gridData');
+        $role->addChild('time/list');
+        $role=$auth->createRole(User::CONSULTANT);
+        $role->addChild('project/grid');
+        $role->addChild('project/gridData');
+        $role->addChild('project/list');
+        $role->addChild('task/grid');
+        $role->addChild('task/gridData');
+        $role->addChild('task/list');
+        $role->addChild('time/grid');
+        $role->addChild('time/gridData');
+        $role->addChild('time/list');
+        $role=$auth->createRole(User::MANAGER);
+        $role->addChild(User::CONSULTANT);
+        $role->addChild('company/grid');
+        $role->addChild('company/gridData');
+        $role->addChild('company/list');
+        $role->addChild('companyPayment/grid');
+        $role->addChild('companyPayment/gridData');
+        $role->addChild('companyPayment/list');
+        $role->addChild('expense/grid');
+        $role->addChild('expense/gridData');
+        $role->addChild('expense/list');
+        $role->addChild('invoice/grid');
+        $role->addChild('invoice/gridData');
+        $role->addChild('invoice/list');
+        $role->addChild('user/grid');
+        $role->addChild('user/gridData');
+        $role->addChild('user/list');
+        $role=$auth->createRole(User::ADMINISTRATOR);
+        $role->addChild(User::MANAGER);
+        // assign user his access type as role
+        $auth->assign($user->accessType,$user->id);
+        // last step. save
+        $auth->save();
     }
 }

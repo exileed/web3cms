@@ -1,6 +1,6 @@
 <?php
 
-// i18n - Russian Original Language Pack (Math)
+// i18n - Russian Vice-Versa Language Pack (Math)
 $retval=array(
     'Total' => 'Всего',
 );

@@ -1,7 +1,8 @@
 <?php
 
-// i18n - Russian Original Language Pack (HTTP)
+// i18n - Russian Vice-Versa Language Pack (HTTP)
 $retval=array(
+    'Invalid request. Please do not repeat this request again.' => 'Неверный запрос. Пожалуйста не повторяйте данный запрос снова.',
     'Page not found.' => 'Страница не найдена.',
     'The requested page does not exist.' => 'Запрашиваемая страница не существует.',
 );

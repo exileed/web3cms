@@ -1,6 +1,6 @@
 <?php
 
-// i18n - Russian Original Language Pack
+// i18n - Russian Vice-Versa Language Pack
 $retval=array(
     '(days)' => '(дней)',
     '- Please select -' => '- Пожалуйста, выберите -',

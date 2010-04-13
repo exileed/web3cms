@@ -1,6 +1,6 @@
 <?php
 
-// i18n - Russian Original Language Pack (CSS Themes)
+// i18n - Russian Vice-Versa Language Pack (CSS Themes)
 $retval=array(
     'Black tie' => 'Вечерний костюм',
     'Blitzer' => 'Блитцер',

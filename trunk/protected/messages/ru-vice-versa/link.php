@@ -1,6 +1,6 @@
 <?php
 
-// i18n - Russian Original Language Pack (Links)
+// i18n - Russian Vice-Versa Language Pack (Links)
 $retval=array(
     'Add a company' => 'Добавить компанию',
     'Add a company payment' => 'Добавить платёж компании',

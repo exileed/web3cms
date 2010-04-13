@@ -1,6 +1,6 @@
 <?php
 
-// i18n - Russian Original Language Pack (Emails)
+// i18n - Russian Vice-Versa Language Pack (Emails)
 $retval=array(
     'New member account' => 'Новая учётная запись',
     'Content(New member account)' => 'Добро пожаловать к {siteTitle}

@@ -1,6 +1,6 @@
 <?php
 
-// i18n - Russian Original Language Pack (Pages)
+// i18n - Russian Vice-Versa Language Pack (Pages)
 $retval=array(
     'Change interface' => 'Сменить внешний вид',
     'Confirm email address' => 'Подтвердить емайл адрес',

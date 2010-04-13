@@ -1,6 +1,6 @@
 <?php
 
-// i18n - Russian Original Language Pack (Payment)
+// i18n - Russian Vice-Versa Language Pack (Payment)
 $retval=array(
     'Balance' => 'Баланс',
     'Cash' => 'Наличные',

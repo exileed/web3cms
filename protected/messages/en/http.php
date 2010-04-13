@@ -2,6 +2,7 @@
 
 // i18n - English Language Pack (HTTP)
 $retval=array(
+    'Invalid request. Please do not repeat this request again.' => 'Invalid request. Please do not repeat this request again.',
     'Page not found.' => 'Page not found.',
     'The requested page does not exist.' => 'The requested page does not exist.',
 );

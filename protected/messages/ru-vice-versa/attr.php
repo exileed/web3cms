@@ -1,6 +1,6 @@
 <?php
 
-// i18n - Russian Language Pack (Attributes)
+// i18n - Russian Vice-Versa Language Pack (Attributes)
 $retval=array(
     'By default (Do not bill to company)' => 'По умолчанию (Не выставлять счёт компании)',
     'By default (Email is not visible by other members)' => 'По умолчанию (Емайл не виден другими участниками)',

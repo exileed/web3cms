@@ -1,6 +1,6 @@
 <?php
 
-// i18n - Russian Original Language Pack (System Messages)
+// i18n - Russian Vice-Versa Language Pack (System Messages)
 $retval=array(
     'Available interfaces: {availableInterfaces}.' => 'Доступные внешние виды: {availableInterfaces}.',
     'Available languages: {availableLanguages}.' => 'Доступные языки: {availableLanguages}.',

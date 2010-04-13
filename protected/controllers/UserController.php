@@ -654,13 +654,6 @@ class UserController extends _CController
      */
     public function actionGrid()
     {
-        if(!User::isManager() && !User::isAdministrator())
-        {
-            // not enough rights
-            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse members.'));
-            $this->redirect($this->getGotoUrl());
-        }
-
         // specify filter parameters
         $accessType=isset($_GET['accessType']) ? $_GET['accessType'] : null;
         if($accessType!=='all' && $accessType!==(string)User::MEMBER && $accessType!==(string)User::CLIENT && $accessType!==(string)User::CONSULTANT && $accessType!==(string)User::MANAGER && $accessType!==(string)User::ADMINISTRATOR)
@@ -885,12 +878,9 @@ class UserController extends _CController
      */
     public function actionGridData()
     {
-        if(!User::isManager() && !User::isAdministrator())
-            return null;
-
         if(!Yii::app()->request->isPostRequest)
         {
-            throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+            throw new CHttpException(400,Yii::t('http','Invalid request. Please do not repeat this request again.'));
             exit;
         }
 

@@ -45,13 +45,65 @@ class _CController extends CController
                 // set user preferred language
                 W3::setLanguage(Yii::app()->user->language);
         }
-        // parameters were loaded before language was set, now it needs to be translated
+        // parameters were loaded before language was set, now they need to be translated
         MParams::i18n();
     }
 
     /**
-     * Returns the URL where to go now to.
-     * @return array action route
+     * This method is invoked right before an action is to be executed (after all possible filters).
+     * @param CAction the action to be executed.
+     */
+    protected function beforeAction($action)
+    {
+        return $this->checkAccessBeforeAction();
+    }
+
+    /**
+     * Performs access check before action is executed.
+     * If access is denied - redirect to an appropriate page or display an empty screen.
+     * See {@link getCheckAccessOnActions} for the list of actions to check access for.
+     */
+    public function checkAccessBeforeAction()
+    {
+        $checkAccessOnActions=$this->getCheckAccessOnActions();
+        if(array_key_exists($this->action->id,$checkAccessOnActions))
+        {
+            // use power of rbac. see {@link _CUserIdentity::authorize} for assignment
+            if(!Yii::app()->user->checkAccess($this->getRoute()))
+            {
+                // access denied
+                if($checkAccessOnActions[$this->action->id]==='exit')
+                    // this results in an empty screen. good for ajax requests
+                    return false;
+                else
+                {
+                    // set error message. should be displayed when redirect will be completed
+                    MUserFlash::setTopError(Yii::t('accessDenied',$this->getRoute()));
+                    // redirect now to either user/show or to a more appropriate page
+                    Yii::app()->request->redirect($this->getGotoUrl());
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns array of actions that must be checked for access using rbac.
+     * Check {@link checkAccessBeforeAction} to see how is it being used.
+     */
+    public function getCheckAccessOnActions()
+    {
+        $retval=array(
+            'grid'=>'',
+            'gridData'=>'exit',
+            'list'=>'',
+        );
+        return $retval;
+    }
+
+    /**
+     * Returns the URL of where now to go.
+     * @return array action route.
      */
     public function getGotoUrl()
     {

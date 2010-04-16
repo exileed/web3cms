@@ -65,22 +65,68 @@ class _CController extends CController
      */
     public function checkAccessBeforeAction()
     {
+        $actionId=$this->action->id;
         $checkAccessOnActions=$this->getCheckAccessOnActions();
-        if(array_key_exists($this->action->id,$checkAccessOnActions))
+        if(array_key_exists($actionId,$checkAccessOnActions))
         {
-            // use power of rbac. see {@link _CUserIdentity::authorize} for assignment
-            if(!Yii::app()->user->checkAccess($this->getRoute()))
+            $a=$checkAccessOnActions[$actionId];
+            // first check whether it should be an ajax or a post request
+            if(!isset($a['request']) ||
+                ($a['request']==='ajax' && Yii::app()->request->isAjaxRequest) ||
+                ($a['request']==='post' && Yii::app()->request->isPostRequest)
+            )
             {
-                // access denied
-                if($checkAccessOnActions[$this->action->id]==='exit')
-                    // this results in an empty screen. good for ajax requests
-                    return false;
-                else
+                // define route variable
+                if(!isset($a['route']) &&
+                    (isset($a['moduleId']) || isset($a['controllerId']) || isset($a['actionId']))
+                )
                 {
-                    // set error message. should be displayed when redirect will be completed
-                    MUserFlash::setTopError(Yii::t('accessDenied',$this->getRoute()));
-                    // redirect now to either user/show or to a more appropriate page
-                    Yii::app()->request->redirect($this->getGotoUrl());
+                    $routeA=array();
+                    if(isset($a['moduleId']) || $this->module)
+                        $routeA[]=isset($a['moduleId'])?$a['moduleId']:$this->module->id;
+                    $routeA[]=isset($a['controllerId'])?$a['controllerId']:$this->id;
+                    $routeA[]=isset($a['actionId'])?$a['actionId']:$this->action->id;
+                    $route=implode('/',$routeA);
+                }
+                else
+                    $route=isset($a['route'])?$a['route']:$this->route;
+                // use power of rbac. see {@link _CUserIdentity::authorize} for assignment
+                if(!Yii::app()->user->checkAccess($route))
+                {
+                    // access denied
+                    // define error message variable
+                    if(!isset($a['messageRoute']) &&
+                        (isset($a['messageModuleId']) || isset($a['messageControllerId']) || isset($a['messageActionId']))
+                    )
+                    {
+                        $routeA=array();
+                        if(isset($a['messageModuleId']) || $this->module)
+                            $routeA[]=isset($a['messageModuleId'])?$a['messageModuleId']:$this->module->id;
+                        $routeA[]=isset($a['messageControllerId'])?$a['messageControllerId']:$this->id;
+                        $routeA[]=isset($a['messageActionId'])?$a['messageActionId']:$this->action->id;
+                        $messageRoute=implode('/',$routeA);
+                    }
+                    else
+                        $messageRoute=isset($a['messageRoute'])?$a['messageRoute']:$route;
+                    $message=Yii::t('accessDenied',$messageRoute);
+                    // do what expected: exit or print json or redirect
+                    if($a==='exit' || (isset($a['do']) && $a['do']==='exit'))
+                        // this results in an empty screen. good for simple ajax requests
+                        return false;
+                    else if($a==='json' || (isset($a['do']) && $a['do']==='json'))
+                    {
+                        // print out json document with error message.
+                        // ideal for ajax requests that expect a status and a message to be returned
+                        $this->printJsonExit(array('status'=>'error','message'=>$message));
+                        return false;
+                    }
+                    else
+                    {
+                        // set error message. should be displayed when redirect will be completed
+                        MUserFlash::setTopError($message);
+                        // redirect now to either user/show or to a more appropriate page
+                        Yii::app()->request->redirect($this->getGotoUrl());
+                    }
                 }
             }
         }
@@ -94,8 +140,10 @@ class _CController extends CController
     public function getCheckAccessOnActions()
     {
         $retval=array(
+            'ajaxDelete'=>array('request'=>'ajax','actionId'=>'delete','do'=>'json'),
+            'delete'=>'',
             'grid'=>'',
-            'gridData'=>'exit',
+            'gridData'=>array('actionId'=>'grid','do'=>'exit'),
             'list'=>'',
         );
         return $retval;

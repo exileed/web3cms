@@ -70,7 +70,7 @@ class _CUserIdentity extends CUserIdentity
         $user=User::model()->findByPk($this->username);
         if($user===null)
             $this->errorCode=self::ERROR_UNKNOWN_IDENTITY;
-        else if($user->isActive==='0')
+        else if($user->isActive===User::IS_NOT_ACTIVE)
             $this->errorCode=self::ERROR_ACCOUNT_IS_INACTIVE;
         else
         {
@@ -91,12 +91,21 @@ class _CUserIdentity extends CUserIdentity
 
     /**
      * Initialize Role-Based Access Control (RBAC).
+     * Role -> task -> operation are essentially the same thing,
+     * as you can see in the code they are of class {@link CAuthItem}.
+     * With operations:
+     *   $bizRule='return Yii::app()->user->id==$params["model"]->id;';
+     *   $task=$auth->createTask('user/updateOwn','update own model',$bizRule);
+     *   $task->addChild('user/update');
+     * we can check using just:
+     *   Yii::app()->user->checkAccess('user/update',array('model'=>$this->loadModel()));
+     * For more info see: http://www.yiiframework.com/doc/guide/topics.auth
      * @param User model
      */
     private function authorize($user)
     {
         $auth=Yii::app()->authManager;
-        // first step. destroy rbac object from previous save
+        // step one. destroy rbac object from previous save
         $auth->clearAll();
         // describe existing operations
         $auth->createOperation('company/grid','browse company grid');
@@ -119,7 +128,13 @@ class _CUserIdentity extends CUserIdentity
         $auth->createOperation('time/list','browse time list');
         $auth->createOperation('user/grid','browse user grid');
         $auth->createOperation('user/list','browse user list');
+        $auth->createOperation('user/update','update an user model');
+        $bizRule='return Yii::app()->user->id==$params["model"]->id;';
+        $task=$auth->createTask('user/updateOwn','update user own model',$bizRule);
+        $task->addChild('user/update');
         // set relations between roles, tasks, operations
+        $role=$auth->createRole(User::MEMBER);
+        $role->addChild('user/updateOwn');
         $role=$auth->createRole(User::CLIENT);
         $role->addChild('company/grid');
         $role->addChild('company/list');
@@ -135,6 +150,7 @@ class _CUserIdentity extends CUserIdentity
         $role->addChild('task/list');
         $role->addChild('time/grid');
         $role->addChild('time/list');
+        $role->addChild('user/updateOwn');
         $role=$auth->createRole(User::CONSULTANT);
         $role->addChild('project/grid');
         $role->addChild('project/list');
@@ -142,6 +158,7 @@ class _CUserIdentity extends CUserIdentity
         $role->addChild('task/list');
         $role->addChild('time/grid');
         $role->addChild('time/list');
+        $role->addChild('user/updateOwn');
         $role=$auth->createRole(User::MANAGER);
         $role->addChild(User::CONSULTANT);
         $role->addChild('company/grid');
@@ -160,6 +177,7 @@ class _CUserIdentity extends CUserIdentity
         $role->addChild(User::MANAGER);
         $role->addChild('expense/deleteWhenInvoiceSet');
         $role->addChild('time/deleteWhenInvoiceSet');
+        $role->addChild('user/update');
         // assign user his access type as role
         $auth->assign($user->accessType,$user->id);
         // last step. save

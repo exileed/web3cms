@@ -368,8 +368,11 @@ body.w3-layout-sidebar1-content-sidebar2 {}
     padding: .3em 1em;
 }
 .w3-form-row-input .w3-input-button.w3-button-big {
-    font-size: 1.5em;
+    font-size: 1.5em; /*10*1.5=15*/
     padding: .4em 1.1em;
+}
+.w3-form-row-input .w3-form-row-text .w3-input-button.w3-button-big {
+    font-size: 1.25em; /*10*1.2*1.25=15*/
 }
 
 

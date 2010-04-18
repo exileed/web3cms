@@ -8,21 +8,28 @@
 <?php MLinkList::set('sidebar',array(
     'links'=>array(
         array(
-            'text'=>$me ? Yii::t('link','Show my profile') : Yii::t('link','Show member'),
-            'url'=>($me && !$idIsSpecified) ? array('show') : array('show','id'=>$model->id),
+            'text'=>Yii::t('link','Show my profile'),
+            'url'=>!$pkIsPassed ? array('show') : array('show','id'=>$model->id),
             'icon'=>'person',
+            'visible'=>$isMe,
         ),
         array(
             'text'=>Yii::t('link','Edit my profile'),
-            'url'=>array('update'),
+            'url'=>!$pkIsPassed ? array('update') : array('update','id'=>$model->id),
             'icon'=>'pencil',
-            'visible'=>$me,
+            'visible'=>$isMe,
+        ),
+        array(
+            'text'=>Yii::t('link','Show member'),
+            'url'=>array('show','id'=>$model->id),
+            'icon'=>'person',
+            'visible'=>!$isMe && (User::isManager() || User::isAdministrator()),
         ),
         array(
             'text'=>Yii::t('link','Edit member\'s profile'),
             'url'=>array('update','id'=>$model->id),
             'icon'=>'pencil',
-            'visible'=>!$me && User::isAdministrator(),
+            'visible'=>!$isMe && User::isAdministrator(),
         ),
         array(
             'text'=>Yii::t('link','List of members'),
@@ -53,16 +60,16 @@
         ),
         array(
             'text'=>Yii::t('link','My profile'),
-            'url'=>$idIsSpecified ? array('show','id'=>$model->id) : array('show'),
-            'visible'=>$me,
+            'url'=>$pkIsPassed ? array('show','id'=>$model->id) : array('show'),
+            'visible'=>$isMe,
         ),
         array(
             'text'=>Yii::t('link','"{screenName}" member',array('{screenName}'=>$model->screenName)),
             'url'=>array('show','id'=>$model->id),
-            'visible'=>!$me,
+            'visible'=>!$isMe,
         ),
         array(
-            'url'=>array($this->action->id),
+            'url'=>($isMe&&!$pkIsPassed) ? array($this->action->id) : array($this->action->id,'id'=>$model->id),
             'active'=>true,
         ),
     ),
@@ -81,7 +88,12 @@
 </div>
 <div class="w3-form-row">
   <div class="w3-form-row-input w3-form-row-2columns w3-center">
-    <?php echo _CHtml::submitButton(Yii::t('link','Apply selected user interface'),array('class'=>'w3-input-button w3-button-big ui-state-default ui-corner-all'))."\n"; ?>
+    <div class="w3-form-row-text">
+      <?php echo Yii::t('hint','{saveButton} or {cancelLink}',array(
+          '{saveButton}'=>_CHtml::submitButton(Yii::t('link','Apply selected user interface'),array('class'=>'w3-input-button w3-button-big ui-state-default ui-corner-all')),
+          '{cancelLink}'=>CHtml::link(Yii::t('link','Cancel[form]'),($isMe && !$pkIsPassed) ? array('show') : array('show','id'=>$model->id)),
+      ))."\n"; ?>
+    </div>
   </div>
   <div class="clear">&nbsp;</div>
 </div>

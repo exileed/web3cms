@@ -29,12 +29,16 @@ class UserController extends _CController
                 //'actions'=>array('login'),
                 //'users'=>array('@'),
             //),
-            array('allow', // allow all users to perform 'captcha', 'confirmEmail', 'grid', 'gridData', 'list', 'login', 'logout', 'register' and 'show' actions
-                'actions'=>array('captcha','confirmEmail','grid','gridData','list','login','logout','register','show'),
+            array('allow', // allow all users to perform 'captcha', 'confirmEmail', 'login', 'logout', 'register' and 'show' actions
+                'actions'=>array('captcha','confirmEmail','login','logout','register','show'),
                 'users'=>array('*'),
             ),
-            array('allow', // allow authenticated user to perform 'create', 'update' and 'updateInterface' actions
-                'actions'=>array('create','update','updateInterface'),
+            array('allow', // following actions are checked by {@link checkAccessBeforeAction}
+                'actions'=>array('grid','gridData','list','update'),
+                'users'=>array('*'),
+            ),
+            array('allow', // allow authenticated user to perform 'create' and 'updateInterface' actions
+                'actions'=>array('create','updateInterface'),
                 'users'=>array('@'),
             ),
             array('deny',  // deny all users
@@ -56,6 +60,30 @@ class UserController extends _CController
                 'backColor'=>0xFFFFFF,
             ),
         );
+    }
+
+    /**
+     * Returns id of the model that should be now loaded.
+     * @return mixed int or numeric string of the model to be loaded or null.
+     */
+    public function loadModelId()
+    {
+        if(isset($_GET['id']))
+            $id=$_GET['id'];
+        else if(!Yii::app()->user->isGuest)
+            $id=Yii::app()->user->id;
+        else
+            $id=null;
+        return $id;
+    }
+
+    /**
+     * Returns array of associated records which this model should be loaded with.
+     * @return array of models to load this model with. 
+     */
+    public function loadModelWith()
+    {
+        return array('details');
     }
 
     /**
@@ -406,34 +434,31 @@ class UserController extends _CController
      */
     public function actionShow()
     {
-        $me=(isset($_GET['id']) && (Yii::app()->user->isGuest || $_GET['id']!==Yii::app()->user->id)) ? false : true;
-        $id=$me ? Yii::app()->user->id : $_GET['id'];
-        $model=$this->loadModel(array('id'=>$id,'with'=>array('details')),false);
-        if($model!==null)
+        $pkIsPassed=isset($_GET['id']);
+        if(($model=$this->loadModel())===null)
         {
-            // loaded user is me?
-            $myModel=!Yii::app()->user->isGuest && Yii::app()->user->id===$model->id;
-            if(!$myModel && !User::isManager() && !User::isAdministrator())
-            {
-                // not enough rights
-                MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse members.'));
-                $this->redirect($this->getGotoUrl());
-            }
-            // render the view file
-            $this->render($this->action->id,array('model'=>$model,'me'=>$me));
-        }
-        else
-        {
-            if(!isset($_GET['id']) && Yii::app()->user->isGuest)
+            // model not found
+            if(!$pkIsPassed && Yii::app()->user->isGuest)
             {
                 // visitor requested his member page, but he is not logged in
-                MUserFlash::setTopError(Yii::t('hint','Please, authorize.'));
+                MUserFlash::setTopError(Yii::t('hint','Your session has expired. Please authorize.'));
                 Yii::app()->user->loginRequired();
             }
             else
                 // just show a message if model is not found
-                $this->render('showNone');
+                $this->render('notFound');
+            return false;
         }
+        $isMe=Yii::app()->user->id===$model->id;
+        // loaded user is me?
+        if(!$isMe && !User::isManager() && !User::isAdministrator())
+        {
+            // not enough rights
+            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse members.'));
+            $this->redirect($this->getGotoUrl());
+        }
+        // render the view file
+        $this->render($this->action->id,array('model'=>$model,'isMe'=>$isMe,'pkIsPassed'=>$pkIsPassed));
     }
 
     /**
@@ -443,20 +468,14 @@ class UserController extends _CController
      */
     public function actionUpdate()
     {
-        $idIsSpecified=isset($_GET['id']);
-        // whether it's me. alternative: admin update member's account.
-        $me=($idIsSpecified && $_GET['id']!==Yii::app()->user->id) ? false : true;
-        $id=$me ? Yii::app()->user->id : $_GET['id'];
-        // load model. if model doesn't exist, throw an http exception
-        $model=$this->loadModel(array('id'=>$id,'with'=>array('details')));
-        // loaded user is me?
-        $myModel=!Yii::app()->user->isGuest && Yii::app()->user->id===$model->id;
-        if(!$myModel && !User::isAdministrator())
+        $pkIsPassed=isset($_GET['id']);
+        if(($model=$this->loadModel())===null)
         {
-            // not enough rights
-            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to edit a member account.'));
+            // model not found
+            MUserFlash::setTopError(Yii::t('modelNotFound',$this->id));
             $this->redirect($this->getGotoUrl());
         }
+        $isMe=Yii::app()->user->id===$model->id;
         // explicitly set model scenario to be current action
         //$model->setScenario($this->action->id);
         //if(is_object($model->details))
@@ -471,9 +490,9 @@ class UserController extends _CController
             // validate with the current action as scenario and save without validation
             if(($validated=$model->validate())!==false && ($saved=$model->save(false))!==false)
             {
-                // update variables first defined in {@link _CUserIdentity} class
-                if($me)
+                if($isMe)
                 {
+                    // update variables previously defined in {@link _CUserIdentity} class
                     // update user states in the session for {@link _CController::init}
                     Yii::app()->user->setState('language',$model->language);
                     // update user screenName, so we continue calling visitor right, 
@@ -505,20 +524,20 @@ class UserController extends _CController
                         {
                             // set success message
                             MUserFlash::setTopSuccess(Yii::t('hint',
-                                $me ?
+                                $isMe ?
                                     '{screenName}, your profile has been updated.' :
                                     'The member account "{screenName}" has been updated.'
                                 ,
                                 array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                             ));
                             // go to 'show' page
-                            $this->redirect($me ? array('show') : array('show','id'=>$model->id));
+                            $this->redirect(($isMe&&!$pkIsPassed) ? array('show') : array('show','id'=>$model->id));
                         }
                         else
                         {
                             // set error message
                             MUserFlash::setTopError(Yii::t('hint',
-                                $me ?
+                                $isMe ?
                                     'Error! {screenName}, your profile could not be updated.' :
                                     'Error! The member account "{screenName}" could not be updated.'
                                 ,
@@ -536,7 +555,7 @@ class UserController extends _CController
             {
                 // set error message
                 MUserFlash::setTopError(Yii::t('hint',
-                    $me ?
+                    $isMe ?
                         'Error! {screenName}, your profile could not be updated.' :
                         'Error! The member account "{screenName}" could not be updated.'
                     ,
@@ -549,7 +568,7 @@ class UserController extends _CController
             }
         }
         // display the update form
-        $this->render($this->action->id,array('model'=>$model,'me'=>$me,'idIsSpecified'=>$idIsSpecified));
+        $this->render($this->action->id,array('model'=>$model,'isMe'=>$isMe,'pkIsPassed'=>$pkIsPassed));
     }
 
     /**
@@ -559,15 +578,11 @@ class UserController extends _CController
      */
     public function actionUpdateInterface()
     {
-        $idIsSpecified=isset($_GET['id']);
-        // whether it's me. alternative: admin update member's account.
-        $me=($idIsSpecified && $_GET['id']!==Yii::app()->user->id) ? false : true;
-        $id=$me ? Yii::app()->user->id : $_GET['id'];
-        // load model. if model doesn't exist, throw an http exception
-        $model=$this->loadModel(array('id'=>$id,'with'=>array('details')));
+        $pkIsPassed=isset($_GET['id']);
+        $model=$this->loadModel();
+        $isMe=$model!==null && Yii::app()->user->id===$model->id;
         // loaded user is me?
-        $myModel=!Yii::app()->user->isGuest && Yii::app()->user->id===$model->id;
-        if(!$myModel && !User::isAdministrator())
+        if(!$isMe && !User::isAdministrator())
         {
             // not enough rights
             MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to change the user interface for a member account.'));
@@ -588,7 +603,7 @@ class UserController extends _CController
                 // take care of updateTime (this is not critical)
                 $model->details->saveAttributes(array('updateTime'=>time()));
                 // update variables first defined in {@link _CUserIdentity} class
-                if($me)
+                if($isMe)
                 {
                     // update user states in the session for {@link _CController::init}
                     Yii::app()->user->setState('interface',$model->interface);
@@ -600,20 +615,20 @@ class UserController extends _CController
                 }
                 // set success message
                 MUserFlash::setTopSuccess(Yii::t('hint',
-                    $me ?
+                    $isMe ?
                         '{screenName}, new user interface has been applied.' :
                         'The user interface for member account "{screenName}" has been updated.'
                     ,
                     array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                 ));
                 // go to 'show' page
-                $this->redirect($me ? array('show') : array('show','id'=>$model->id));
+                $this->redirect($isMe ? array('show') : array('show','id'=>$model->id));
             }
             else if($validated && !$saved)
             {
                 // set error message
                 MUserFlash::setTopError(Yii::t('hint',
-                    $me ?
+                    $isMe ?
                         'Error! {screenName}, new user interface could not be applied.' :
                         'Error! The user interface for member account "{screenName}" could not be updated.'
                     ,
@@ -626,7 +641,7 @@ class UserController extends _CController
             }
         }
         // display the update form
-        $this->render($this->action->id,array('model'=>$model,'me'=>$me,'idIsSpecified'=>$idIsSpecified));
+        $this->render($this->action->id,array('model'=>$model,'isMe'=>$isMe,'pkIsPassed'=>$pkIsPassed));
     }
 
     /**

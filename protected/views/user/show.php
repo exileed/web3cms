@@ -1,27 +1,27 @@
-<?php MParams::setPageLabel($me ? Yii::t('page','View my profile') : Yii::t('page','View "{screenName}" member',array('{screenName}'=>$model->screenName))); ?>
+<?php MParams::setPageLabel($isMe ? Yii::t('page','View my profile') : Yii::t('page','View "{screenName}" member',array('{screenName}'=>$model->screenName))); ?>
 <?php MLinkList::set('sidebar',array(
     'links'=>array(
         array(
             'text'=>Yii::t('link','Edit my profile'),
-            'url'=>array('update'),
+            'url'=>!$pkIsPassed ? array('update') : array('update','id'=>$model->id),
             'icon'=>'pencil',
-            'visible'=>$me,
+            'visible'=>$isMe,
         ),
         array(
             'text'=>Yii::t('link','Change interface'),
-            'url'=>array('updateInterface'),
-            'visible'=>$me,
+            'url'=>!$pkIsPassed ? array('updateInterface') : array('updateInterface','id'=>$model->id),
+            'visible'=>$isMe,
         ),
         array(
             'text'=>Yii::t('link','Edit member\'s profile'),
             'url'=>array('update','id'=>$model->id),
             'icon'=>'pencil',
-            'visible'=>!$me && User::isAdministrator(),
+            'visible'=>!$isMe && User::isAdministrator(),
         ),
         array(
             'text'=>Yii::t('link','Change interface'),
             'url'=>array('updateInterface','id'=>$model->id),
-            'visible'=>!$me && User::isAdministrator(),
+            'visible'=>!$isMe && User::isAdministrator(),
         ),
         array(
             'text'=>Yii::t('link','List of members'),
@@ -51,7 +51,7 @@
             'active'=>false,
         ),
         array(
-            'url'=>$me ?
+            'url'=>($isMe&&!$pkIsPassed) ?
                 array($this->action->id) :
                 array($this->action->id,'id'=>$model->id)
             ,
@@ -61,8 +61,8 @@
 )); ?>
 <div class="w3-detail-box ui-widget-content ui-corner-all">
 
-<?php if($me || User::isAdministrator()): ?>
-<?php if(!$me): ?>
+<?php if($isMe || User::isAdministrator()): ?>
+<?php if(!$isMe): ?>
 <div class="w3-detail-row<?php echo $this->var->isNotW3First ? '' : ' w3-first'; ?>">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->getAttributeLabel('isActive')); ?></div>
   <div class="w3-detail-row-value"><?php echo CHtml::encode($model->getAttributeView('isActive')); ?></div>
@@ -102,7 +102,7 @@
   <div class="w3-detail-row-value"><?php echo CHtml::encode($model->details->initials); ?></div>
   <div class="clear">&nbsp;</div>
 </div>
-<?php if($me): ?>
+<?php if($isMe): ?>
 <div class="w3-detail-row">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->getAttributeLabel('language')); ?></div>
   <div class="w3-detail-row-value"><?php echo CHtml::encode($model->getAttributeView('language')); ?></div>
@@ -114,7 +114,7 @@
   <div class="clear">&nbsp;</div>
 </div>
 <?php endif; ?>
-<?php if($me || User::isAdministrator()): ?>
+<?php if($isMe || User::isAdministrator()): ?>
 <div class="w3-detail-row">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->getAttributeLabel('accessType')); ?></div>
   <div class="w3-detail-row-value"><?php echo CHtml::encode($model->getAttributeView('accessType')); ?></div>
@@ -153,20 +153,20 @@
   <div class="clear">&nbsp;</div>
 </div>
 <?php endif; ?>
-<?php endif; /*end if me || admin*/ ?>
+<?php endif; /*end if isMe || admin*/ ?>
 <div class="w3-detail-row">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->getAttributeLabel('createTime')); ?></div>
   <div class="w3-detail-row-value"><?php echo CHtml::encode(MDate::format($model->createTime,'full')); ?></div>
   <div class="clear">&nbsp;</div>
 </div>
-<?php if(($me || User::isAdministrator())/* && $model->details->updateTime*/): ?>
+<?php if(($isMe || User::isAdministrator())/* && $model->details->updateTime*/): ?>
 <div class="w3-detail-row">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->details->getAttributeLabel('updateTime')); ?></div>
   <div class="w3-detail-row-value"><?php echo CHtml::encode(MDate::format($model->details->updateTime,'full')); ?></div>
   <div class="clear">&nbsp;</div>
 </div>
 <?php endif; ?>
-<?php if($model->hasVirtualAttribute('id') && ($me || User::isAdministrator())): ?>
+<?php if($model->hasVirtualAttribute('id') && ($isMe || User::isAdministrator())): ?>
 <div class="w3-detail-row">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->getAttributeLabel('id')); ?></div>
   <div class="w3-detail-row-value"><?php echo CHtml::encode($model->id); ?></div>

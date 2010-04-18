@@ -62,6 +62,7 @@ class _CController extends CController
      * Performs access check before action is executed.
      * If access is denied - redirect to an appropriate page or display an empty screen.
      * See {@link getCheckAccessOnActions} for the list of actions to check access for.
+     * @param CAction the action to be executed.
      */
     public function checkAccessBeforeAction()
     {
@@ -76,7 +77,7 @@ class _CController extends CController
                 ($a['request']==='post' && Yii::app()->request->isPostRequest)
             )
             {
-                // define route variable
+                // define route and other variables
                 if(!isset($a['route']) &&
                     (isset($a['moduleId']) || isset($a['controllerId']) || isset($a['actionId']))
                 )
@@ -90,8 +91,14 @@ class _CController extends CController
                 }
                 else
                     $route=isset($a['route'])?$a['route']:$this->route;
+                $params=(isset($a['params'])&&is_array($a['params']))?$a['params']:array();
+                foreach($params as $key=>$value)
+                {
+                    if(isset($value['call_user_func']))
+                        $params[$key]=call_user_func(array($this,$value['call_user_func']));
+                }
                 // use power of rbac. see {@link _CUserIdentity::authorize} for assignment
-                if(!Yii::app()->user->checkAccess($route))
+                if(!Yii::app()->user->checkAccess($route,$params))
                 {
                     // access denied
                     // define error message variable
@@ -124,8 +131,8 @@ class _CController extends CController
                     {
                         // set error message. should be displayed when redirect will be completed
                         MUserFlash::setTopError($message);
-                        // redirect now to either user/show or to a more appropriate page
-                        Yii::app()->request->redirect($this->getGotoUrl());
+                        // redirect now to user/login, user/show or to a more appropriate page
+                        $this->redirect($this->getGotoUrl());
                     }
                 }
             }
@@ -145,97 +152,188 @@ class _CController extends CController
             'grid'=>'',
             'gridData'=>array('actionId'=>'grid','do'=>'exit'),
             'list'=>'',
+            'update'=>array('params'=>array('model'=>array('call_user_func'=>'loadModel'))),
         );
         return $retval;
     }
 
     /**
-     * Returns the URL of where now to go.
-     * @return array action route.
+     * Returns the data model based on the primary key given in the GET variable.
+     * If the data model is not found, an HTTP exception will be raised.
+     * @param array of parameters
+     * @param boolean whether throw exception if model is not found
      */
-    public function getGotoUrl()
+    public function loadModel($params=array(),$throwException=null)
     {
-        $controller=$this->id;
-        $action=$this->action->id;
+        if($this->_model===null)
+        {
+            // processing parameters
+            if(ctype_digit($params))
+                $id=$params;
+            else if(isset($params['id']))
+                $id=$params['id'];
+            else
+                $id=$this->loadModelId();
+            $with=(isset($params['with'])&&$params['with']!==null) ? $params['with'] : $this->loadModelWith();
+            if($throwException===null)
+                $throwException=$this->loadModelThrowException();
+            // load the model
+            if($id!==null)
+            {
+                // calculate model name. e.g. for 'UserController' model should be 'User'
+                $class=get_class($this);
+                $modelName=isset($this->modelName) ? $this->modelName : null;
+                if($modelName===null)
+                    $modelName=substr($class,-10)==='Controller' ? substr($class,0,strlen($class)-10) : $class;
+                if(file_exists(Yii::app()->basePath.'/models/'.$modelName.'.php'))
+                {
+                    // find model by primary key
+                    $ar=call_user_func(array($modelName,'model'));
+                    if($with===array())
+                        $this->_model=$ar->findByPk($id);
+                    else
+                        $this->_model=$ar->with($with)->findByPk($id);
+                }
+                else
+                    // error - model class file is missing
+                    Yii::log(W3::t('system',
+                        'Class {class} does not exist. Method called: {method}.',
+                        array(
+                            '{class}'=>$modelName,
+                            '{method}'=>get_class($this).'->'.__FUNCTION__.'()'
+                        )
+                    ),'warning','w3');
+            }
+            if($this->_model===null && $throwException)
+                // if model is not found - throw 404
+                throw new CHttpException(404,'The requested page does not exist.');
+        }
+        return $this->_model;
+    }
+
+    /**
+     * Returns id of the model that should be now loaded.
+     * Is invoked by {@link loadModel}.
+     * @return mixed int or numeric string of the model to be loaded or null.
+     */
+    public function loadModelId()
+    {
+        if(isset($_GET['id']))
+            $id=$_GET['id'];
+        else
+            $id=null;
+        return $id;
+    }
+
+    /**
+     * Returns array of associated records which this model should be loaded with.
+     * Is invoked by {@link loadModel}.
+     * @return array of models to load this model with. 
+     */
+    public function loadModelWith()
+    {
+        return array();
+    }
+
+    /**
+     * Returns boolean whether throw 404 http exception if model is not loaded.
+     * Is invoked by {@link loadModel}.
+     * @return boolean whether throw exception on model not loaded. 
+     */
+    public function loadModelThrowException()
+    {
+        return false;
+    }
+
+    /**
+     * Returns the URL of where now to go.
+     * @return array action route or string url.
+     */
+    public function getGotoUrl($params=array())
+    {
+        // set variables
+        $controllerId=$this->id;
+        $actionId=$this->action->id;
         $defaultUrl=array('user/show');
-        $controllerUrl=array($controller.'/');
+        $controllerUrl=array($controllerId.'/');
         // return url based on the current controller and the action being executed
-        if($controller==='site' && $action==='index')
+        if($controllerId==='site' && $actionId==='index')
             $retval=Yii::app()->user->isGuest ? Yii::app()->user->loginUrl : $defaultUrl;
-        else if($controller==='company' && $action==='grid')
+        else if($controllerId==='company' && $actionId==='grid')
             $retval=$this->_getGotoUrl($defaultUrl);
-        else if($controller==='company' && $action==='show')
+        else if($controllerId==='company' && $actionId==='show')
         {
             if(!Yii::app()->user->isGuest)
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
-        else if($controller==='companyPayment' && $action==='show')
+        else if($controllerId==='companyPayment' && $actionId==='show')
         {
             if(!Yii::app()->user->isGuest)
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
-        else if($controller==='expense' && $action==='delete')
+        else if($controllerId==='expense' && $actionId==='delete')
             $retval=$controllerUrl;
-        else if($controller==='expense' && $action==='show')
+        else if($controllerId==='expense' && $actionId==='show')
         {
             if(!Yii::app()->user->isGuest)
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
-        else if($controller==='expense' && $action==='update')
+        else if($controllerId==='expense' && $actionId==='update')
             $retval=$controllerUrl;
-        else if($controller==='invoice' && $action==='create')
+        else if($controllerId==='invoice' && $actionId==='create')
             $retval=$controllerUrl;
-        else if($controller==='invoice' && $action==='show')
+        else if($controllerId==='invoice' && $actionId==='show')
         {
             if(!Yii::app()->user->isGuest)
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
-        else if($controller==='invoice' && $action==='update')
+        else if($controllerId==='invoice' && $actionId==='update')
             $retval=$controllerUrl;
-        else if($controller==='project' && $action==='grid')
+        else if($controllerId==='project' && $actionId==='grid')
             $retval=$this->_getGotoUrl($defaultUrl);
-        else if($controller==='project' && $action==='show')
+        else if($controllerId==='project' && $actionId==='show')
+        {
+            //if(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator())
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
+        }
+        else if($controllerId==='task' && $actionId==='grid')
+            $retval=$this->_getGotoUrl($defaultUrl);
+        else if($controllerId==='task' && $actionId==='show')
         {
             if(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator())
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
-        else if($controller==='task' && $action==='grid')
+        else if($controllerId==='time' && $actionId==='delete')
+            $retval=$controllerUrl;
+        else if($controllerId==='time' && $actionId==='grid')
             $retval=$this->_getGotoUrl($defaultUrl);
-        else if($controller==='task' && $action==='show')
+        else if($controllerId==='time' && $actionId==='show')
         {
             if(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator())
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
-        else if($controller==='time' && $action==='delete')
+        else if($controllerId==='time' && $actionId==='update')
             $retval=$controllerUrl;
-        else if($controller==='time' && $action==='grid')
+        else if($controllerId==='user' && $actionId==='create')
+            $retval=$controllerUrl;
+        else if($controllerId==='user' && $actionId==='grid')
             $retval=$this->_getGotoUrl($defaultUrl);
-        else if($controller==='time' && $action==='show')
-        {
-            if(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator())
-                $retval=$controllerUrl;
-            else
-                $retval=$this->_getGotoUrl($defaultUrl);
-        }
-        else if($controller==='time' && $action==='update')
-            $retval=$controllerUrl;
-        else if($controller==='user' && $action==='create')
-            $retval=$controllerUrl;
-        else if($controller==='user' && $action==='grid')
-            $retval=$this->_getGotoUrl($defaultUrl);
-        else if($controller==='user' && $action==='login')
+        else if($controllerId==='user' && $actionId==='login')
         {
             if(Yii::app()->user->returnUrl!==null &&
                 // hmm... {@link CWebUser::getReturnUrl} returns scriptUrl if returnUrl is not set
@@ -259,27 +357,29 @@ class _CController extends CController
             else
                 $retval=$defaultUrl;
         }
-        else if($controller==='user' && $action==='logout')
+        else if($controllerId==='user' && $actionId==='logout')
             $retval=Yii::app()->user->loginUrl;
-        else if($controller==='user' && $action==='register')
+        else if($controllerId==='user' && $actionId==='register')
             $retval=Yii::app()->user->loginUrl;
-        else if($controller==='user' && $action==='show')
+        else if($controllerId==='user' && $actionId==='show')
         {
-            if(User::isManager() || User::isAdministrator())
+            //if(User::isManager() || User::isAdministrator())
+            // is there a way to replace 'grid' with $defaultAction?
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
-        else if($controller==='user' && $action==='update')
+        else if($controllerId==='user' && $actionId==='update')
         {
-            if(User::isManager() || User::isAdministrator())
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
-        else if($controller==='user' && $action==='updateInterface')
+        else if($controllerId==='user' && $actionId==='updateInterface')
         {
-            if(User::isManager() || User::isAdministrator())
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
@@ -354,75 +454,6 @@ class _CController extends CController
     }
 
     /**
-     * Returns the data model based on the primary key given in the GET variable.
-     * If the data model is not found, an HTTP exception will be raised.
-     * @param array of parameters
-     * @param boolean whether throw exception if model is not found
-     */
-    public function loadModel($parameters=array(),$throwException=true)
-    {
-        if($this->_model===null)
-        {
-            // processing parameters
-            if(ctype_digit($parameters))
-                $id=$parameters;
-            else if(isset($parameters['id']))
-                $id=$parameters['id'];
-            else if(isset($_GET['id']))
-                $id=$_GET['id'];
-            else
-                $id=null;
-            $with=isset($parameters['with']) ? $parameters['with'] : null;
-            // load the model
-            if($id!==null)
-            {
-                $modelName=isset($this->modelName)?$this->modelName:str_replace('Controller','',get_class($this));
-                if(file_exists(Yii::app()->basePath.'/models/'.$modelName.'.php'))
-                {
-                    $ar=call_user_func(array($modelName,'model'));
-                    if($with===null)
-                        $this->_model=$ar->findByPk($id);
-                    else
-                        $this->_model=$ar->with($with)->findByPk($id);
-                }
-                else
-                    Yii::log(W3::t('system',
-                        'Class {class} does not exist. Method called: {method}.',
-                        array(
-                            '{class}'=>$modelName,
-                            '{method}'=>get_class($this).'->'.__FUNCTION__.'()'
-                        )
-                    ),'warning','w3');
-            }
-            if($throwException && $this->_model===null)
-                // if model is not found - throw 404
-                throw new CHttpException(404,'The requested page does not exist.');
-        }
-        return $this->_model;
-    }
-
-    /**
-     * Print out the data in the json format.
-     * @param array of data
-     */
-    public function printJson($data)
-    {
-        if(!headers_sent())
-            header('Content-type: application/json');
-        echo json_encode($data);
-    }
-
-    /**
-     * Print out the data in the json format and exit.
-     * @param array of data
-     */
-    public function printJsonExit($data)
-    {
-        $this->printJson($data);
-        exit;
-    }
-
-    /**
      * Process jqGrid request. jqGrid is specifying query details using the POST request.
      * page - page number
      * rows - page size
@@ -450,5 +481,26 @@ class _CController extends CController
         if($jqGrid['sort']!==null)
             $_GET['sort']=$jqGrid['sort'];
         return $jqGrid;
+    }
+
+    /**
+     * Print out the data in the json format.
+     * @param array of data
+     */
+    public function printJson($data)
+    {
+        if(!headers_sent())
+            header('Content-type: application/json');
+        echo json_encode($data);
+    }
+
+    /**
+     * Print out the data in the json format and exit.
+     * @param array of data
+     */
+    public function printJsonExit($data)
+    {
+        $this->printJson($data);
+        exit;
     }
 }

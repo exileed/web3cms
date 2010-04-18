@@ -14,6 +14,7 @@ $retval=array(
     'time/deleteWhenInvoiceSet' => 'Access denied. We are sorry, but you don\'t have enough rights to delete a time record associated with an invoice.',
     'time/grid' => 'Access denied. We are sorry, but you don\'t have enough rights to browse the time records.',
     'user/grid' => 'Access denied. We are sorry, but you don\'t have enough rights to browse members.',
+    'user/update' => 'Access denied. We are sorry, but you don\'t have enough rights to edit a member account.',
 );
 $myfile=dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'mycustom'.DIRECTORY_SEPARATOR.basename(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.basename(dirname(__FILE__)).DIRECTORY_SEPARATOR.basename(__FILE__);
 return (file_exists($myfile) && is_array($myarray=require($myfile))) ? CMap::mergeArray($retval,$myarray) : $retval;

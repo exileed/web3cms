@@ -113,7 +113,9 @@ class _CUserIdentity extends CUserIdentity
         $auth->createOperation('companyPayment/grid','browse company payment grid');
         $auth->createOperation('companyPayment/list','browse company payment list');
         $auth->createOperation('expense/delete','delete expense record');
-        $auth->createOperation('expense/deleteWhenInvoiceSet','delete expense record associated with an invoice');
+        $bizRule='return is_object($params["model"]) && $params["model"]->invoiceId==0;';
+        $task=$auth->createTask('expense/deleteWhenInvoiceIsNotSet','delete expense record not associated with any invoice yet',$bizRule);
+        $task->addChild('expense/delete');
         $auth->createOperation('expense/grid','browse expense grid');
         $auth->createOperation('expense/list','browse expense list');
         $auth->createOperation('invoice/grid','browse invoice grid');
@@ -123,7 +125,9 @@ class _CUserIdentity extends CUserIdentity
         $auth->createOperation('task/grid','browse task grid');
         $auth->createOperation('task/list','browse task list');
         $auth->createOperation('time/delete','delete time record');
-        $auth->createOperation('time/deleteWhenInvoiceSet','delete time record associated with an invoice');
+        $bizRule='return is_object($params["model"]) && $params["model"]->invoiceId==0;';
+        $task=$auth->createTask('time/deleteWhenInvoiceIsNotSet','delete time record not associated with any invoice yet',$bizRule);
+        $task->addChild('time/delete');
         $auth->createOperation('time/grid','browse time grid');
         $auth->createOperation('time/list','browse time list');
         $auth->createOperation('user/grid','browse user grid');
@@ -165,18 +169,18 @@ class _CUserIdentity extends CUserIdentity
         $role->addChild('company/list');
         $role->addChild('companyPayment/grid');
         $role->addChild('companyPayment/list');
-        $role->addChild('expense/delete');
+        $role->addChild('expense/deleteWhenInvoiceIsNotSet');
         $role->addChild('expense/grid');
         $role->addChild('expense/list');
         $role->addChild('invoice/grid');
         $role->addChild('invoice/list');
-        $role->addChild('time/delete');
+        $role->addChild('time/deleteWhenInvoiceIsNotSet');
         $role->addChild('user/grid');
         $role->addChild('user/list');
         $role=$auth->createRole(User::ADMINISTRATOR);
         $role->addChild(User::MANAGER);
-        $role->addChild('expense/deleteWhenInvoiceSet');
-        $role->addChild('time/deleteWhenInvoiceSet');
+        $role->addChild('expense/delete');
+        $role->addChild('time/delete');
         $role->addChild('user/update');
         // assign user his access type as role
         $auth->assign($user->accessType,$user->id);

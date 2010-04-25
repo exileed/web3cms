@@ -84,13 +84,23 @@ class _CController extends CController
                 {
                     $routeA=array();
                     if(isset($a['moduleId']) || $this->module)
-                        $routeA[]=isset($a['moduleId'])?$a['moduleId']:$this->module->id;
-                    $routeA[]=isset($a['controllerId'])?$a['controllerId']:$this->id;
-                    $routeA[]=isset($a['actionId'])?$a['actionId']:$this->action->id;
+                        $routeA['moduleId']=isset($a['moduleId'])?$a['moduleId']:$this->module->id;
+                    $routeA['controllerId']=isset($a['controllerId'])?$a['controllerId']:$this->id;
+                    $routeA['actionId']=isset($a['actionId'])?$a['actionId']:$this->action->id;
                     $route=implode('/',$routeA);
                 }
                 else
                     $route=isset($a['route'])?$a['route']:$this->route;
+                if(!isset($routeA))
+                {
+                    // attempt to generate access route
+                    $routeT=explode('/',$route);
+                    if(count($routeT)==2)
+                        $routeA=array('controllerId'=>$routeT[0],'actionId'=>$routeT[1]);
+                    else if(count($routeT)==3)
+                        $routeA=array('moduleId'=>$routeT[0],'controllerId'=>$routeT[1],'actionId'=>$routeT[2]);
+                    unset($routeT);
+                }
                 $params=(isset($a['params'])&&is_array($a['params']))?$a['params']:array();
                 foreach($params as $key=>$value)
                 {
@@ -106,12 +116,26 @@ class _CController extends CController
                         (isset($a['messageModuleId']) || isset($a['messageControllerId']) || isset($a['messageActionId']))
                     )
                     {
-                        $routeA=array();
+                        $routeM=array();
                         if(isset($a['messageModuleId']) || $this->module)
-                            $routeA[]=isset($a['messageModuleId'])?$a['messageModuleId']:$this->module->id;
-                        $routeA[]=isset($a['messageControllerId'])?$a['messageControllerId']:$this->id;
-                        $routeA[]=isset($a['messageActionId'])?$a['messageActionId']:$this->action->id;
-                        $messageRoute=implode('/',$routeA);
+                            $routeM['messageModuleId']=isset($a['messageModuleId'])?$a['messageModuleId']:(isset($routeA['moduleId'])?$routeA['moduleId']:$this->module->id);
+                        $routeM['messageControllerId']=isset($a['messageControllerId'])?$a['messageControllerId']:(isset($routeA['controllerId'])?$routeA['controllerId']:$this->id);
+                        if(isset($a['messageActionId']))
+                        {
+                            if(is_array($a['messageActionId']))
+                            {
+                                foreach($a['messageActionId'] as $id=>$bizRule)
+                                {
+                                    if(empty($bizRule) || @eval($bizRule)!=0)
+                                        $routeM['messageActionId']=$id;
+                                }
+                            }
+                            else
+                                $routeM['messageActionId']=$a['messageActionId'];
+                        }
+                        if(!isset($routeM['messageActionId']))
+                            $routeM['messageActionId']=isset($routeA['actionId'])?$routeA['actionId']:$this->action->id;
+                        $messageRoute=implode('/',$routeM);
                     }
                     else
                         $messageRoute=isset($a['messageRoute'])?$a['messageRoute']:$route;
@@ -147,8 +171,13 @@ class _CController extends CController
     public function getCheckAccessOnActions()
     {
         $retval=array(
-            'ajaxDelete'=>array('request'=>'ajax','actionId'=>'delete','do'=>'json'),
-            'delete'=>'',
+            'ajaxDelete'=>array('request'=>'ajax','actionId'=>'delete','do'=>'json',
+            	'params'=>array('model'=>array('call_user_func'=>'loadModel')),
+            	'messageActionId'=>array('deleteWhenInvoiceIsSet'=>'return is_object($params["model"]) && $params["model"]->invoiceId>=1;'),
+            ),
+            'delete'=>array('params'=>array('model'=>array('call_user_func'=>'loadModel')),
+            	'messageActionId'=>array('deleteWhenInvoiceIsSet'=>'return is_object($params["model"]) && $params["model"]->invoiceId>=1;'),
+            ),
             'grid'=>'',
             'gridData'=>array('actionId'=>'grid','do'=>'exit'),
             'list'=>'',
@@ -220,6 +249,8 @@ class _CController extends CController
     {
         if(isset($_GET['id']))
             $id=$_GET['id'];
+        else if(isset($_POST['id']))
+            $id=$_POST['id'];
         else
             $id=null;
         return $id;
@@ -276,7 +307,11 @@ class _CController extends CController
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
         else if($controllerId==='expense' && $actionId==='delete')
-            $retval=$controllerUrl;
+            // is there a way to replace 'grid' with $defaultAction?
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='expense' && $actionId==='show')
         {
             if(!Yii::app()->user->isGuest)
@@ -285,9 +320,15 @@ class _CController extends CController
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
         else if($controllerId==='expense' && $actionId==='update')
-            $retval=$controllerUrl;
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='invoice' && $actionId==='create')
-            $retval=$controllerUrl;
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='invoice' && $actionId==='show')
         {
             if(!Yii::app()->user->isGuest)
@@ -296,12 +337,14 @@ class _CController extends CController
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
         else if($controllerId==='invoice' && $actionId==='update')
-            $retval=$controllerUrl;
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='project' && $actionId==='grid')
             $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='project' && $actionId==='show')
         {
-            //if(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator())
             if(Yii::app()->user->checkAccess($controllerId.'/grid'))
                 $retval=$controllerUrl;
             else
@@ -311,26 +354,35 @@ class _CController extends CController
             $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='task' && $actionId==='show')
         {
-            if(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator())
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
         else if($controllerId==='time' && $actionId==='delete')
-            $retval=$controllerUrl;
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='time' && $actionId==='grid')
             $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='time' && $actionId==='show')
         {
-            if(User::isClient() || User::isConsultant() || User::isManager() || User::isAdministrator())
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
                 $retval=$controllerUrl;
             else
                 $retval=$this->_getGotoUrl($defaultUrl);
         }
         else if($controllerId==='time' && $actionId==='update')
-            $retval=$controllerUrl;
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='user' && $actionId==='create')
-            $retval=$controllerUrl;
+            if(Yii::app()->user->checkAccess($controllerId.'/grid'))
+                $retval=$controllerUrl;
+            else
+                $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='user' && $actionId==='grid')
             $retval=$this->_getGotoUrl($defaultUrl);
         else if($controllerId==='user' && $actionId==='login')
@@ -363,8 +415,6 @@ class _CController extends CController
             $retval=Yii::app()->user->loginUrl;
         else if($controllerId==='user' && $actionId==='show')
         {
-            //if(User::isManager() || User::isAdministrator())
-            // is there a way to replace 'grid' with $defaultAction?
             if(Yii::app()->user->checkAccess($controllerId.'/grid'))
                 $retval=$controllerUrl;
             else

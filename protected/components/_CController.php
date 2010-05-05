@@ -173,15 +173,17 @@ class _CController extends CController
         $retval=array(
             'ajaxDelete'=>array('request'=>'ajax','actionId'=>'delete','do'=>'json',
             	'params'=>array('model'=>array('call_user_func'=>'loadModel')),
-            	'messageActionId'=>array('deleteWhenInvoiceIsSet'=>'return is_object($params["model"]) && $params["model"]->invoiceId>=1;'),
+            	'messageActionId'=>array('deleteWhenInvoiceIsSet'=>'return ($params["model"] instanceof Expense || $params["model"] instanceof Time) && $params["model"]->invoiceId>=1;'),
             ),
             'delete'=>array('params'=>array('model'=>array('call_user_func'=>'loadModel')),
-            	'messageActionId'=>array('deleteWhenInvoiceIsSet'=>'return is_object($params["model"]) && $params["model"]->invoiceId>=1;'),
+            	'messageActionId'=>array('deleteWhenInvoiceIsSet'=>'return ($params["model"] instanceof Expense || $params["model"] instanceof Time) && $params["model"]->invoiceId>=1;'),
             ),
             'grid'=>'',
             'gridData'=>array('actionId'=>'grid','do'=>'exit'),
             'list'=>'',
-            'update'=>array('params'=>array('model'=>array('call_user_func'=>'loadModel'))),
+            'update'=>array('params'=>array('model'=>array('call_user_func'=>'loadModel')),
+            	'messageActionId'=>array('updateWhenInvoiceIsSet'=>'return ($params["model"] instanceof Expense || $params["model"] instanceof Time) && $params["model"]->invoiceId>=1;'),
+            ),
         );
         return $retval;
     }

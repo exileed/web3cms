@@ -108,12 +108,15 @@ class _CUserIdentity extends CUserIdentity
         // step one. destroy rbac object from previous save
         $auth->clearAll();
         // describe existing operations
+        $auth->createOperation('company/create','create a company record');
         $auth->createOperation('company/grid','browse company grid');
         $auth->createOperation('company/list','browse company list');
         $auth->createOperation('company/update','update a company record');
+        $auth->createOperation('companyPayment/create','create a company payment record');
         $auth->createOperation('companyPayment/grid','browse company payment grid');
         $auth->createOperation('companyPayment/list','browse company payment list');
         $auth->createOperation('companyPayment/update','update a company payment record');
+        $auth->createOperation('expense/create','create an expense record');
         $auth->createOperation('expense/delete','delete an expense record');
         $bizRule='return is_object($params["model"]) && $params["model"]->invoiceId==0;';
         $task=$auth->createTask('expense/deleteWhenInvoiceIsNotSet','delete an expense record not associated with any invoice yet',$bizRule);
@@ -124,15 +127,19 @@ class _CUserIdentity extends CUserIdentity
         $bizRule='return is_object($params["model"]) && $params["model"]->invoiceId==0;';
         $task=$auth->createTask('expense/updateWhenInvoiceIsNotSet','update an expense record not associated with any invoice yet',$bizRule);
         $task->addChild('expense/update');
+        $auth->createOperation('invoice/create','create an invoice record');
         $auth->createOperation('invoice/grid','browse invoice grid');
         $auth->createOperation('invoice/list','browse invoice list');
         $auth->createOperation('invoice/update','update an invoice record');
+        $auth->createOperation('project/create','create a project record');
         $auth->createOperation('project/grid','browse project grid');
         $auth->createOperation('project/list','browse project list');
         $auth->createOperation('project/update','update a project record');
+        $auth->createOperation('task/create','create a task record');
         $auth->createOperation('task/grid','browse task grid');
         $auth->createOperation('task/list','browse task list');
         $auth->createOperation('task/update','update a task record');
+        $auth->createOperation('time/create','create a time record');
         $auth->createOperation('time/delete','delete a time record');
         $bizRule='return is_object($params["model"]) && $params["model"]->invoiceId==0;';
         $task=$auth->createTask('time/deleteWhenInvoiceIsNotSet','delete a time record not associated with any invoice yet',$bizRule);
@@ -143,6 +150,7 @@ class _CUserIdentity extends CUserIdentity
         $bizRule='return is_object($params["model"]) && $params["model"]->invoiceId==0;';
         $task=$auth->createTask('time/updateWhenInvoiceIsNotSet','update a time record not associated with any invoice yet',$bizRule);
         $task->addChild('time/update');
+        $auth->createOperation('user/create','create an user record');
         $auth->createOperation('user/grid','browse user grid');
         $auth->createOperation('user/list','browse user list');
         $auth->createOperation('user/update','update an user record');
@@ -178,6 +186,7 @@ class _CUserIdentity extends CUserIdentity
         $role->addChild('user/updateOwn');
         $role=$auth->createRole(User::MANAGER);
         $role->addChild(User::CONSULTANT);
+        $role->addChild('company/create');
         $role->addChild('company/grid');
         $role->addChild('company/list');
         $role->addChild('companyPayment/grid');
@@ -188,7 +197,9 @@ class _CUserIdentity extends CUserIdentity
         $role->addChild('expense/list');
         $role->addChild('invoice/grid');
         $role->addChild('invoice/list');
+        $role->addChild('task/create');
         $role->addChild('task/update');
+        $role->addChild('time/create');
         $role->addChild('time/deleteWhenInvoiceIsNotSet');
         $role->addChild('time/updateWhenInvoiceIsNotSet');
         $role->addChild('user/grid');
@@ -196,13 +207,18 @@ class _CUserIdentity extends CUserIdentity
         $role=$auth->createRole(User::ADMINISTRATOR);
         $role->addChild(User::MANAGER);
         $role->addChild('company/update');
+        $role->addChild('companyPayment/create');
         $role->addChild('companyPayment/update');
+        $role->addChild('expense/create');
         $role->addChild('expense/delete');
         $role->addChild('expense/update');
+        $role->addChild('invoice/create');
         $role->addChild('invoice/update');
+        $role->addChild('project/create');
         $role->addChild('project/update');
         $role->addChild('time/delete');
         $role->addChild('time/update');
+        $role->addChild('user/create');
         $role->addChild('user/update');
         // assign user his access type as role
         $auth->assign($user->accessType,$user->id);

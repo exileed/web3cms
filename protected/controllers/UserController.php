@@ -445,16 +445,15 @@ class UserController extends _CController
                 $this->render('notFound');
             return false;
         }
-        $isMe=Yii::app()->user->id===$model->id;
         // loaded user is me?
-        if(!$isMe && !User::isManager() && !User::isAdministrator())
+        if(!$model->isMe && !User::isManager() && !User::isAdministrator())
         {
             // not enough rights
             MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse members.'));
             $this->redirect($this->getGotoUrl());
         }
         // render the view file
-        $this->render($this->action->id,array('model'=>$model,'isMe'=>$isMe,'pkIsPassed'=>$pkIsPassed));
+        $this->render($this->action->id,array('model'=>$model,'pkIsPassed'=>$pkIsPassed));
     }
 
     /**
@@ -471,7 +470,6 @@ class UserController extends _CController
             MUserFlash::setTopError(Yii::t('modelNotFound',$this->id));
             $this->redirect($this->getGotoUrl());
         }
-        $isMe=Yii::app()->user->id===$model->id;
         // explicitly set model scenario to be current action
         //$model->setScenario($this->action->id);
         //if(is_object($model->details))
@@ -486,7 +484,7 @@ class UserController extends _CController
             // validate with the current action as scenario and save without validation
             if(($validated=$model->validate())!==false && ($saved=$model->save(false))!==false)
             {
-                if($isMe)
+                if($model->isMe)
                 {
                     // update variables previously defined in {@link _CUserIdentity} class
                     // update user states in the session for {@link _CController::init}
@@ -520,20 +518,20 @@ class UserController extends _CController
                         {
                             // set success message
                             MUserFlash::setTopSuccess(Yii::t('hint',
-                                $isMe ?
+                                $model->isMe ?
                                     '{screenName}, your profile has been updated.' :
                                     'The member account "{screenName}" has been updated.'
                                 ,
                                 array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                             ));
                             // go to 'show' page
-                            $this->redirect(($isMe&&!$pkIsPassed) ? array('show') : array('show','id'=>$model->id));
+                            $this->redirect(($model->isMe&&!$pkIsPassed) ? array('show') : array('show','id'=>$model->id));
                         }
                         else
                         {
                             // set error message
                             MUserFlash::setTopError(Yii::t('hint',
-                                $isMe ?
+                                $model->isMe ?
                                     'Error! {screenName}, your profile could not be updated.' :
                                     'Error! The member account "{screenName}" could not be updated.'
                                 ,
@@ -551,7 +549,7 @@ class UserController extends _CController
             {
                 // set error message
                 MUserFlash::setTopError(Yii::t('hint',
-                    $isMe ?
+                    $model->isMe ?
                         'Error! {screenName}, your profile could not be updated.' :
                         'Error! The member account "{screenName}" could not be updated.'
                     ,
@@ -564,7 +562,7 @@ class UserController extends _CController
             }
         }
         // display the update form
-        $this->render($this->action->id,array('model'=>$model,'isMe'=>$isMe,'pkIsPassed'=>$pkIsPassed));
+        $this->render($this->action->id,array('model'=>$model,'pkIsPassed'=>$pkIsPassed));
     }
 
     /**
@@ -587,7 +585,6 @@ class UserController extends _CController
             MUserFlash::setTopError(Yii::t('modelNotFound',$this->id));
             $this->redirect($this->getGotoUrl());
         }
-        $isMe=Yii::app()->user->id===$model->id;
         // explicitly set model scenario to be current action
         $model->setScenario($this->action->id);
         if(is_object($model->details))
@@ -603,7 +600,7 @@ class UserController extends _CController
                 // take care of updateTime (this is not critical)
                 $model->details->saveAttributes(array('updateTime'=>time()));
                 // update variables first defined in {@link _CUserIdentity} class
-                if($isMe)
+                if($model->isMe)
                 {
                     // update user states in the session for {@link _CController::init}
                     Yii::app()->user->setState('interface',$model->interface);
@@ -615,20 +612,20 @@ class UserController extends _CController
                 }
                 // set success message
                 MUserFlash::setTopSuccess(Yii::t('hint',
-                    $isMe ?
+                    $model->isMe ?
                         '{screenName}, new user interface has been applied.' :
                         'The user interface for member account "{screenName}" has been updated.'
                     ,
                     array('{screenName}'=>MHtml::wrapInTag($model->screenName,'strong'))
                 ));
                 // go to 'show' page
-                $this->redirect($isMe ? array('show') : array('show','id'=>$model->id));
+                $this->redirect($model->isMe ? array('show') : array('show','id'=>$model->id));
             }
             else if($validated && !$saved)
             {
                 // set error message
                 MUserFlash::setTopError(Yii::t('hint',
-                    $isMe ?
+                    $model->isMe ?
                         'Error! {screenName}, new user interface could not be applied.' :
                         'Error! The user interface for member account "{screenName}" could not be updated.'
                     ,
@@ -641,7 +638,7 @@ class UserController extends _CController
             }
         }
         // display the update form
-        $this->render($this->action->id,array('model'=>$model,'isMe'=>$isMe,'pkIsPassed'=>$pkIsPassed));
+        $this->render($this->action->id,array('model'=>$model,'pkIsPassed'=>$pkIsPassed));
     }
 
     /**

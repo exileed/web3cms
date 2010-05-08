@@ -11,25 +11,25 @@
             'text'=>Yii::t('link','Show my profile'),
             'url'=>!$pkIsPassed ? array('show') : array('show','id'=>$model->id),
             'icon'=>'person',
-            'visible'=>$isMe,
+            'visible'=>$model->isMe,
         ),
         array(
             'text'=>Yii::t('link','Edit my profile'),
             'url'=>!$pkIsPassed ? array('update') : array('update','id'=>$model->id),
             'icon'=>'pencil',
-            'visible'=>$isMe,
+            'visible'=>$model->isMe,
         ),
         array(
             'text'=>Yii::t('link','Show member'),
             'url'=>array('show','id'=>$model->id),
             'icon'=>'person',
-            'visible'=>!$isMe && (User::isManager() || User::isAdministrator()),
+            'visible'=>!$model->isMe && (User::isManager() || User::isAdministrator()),
         ),
         array(
             'text'=>Yii::t('link','Edit member\'s profile'),
             'url'=>array('update','id'=>$model->id),
             'icon'=>'pencil',
-            'visible'=>!$isMe && User::isAdministrator(),
+            'visible'=>!$model->isMe && User::isAdministrator(),
         ),
         array(
             'text'=>Yii::t('link','List of members'),
@@ -61,15 +61,15 @@
         array(
             'text'=>Yii::t('link','My profile'),
             'url'=>$pkIsPassed ? array('show','id'=>$model->id) : array('show'),
-            'visible'=>$isMe,
+            'visible'=>$model->isMe,
         ),
         array(
             'text'=>Yii::t('link','"{screenName}" member',array('{screenName}'=>$model->screenName)),
             'url'=>array('show','id'=>$model->id),
-            'visible'=>!$isMe,
+            'visible'=>!$model->isMe,
         ),
         array(
-            'url'=>($isMe&&!$pkIsPassed) ? array($this->action->id) : array($this->action->id,'id'=>$model->id),
+            'url'=>($model->isMe&&!$pkIsPassed) ? array($this->action->id) : array($this->action->id,'id'=>$model->id),
             'active'=>true,
         ),
     ),
@@ -91,7 +91,7 @@
     <div class="w3-form-row-text">
       <?php echo Yii::t('hint','{saveButton} or {cancelLink}',array(
           '{saveButton}'=>_CHtml::submitButton(Yii::t('link','Apply selected user interface'),array('class'=>'w3-input-button w3-button-big ui-state-default ui-corner-all')),
-          '{cancelLink}'=>CHtml::link(Yii::t('link','Cancel[form]'),($isMe && !$pkIsPassed) ? array('show') : array('show','id'=>$model->id)),
+          '{cancelLink}'=>CHtml::link(Yii::t('link','Cancel[form]'),($model->isMe && !$pkIsPassed) ? array('show') : array('show','id'=>$model->id)),
       ))."\n"; ?>
     </div>
   </div>

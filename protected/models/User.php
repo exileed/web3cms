@@ -516,6 +516,15 @@ class User extends _CActiveRecord
     }
 
     /**
+     * Whether user is me, current model is my member account.
+     * @return boolean
+     */
+    public function getIsMe()
+    {
+        return !Yii::app()->user->isGuest && $this->id===Yii::app()->user->id;
+    }
+
+    /**
      * Set user private data, such as 'accessType'.
      * Save it in a static array on every page load,
      * because this data can be changed by administrator at any time.

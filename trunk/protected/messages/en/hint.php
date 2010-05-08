@@ -64,7 +64,6 @@ $retval=array(
     'View {minRow} - {maxRow} of {totalRecords}' => 'View {minRow} - {maxRow} of {totalRecords}',
     'We are sorry, but email address {email} has a different confirmation key. You provided: {emailConfirmationKey}.' => 'We are sorry, but email address {email} has a different confirmation key. You provided: {emailConfirmationKey}.',
     'We are sorry, but you are not the owner of any company yet.' => 'We are sorry, but you are not the owner of any company yet.',
-    'We are sorry, but you don\'t have enough rights to change the user interface for a member account.' => 'We are sorry, but you don\'t have enough rights to change the user interface for a member account.',
     'We are sorry, but you don\'t have enough rights to view the company payment record number {id}.' => 'We are sorry, but you don\'t have enough rights to view the company payment record number {id}.',
     'We are sorry, but you don\'t have enough rights to view the company record number {id}.' => 'We are sorry, but you don\'t have enough rights to view the company record number {id}.',
     'We are sorry, but you don\'t have enough rights to view the expense record number {id}.' => 'We are sorry, but you don\'t have enough rights to view the expense record number {id}.',

@@ -203,12 +203,6 @@ class UserController extends _CController
      */
     public function actionCreate()
     {
-        if(!User::isAdministrator())
-        {
-            // not enough rights
-            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to create a new member.'));
-            $this->redirect($this->getGotoUrl());
-        }
         $model=new User($this->action->id);
         if(isset($_POST['User']))
         {

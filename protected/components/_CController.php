@@ -175,6 +175,7 @@ class _CController extends CController
             	'params'=>array('model'=>array('call_user_func'=>'loadModel')),
             	'messageActionId'=>array('deleteWhenInvoiceIsSet'=>'return ($params["model"] instanceof Expense || $params["model"] instanceof Time) && $params["model"]->invoiceId>=1;'),
             ),
+            'create'=>'',
             'delete'=>array('params'=>array('model'=>array('call_user_func'=>'loadModel')),
             	'messageActionId'=>array('deleteWhenInvoiceIsSet'=>'return ($params["model"] instanceof Expense || $params["model"] instanceof Time) && $params["model"]->invoiceId>=1;'),
             ),

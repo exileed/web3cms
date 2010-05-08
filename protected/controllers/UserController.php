@@ -34,13 +34,13 @@ class UserController extends _CController
                 'users'=>array('*'),
             ),
             array('allow', // following actions are checked by {@link checkAccessBeforeAction}
-                'actions'=>array('grid','gridData','list','update'),
+                'actions'=>array('create','grid','gridData','list','update','updateInterface'),
                 'users'=>array('*'),
             ),
-            array('allow', // allow authenticated user to perform 'create' and 'updateInterface' actions
-                'actions'=>array('create','updateInterface'),
+            /*array('allow', // allow authenticated user to perform 'create' actions
+                'actions'=>array('create'),
                 'users'=>array('@'),
-            ),
+            ),*/
             array('deny',  // deny all users
                 'users'=>array('*'),
             ),
@@ -70,6 +70,8 @@ class UserController extends _CController
     {
         if(isset($_GET['id']))
             $id=$_GET['id'];
+        else if(isset($_POST['id']))
+            $id=$_POST['id'];
         else if(!Yii::app()->user->isGuest)
             $id=Yii::app()->user->id;
         else
@@ -572,16 +574,20 @@ class UserController extends _CController
      */
     public function actionUpdateInterface()
     {
-        $pkIsPassed=isset($_GET['id']);
-        $model=$this->loadModel();
-        $isMe=$model!==null && Yii::app()->user->id===$model->id;
-        // loaded user is me?
-        if(!$isMe && !User::isAdministrator())
+        if(!Yii::app()->user->checkAccess($this->route,array('model'=>$this->loadModel())))
         {
-            // not enough rights
-            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to change the user interface for a member account.'));
+            // access denied
+            MUserFlash::setTopError(Yii::t('accessDenied',$this->route));
             $this->redirect($this->getGotoUrl());
         }
+        $pkIsPassed=isset($_GET['id']);
+        if(($model=$this->loadModel())===null)
+        {
+            // model not found
+            MUserFlash::setTopError(Yii::t('modelNotFound',$this->id));
+            $this->redirect($this->getGotoUrl());
+        }
+        $isMe=Yii::app()->user->id===$model->id;
         // explicitly set model scenario to be current action
         $model->setScenario($this->action->id);
         if(is_object($model->details))

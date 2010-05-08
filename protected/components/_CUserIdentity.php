@@ -99,6 +99,7 @@ class _CUserIdentity extends CUserIdentity
      *   $task->addChild('user/update');
      * we can check using just:
      *   Yii::app()->user->checkAccess('user/update',array('model'=>$this->loadModel()));
+     * Another example is {@link UserController::actionUpdateInterface()}.
      * For more info see: http://www.yiiframework.com/doc/guide/topics.auth
      * @param User model
      */
@@ -157,6 +158,10 @@ class _CUserIdentity extends CUserIdentity
         $bizRule='return Yii::app()->user->id==$params["model"]->id;';
         $task=$auth->createTask('user/updateOwn','update user own model',$bizRule);
         $task->addChild('user/update');
+        $auth->createOperation('user/updateInterface','update an user interface');
+        $bizRule='return Yii::app()->user->id==$params["model"]->id;';
+        $task=$auth->createTask('user/updateOwnInterface','update user own interface',$bizRule);
+        $task->addChild('user/updateInterface');
         // set relations between roles, tasks, operations
         $role=$auth->createRole(User::MEMBER);
         $role->addChild('user/updateOwn');
@@ -220,6 +225,7 @@ class _CUserIdentity extends CUserIdentity
         $role->addChild('time/update');
         $role->addChild('user/create');
         $role->addChild('user/update');
+        $role->addChild('user/updateInterface');
         // assign user his access type as role
         $auth->assign($user->accessType,$user->id);
         // last step. save

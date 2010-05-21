@@ -42,6 +42,61 @@ CREATE TABLE w3_user_details
         REFERENCES w3_user (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) CHARACTER SET utf8 COLLATE utf8_general_ci;
 
+CREATE TABLE w3_forum_sections (
+      id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+      parentId INTEGER UNSIGNED NOT NULL DEFAULT 0,
+      name TINYTEXT NOT NULL,
+      description TEXT NULL,
+      topicCount INTEGER UNSIGNED NULL DEFAULT 0,
+      postCount INTEGER UNSIGNED NULL DEFAULT 0,
+      position TINYINT UNSIGNED NOT NULL,
+      isActive BOOL NULL DEFAULT 1,
+      accessLevel TINYINT UNSIGNED NULL DEFAULT 0,
+      PRIMARY KEY(id)
+) CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+CREATE TABLE w3_forum_topics (
+      id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+      sectionId INTEGER UNSIGNED NOT NULL,
+      postedBy INTEGER UNSIGNED NOT NULL,
+      created INTEGER UNSIGNED NOT NULL,
+      replyCount INTEGER UNSIGNED NULL DEFAULT 0,
+      viewCount INTEGER UNSIGNED NULL DEFAULT 0,
+      closed BOOL NULL DEFAULT 0,
+      sticky BOOL NULL DEFAULT 0,
+      hasPoll BOOL NULL DEFAULT 0,
+      isActive BOOL NULL DEFAULT 1,
+      accessLevel TINYINT UNSIGNED NULL DEFAULT 0,
+      PRIMARY KEY(id, sectionId, postedBy),
+      INDEX w3_forum_topics_FKIndex1(sectionId),
+      INDEX w3_forum_topics_FKIndex2(postedBy),
+      FOREIGN KEY(sectionId)
+        REFERENCES w3_forum_sections(id)
+          ON DELETE CASCADE
+          ON UPDATE CASCADE,
+      FOREIGN KEY(postedBy)
+        REFERENCES w3_user(id)
+          ON DELETE NO ACTION
+          ON UPDATE NO ACTION
+) CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+CREATE TABLE w3_forum_posts (
+      id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+      topicId INTEGER UNSIGNED NOT NULL,
+      sectionId INTEGER UNSIGNED NOT NULL,
+      title TINYTEXT NOT NULL,
+      shortContent TINYTEXT NULL,
+      content TEXT NOT NULL,
+      postTime INTEGER UNSIGNED NOT NULL,
+      postedBy INTEGER UNSIGNED NOT NULL,
+      PRIMARY KEY(id, topicId, sectionId, postedBy),
+      INDEX w3_forum_posts_FKIndex1(topicId, sectionId, postedBy),
+      FOREIGN KEY(topicId, sectionId, postedBy)
+        REFERENCES w3_forum_topics(id, sectionId, postedBy)
+          ON DELETE CASCADE
+          ON UPDATE CASCADE
+) CHARACTER SET utf8 COLLATE utf8_general_ci;
+
 INSERT INTO w3_user (`id`, `username`, `password`, `email`, `screenName`, `accessType`, `accessLevel`, `isActive`, `createTime`) VALUES ('1','admin','21232f297a57a5a743894a0e4a801fc3','admin@example.com','Administrator','administrator','5','1',UNIX_TIMESTAMP());
 INSERT INTO w3_user (`id`, `username`, `password`, `email`, `screenName`, `accessType`, `accessLevel`, `isActive`, `createTime`) VALUES ('2','demo','fe01ce2a7fbac8fafaed7c982a04e229','demo@example.com','Demo Member','member','1','1',UNIX_TIMESTAMP());
 INSERT INTO w3_user_details (`userId`, `emailConfirmationKey`) VALUES ('1','fbc07066a1a79166a9098664821869d1');

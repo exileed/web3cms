@@ -32,7 +32,8 @@
 <?php $this->widget('application.components.WMainMenu',array(
     'items'=>array(
         array('label'=>Yii::t('link','Home'), 'url'=>array('site/index'), 'visible'=>false, 'options'=>array('title'=>Yii::t('link','Main page'))),
-        array('label'=>Yii::t('link','Contact'), 'url'=>array('site/contact'), 'visible'=>true, 'options'=>array('title'=>Yii::t('link','Contact us'))),
+        array('label'=>Yii::t('link','Forum'), 'url'=>array('forum/index'), 'visible'=>true, 'options'=>array('title'=>Yii::t('link','Forum'))),
+		array('label'=>Yii::t('link','Contact'), 'url'=>array('site/contact'), 'visible'=>true, 'options'=>array('title'=>Yii::t('link','Contact us'))),
         array('label'=>Yii::t('link','Login'), 'url'=>Yii::app()->user->loginUrl, 'visible'=>Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Authenticate using my member account'))),
         array('label'=>Yii::t('link','Register'), 'url'=>array('user/register'), 'visible'=>Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Create a new member account'))),
         array('label'=>Yii::t('link','Member'), 'url'=>array('user/'), 'visible'=>User::isAdministrator(), 'options'=>array('title'=>Yii::t('link','Browse members'))),

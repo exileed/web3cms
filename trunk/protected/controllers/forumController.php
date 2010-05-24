@@ -57,17 +57,17 @@ class forumController extends _CController {
      * Lists all topics.
      */
     public function actionSection() {
-        $id = Yii::app()->request->getQuery('id',false);
-        if ($id == false)
+        $sectionId = Yii::app()->request->getQuery('sid',false);
+        if ($sectionId == false)
             $this->redirect($this->createAbsoluteUrl('forum/index'));
-        $criteria = new CDbCriteria(array('with'=>array('section'=>array('select'=>'parentId,name,description'),'user'=>array('select'=>'username'),'post'),'condition'=>'`t`.`sectionId`='.$id));
+        $criteria = new CDbCriteria(array('with'=>array('section'=>array('select'=>'parentId,name,description'),'user'=>array('select'=>'username'),'post'),'condition'=>'`t`.`sectionId`='.$sectionId));
         $models = forumTopics::model()->findAll($criteria);
         if (empty($models)) {
             MUserFlash::setTopInfo('There are no topics in this section.');
-            $this->render($this->action->id, array('section'=>forumSections::model()->findByPk($id),'id'=>$id));
+            $this->render($this->action->id, array('section'=>forumSections::model()->findByPk($sectionId),'sid'=>$sectionId));
         } else {
         $this->render($this->action->id, array(
-                'models'=>$models,'id'=>$id)
+                'models'=>$models,'sid'=>$sectionId)
         );}
     }
 
@@ -75,12 +75,12 @@ class forumController extends _CController {
      * Viewing a topic
      */
     public function actionTopic() {
-        $id = Yii::app()->request->getQuery('id',false);
-        if ($id == false)
+        $topicId = Yii::app()->request->getQuery('id',false);
+        if ($topicId == false)
             $this->redirect($this->createAbsoluteUrl('forum/index'));
-        $criteria = new CDbCriteria(array('with'=>array('topic','user'=>array('select'=>'username,createTime'),'section'=>array('select'=>'name')),'condition'=>'`t`.`topicId`='.$id));
+        $criteria = new CDbCriteria(array('with'=>array('topic','user'=>array('select'=>'username,createTime'),'section'=>array('select'=>'name')),'condition'=>'`t`.`topicId`='.$topicId,'order'=>'postTime'));
         $this->render($this->action->id, array(
-                'models'=>forumPosts::model()->findAll($criteria),'id'=>$id)
+                'models'=>forumPosts::model()->findAll($criteria),'tid'=>$topicId)
         );
     }
 
@@ -102,25 +102,23 @@ class forumController extends _CController {
      * Postage of a new topic
      */
     public function actionNewTopic() {
-        $id = Yii::app()->request->getQuery('id',false);
-        if ($id == false)
+        $sectionId = Yii::app()->request->getQuery('sid',false);
+        if ($sectionId == false)
             $this->redirect($this->createAbsoluteUrl('forum/index'));
-        $forumPosts = new forumPosts;
-        $forumTopics = new forumTopics;
+        list($forumPosts,$forumTopics) = array(new forumPosts,new forumTopics);
         if (Yii::app()->request->isPostRequest) {
-            $sid = Yii::app()->request->getParam('id',NULL);
-            $forumTopics->sectionId = $sid;
+            $forumTopics->sectionId = $sectionId;
+            $forumTopics->postedBy = Yii::app()->user->id;
             $forumTopics->created = time();
-            $forumPosts->sectionId = $sid;
+            $forumPosts->sectionId = $sectionId;
             $forumPosts->attributes = $_POST['forumPosts'];
             $forumPosts->postedBy = Yii::app()->user->id;
-            $forumTopics->postedBy = Yii::app()->user->id;
             $forumPosts->postTime = time();
             if ($forumPosts->validate() && $forumTopics->validate()) {
                 $forumTopics->save(false);
                 $forumPosts->topicId = $forumTopics->id;
                 $forumPosts->save(false);
-                $this->redirect(array('forum/topic', 'id'=>Yii::app()->db->getLastInsertID()));
+                $this->redirect(array('forum/topic', 'id'=>$forumTopics->id));
             }
         }
         $this->render($this->action->id,array('forumPosts'=>$forumPosts,'forumTopics'=>$forumTopics));
@@ -130,8 +128,23 @@ class forumController extends _CController {
      * Postage of a reply
      */
     public function actionReply() {
-        // if (!Yii::app()->request->isPostRequest || !Yii::app()->request->getPost('topic',false)) $this->redirect($this->createAbsoluteUrl('forum/index'));
-        // TODO
+        $topicId = Yii::app()->request->getQuery('tid',false);
+        $sectionId = Yii::app()->request->getQuery('sid',false);
+        if ($topicId == false || $sectionId == false)
+            $this->redirect($this->createAbsoluteUrl('forum/index'));
+        $forumPosts = new forumPosts;
+        if (Yii::app()->request->isPostRequest) {
+            $forumPosts->sectionId = $sectionId;
+            $forumPosts->attributes = $_POST['forumPosts'];
+            $forumPosts->postedBy = Yii::app()->user->id;
+            $forumPosts->postTime = time();
+            $forumPosts->topicId = $topicId;
+            if ($forumPosts->save()) {
+                forumTopics::model()->updateCounters(array('replyCount'=>1),array('condition'=>'`id`='.$topicId));
+                $this->redirect(array('forum/topic', 'id'=>$topicId));
+            }
+        }
+        $this->render($this->action->id,array('forumPosts'=>$forumPosts));
     }
 
     /**

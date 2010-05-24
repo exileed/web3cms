@@ -12,7 +12,7 @@ if (!empty($models)):?>
     </tr>
         <?php foreach ($models as $model):?>
     <tr class="w3-grid-row">
-        <td><?php echo CHtml::link('<strong>'.CHtml::encode($model->name).'</strong>', array('forum/section', 'id'=>$model->id)).'<br />'.CHtml::encode(MStr::shorten($model->description,128)); ?></td>
+        <td><?php echo CHtml::link('<strong>'.CHtml::encode($model->name).'</strong>', array('forum/section', 'sid'=>$model->id)).'<br />'.CHtml::encode(MStr::shorten($model->description,128)); ?></td>
         <td><?php echo CHtml::encode($model->topicCount); ?></td>
         <td><?php echo CHtml::encode($model->postCount); ?></td>
         <td><?php echo CHtml::encode(MDate::format(time())); ?></td>

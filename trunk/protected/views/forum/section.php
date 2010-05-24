@@ -4,7 +4,7 @@ $breadcrumbs = array(
                 'active'=>true,
     );
 echo $this->renderPartial('_common',array('breadcrumbs'=>$breadcrumbs));
-echo $this->renderPartial('_actionbar',array('id'=>$id));
+echo $this->renderPartial('_actionbar',array('sid'=>$sid));
 if (!empty($models)):?>
 <table class="w3-grid-box ui-widget-content ui-corner-all" width="100%">
     <tr class="w3-grid-columns-row w3-grid-titlebar ui-state-default">

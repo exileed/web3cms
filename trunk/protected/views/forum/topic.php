@@ -7,7 +7,7 @@ $breadcrumbs = array(
                 'active'=>true,
     );
 echo $this->renderPartial('_common',array('breadcrumbs'=>$breadcrumbs));
-echo $this->renderPartial('_actionbar',array('tid'=>$tid,'sid'=>$models[0]->sectionId));
+echo $this->renderPartial('_actionbar',array('tid'=>$tid,'sid'=>$sectionId));
 ?>
 <?php if (!empty($models)):?>
 <table class="w3-grid-box ui-widget-content ui-corner-all" width="100%">
@@ -29,10 +29,10 @@ echo $this->renderPartial('_actionbar',array('tid'=>$tid,'sid'=>$models[0]->sect
         </td>
     </tr>
     <tr>
-        <td><?php echo CHtml::encode($model->content); ?></td>
+        <td><?php echo MHtml::renderBB($model->content); ?></td>
     </tr>
         <?php endforeach;?>
 </table>
 <br />
-<?php echo $this->renderPartial('_actionbar',array('tid'=>$tid,'sid'=>$models[0]->sectionId));?>
+<?php echo $this->renderPartial('_actionbar',array('tid'=>$tid,'sid'=>$sectionId));?>
 <?php endif;?>

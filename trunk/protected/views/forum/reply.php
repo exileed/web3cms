@@ -23,7 +23,14 @@ MUserFlash::setSidebarInfo(Yii::t('hint','Required: {authRoles}.',    array(2,'{
     <div class="w3-form-row">
         <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($forumPosts,'content'); ?></div>
         <div class="w3-form-row-input">
-            <?php echo _CHtml::activeTextArea($forumPosts,'content',array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+                        <?php
+                        $this->widget('application.components.WRichInput',array(
+                                'model'=>$forumPosts,
+                                'attribute'=>'content',
+                                'options'=>array('previewParserPath'=>Yii::app()->createUrl('forum/ajax',array('action'=>'renderBB'))),
+                                'htmlOptions'=>array('class'=>'w3-input-text ui-widget-content ui-corner-all','style'=>'width: 90%'),
+                        ));
+                        ?>
         </div>
         <div class="clear">&nbsp;</div>
     </div>

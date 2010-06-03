@@ -2,8 +2,8 @@
 MParams::setPageLabel(Yii::t('page','Post a new topic'));
 MUserFlash::setTopError(_CHtml::errorSummary(array($forumPosts,$forumTopics)));
 MUserFlash::setSidebarInfo(Yii::t('hint','Required: {authRoles}.',    array(2,'{authRoles}'=>implode(', ',array(Yii::t('t',User::MEMBER_T),Yii::t('t',User::MANAGER_T),Yii::t('t',User::ADMINISTRATOR_T))))
-));?>
-<?php echo $this->renderPartial('_common'); ?>
+));
+echo $this->renderPartial('_common'); ?>
 <div class="w3-main-form-box ui-widget-content ui-corner-all">
     <?php echo _CHtml::beginForm('','post',array('class'=>'w3-main-form'))."\n"; ?>
     <div class="w3-form-row w3-first">
@@ -23,7 +23,14 @@ MUserFlash::setSidebarInfo(Yii::t('hint','Required: {authRoles}.',    array(2,'{
     <div class="w3-form-row">
         <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($forumPosts,'content'); ?></div>
         <div class="w3-form-row-input">
-            <?php echo _CHtml::activeTextArea($forumPosts,'content',array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+                        <?php
+                        $this->widget('application.components.WRichInput',array(
+                                'model'=>$forumPosts,
+                                'attribute'=>'content',
+                                'options'=>array('previewParserPath'=>Yii::app()->createUrl('forum/ajax',array('action'=>'renderBB'))),
+                                'htmlOptions'=>array('class'=>'w3-input-text ui-widget-content ui-corner-all','style'=>'width: 90%'),
+                        ));
+                        ?>
         </div>
         <div class="clear">&nbsp;</div>
     </div>

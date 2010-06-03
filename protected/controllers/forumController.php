@@ -5,7 +5,7 @@ class forumController extends _CController {
     /**
      * @var CActiveRecord the currently loaded data model instance.
      */
-    private $_model,$breadcrumbs;
+    private $_model;
 
     /**
      * @return array action filters
@@ -28,7 +28,7 @@ class forumController extends _CController {
                 'users'=>array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions'=>array('NewTopic','Reply'),
+                'actions'=>array('NewTopic','Reply','ajax'),
                 'users'=>array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -162,4 +162,16 @@ class forumController extends _CController {
                 'model'=>$model,
         ));
     }
+
+    public function actionAjax() {
+        if (Yii::app()->request->getIsAjaxRequest() != false && Yii::app()->request->getParam('action') != false) {
+            switch(Yii::app()->request->getParam('action')) {
+                case 'renderBB':
+                    echo MHtml::renderBB(Yii::app()->request->getParam('data'));
+                    break;
+            }
+            Yii::app()->end();
+        }
+    }
+
 }

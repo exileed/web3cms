@@ -1,3 +1,4 @@
+Options +FollowSymlinks
 RewriteEngine on
 
 #RedirectMatch (.*)admin\.php$ $1backend.php

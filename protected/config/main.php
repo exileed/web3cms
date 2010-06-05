@@ -36,10 +36,10 @@ $retval=array(
     'components'=>array(
         'db'=>array(
             //'connectionString'=>'sqlite:'.dirname(__FILE__).'/../data/web3cms.db',
-            // CREATE DATABASE `web3cms_r34` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-            'connectionString'=>'mysql:host=localhost;dbname=web3cms_r34',
-            'username'=>'web3cmsuser', //'web3cmsuser'
-            'password'=>'web3cmspass', //'web3cmspass'
+            // CREATE DATABASE `web3cms` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+            'connectionString'=>'mysql:host=127.0.0.1;dbname=web3cms',
+            'username'=>'root',
+            'password'=>'',
             'charset'=>'utf8', //comment this if you are using a different db charset
         ),
         'errorHandler'=>array(

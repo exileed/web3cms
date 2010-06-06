@@ -15,8 +15,8 @@ class forumTopics extends _CActiveRecord
 	 * @var integer $isActive
 	 * @var integer $accessLevel
 	 */
-    
-	/**
+
+        /**
 	 * Returns the static model of the specified AR class.
 	 * @return CActiveRecord the static model class
 	 */
@@ -63,7 +63,13 @@ class forumTopics extends _CActiveRecord
 		);
 	}
 
-	/**
+        protected function beforeValidate() {
+            $this->postedBy = (!empty($this->postedBy) ? $this->postedBy : Yii::app()->user->id);
+            $this->created = (!empty($this->created) ? $this->created : time());
+            return true;
+        }
+
+        /**
 	 * @return array customized attribute labels (name=>label)
 	 */
 	public function attributeLabels()

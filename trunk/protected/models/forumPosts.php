@@ -13,6 +13,8 @@ class forumPosts extends _CActiveRecord
 	 * @var string $content
 	 * @var integer $postTime
 	 */
+    
+        public $isReply = false;
 
 	/**
 	 * Returns the static model of the specified AR class.
@@ -59,6 +61,18 @@ class forumPosts extends _CActiveRecord
                     'user'=>array(self::BELONGS_TO, 'User','postedBy'),
                     'section'=>array(self::BELONGS_TO, 'forumSections','sectionId')
             );
+        }
+
+        protected function beforeValidate() {
+            $this->postedBy = (!empty($this->postedBy) ? $this->postedBy : Yii::app()->user->id);
+            $this->postTime = (!empty($this->postTime) ? $this->postTime : time());
+            return true;
+        }
+        
+        protected function afterSave() {
+            if ($this->isReply == true) {
+                forumTopics::model()->updateCounters(array('replyCount'=>1),array('condition'=>'`id`='.$this->topicId));
+            }
         }
 
         /**

@@ -20,6 +20,7 @@ echo $this->renderPartial('_actionbar',array('tid'=>$tid,'sid'=>$sectionId));
     <tr class="w3-grid-row">
         <td valign="top" colspan="1" rowspan="2">
             <strong><?php echo CHtml::link(CHtml::encode($model->user->username), array('user/show', 'id'=>$model->user->id)); ?></strong><br />
+            Joined: <?php echo MDate::format($model->user->createTime);?>
         </td>
         <td valign="top" align="right">
             <?php

@@ -47,8 +47,6 @@ CREATE TABLE w3_forum_sections (
       parentId INTEGER UNSIGNED NOT NULL DEFAULT 0,
       name TINYTEXT NOT NULL,
       description TEXT NULL,
-      topicCount INTEGER UNSIGNED NULL DEFAULT 0,
-      postCount INTEGER UNSIGNED NULL DEFAULT 0,
       position TINYINT UNSIGNED NOT NULL,
       isActive BOOL NULL DEFAULT 1,
       accessLevel TINYINT UNSIGNED NULL DEFAULT 0,

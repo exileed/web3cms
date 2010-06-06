@@ -5,7 +5,7 @@
  */
 class MHtml
 {
-    const EMOTICONS_DIR='/static/js/markitup/images/emoticons/';
+    const emoticonsDir = '/static/js/markitup/images/emoticons/';
 
     /**
      * Wrap a text in a html tag.
@@ -42,51 +42,54 @@ class MHtml
 	$text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', "escape", $text);
 
 	// Smileys to find...
-	$in = array(                     ':)',
-					 ':D',
-					 ':o',
-					 ':p',
-					 ':(',
-					 ';)'
-	);
-	// And replace them by...
-	$out = array(	 '<img alt=":)" src="'.EMOTICONS_DIR.'emoticon-happy.png" />',
-					 '<img alt=":D" src="'.EMOTICONS_DIR.'emoticon-smile.png" />',
-					 '<img alt=":o" src="'.EMOTICONS_DIR.'emoticon-surprised.png" />',
-					 '<img alt=":p" src="'.EMOTICONS_DIR.'emoticon-tongue.png" />',
-					 '<img alt=":(" src="'.EMOTICONS_DIR.'emoticon-unhappy.png" />',
-					 '<img alt=";)" src="'.EMOTICONS_DIR.'emoticon-wink.png" />'
-	);
+        $in = array(
+                ':)',
+                ':D',
+                ':o',
+                ':p',
+                ':(',
+                ';)'	);
+        // And replace them by...
+        $out = array(
+                '<img alt=":)" src="'.self::emoticonsDir.'emoticon-happy.png" />',
+                '<img alt=":D" src="'.self::emoticonsDir.'emoticon-smile.png" />',
+                '<img alt=":o" src="'.self::emoticonsDir.'emoticon-surprised.png" />',
+                '<img alt=":p" src="'.self::emoticonsDir.'emoticon-tongue.png" />',
+                '<img alt=":(" src="'.self::emoticonsDir.'emoticon-unhappy.png" />',
+                '<img alt=";)" src="'.self::emoticonsDir.'emoticon-wink.png" />'
+        );
 	$text = str_replace($in, $out, $text);
 
 	// BBCode to find...
-	$in = array( 	 '/\[b\](.*?)\[\/b\]/ms',
-					 '/\[i\](.*?)\[\/i\]/ms',
-					 '/\[u\](.*?)\[\/u\]/ms',
-					 '/\[img\](.*?)\[\/img\]/ms',
-					 '/\[email\](.*?)\[\/email\]/ms',
-					 '/\[url\="?(.*?)"?\](.*?)\[\/url\]/ms',
-					 '/\[size\="?(.*?)"?\](.*?)\[\/size\]/ms',
-					 '/\[color\="?(.*?)"?\](.*?)\[\/color\]/ms',
-					 '/\[quote](.*?)\[\/quote\]/ms',
-					 '/\[list\=(.*?)\](.*?)\[\/list\]/ms',
-					 '/\[list\](.*?)\[\/list\]/ms',
-					 '/\[\*\]\s?(.*?)\n/ms'
-	);
-	// And replace them by...
-	$out = array(	 '<strong>\1</strong>',
-					 '<em>\1</em>',
-					 '<u>\1</u>',
-					 '<img src="\1" alt="\1" />',
-					 '<a href="mailto:\1">\1</a>',
-					 '<a href="\1">\2</a>',
-					 '<span style="font-size:\1%">\2</span>',
-					 '<span style="color:\1">\2</span>',
-					 '<blockquote>\1</blockquote>',
-					 '<ol start="\1">\2</ol>',
-					 '<ul>\1</ul>',
-					 '<li>\1</li>'
-	);
+        $in = array(
+                '/\[b\](.*?)\[\/b\]/ms',
+                '/\[i\](.*?)\[\/i\]/ms',
+                '/\[u\](.*?)\[\/u\]/ms',
+                '/\[img\](.*?)\[\/img\]/ms',
+                '/\[email\](.*?)\[\/email\]/ms',
+                '/\[url\="?(.*?)"?\](.*?)\[\/url\]/ms',
+                '/\[size\="?(.*?)"?\](.*?)\[\/size\]/ms',
+                '/\[color\="?(.*?)"?\](.*?)\[\/color\]/ms',
+                '/\[quote](.*?)\[\/quote\]/ms',
+                '/\[list\=(.*?)\](.*?)\[\/list\]/ms',
+                '/\[list\](.*?)\[\/list\]/ms',
+                '/\[\*\]\s?(.*?)\n/ms'
+        );
+        // And replace them by...
+        $out = array(
+                '<strong>\1</strong>',
+                '<em>\1</em>',
+                '<u>\1</u>',
+                '<img src="\1" alt="\1" />',
+                '<a href="mailto:\1">\1</a>',
+                '<a href="\1">\2</a>',
+                '<span style="font-size:\1%">\2</span>',
+                '<span style="color:\1">\2</span>',
+                '<blockquote>\1</blockquote>',
+                '<ol start="\1">\2</ol>',
+                '<ul>\1</ul>',
+                '<li>\1</li>'
+        );
 	$text = preg_replace($in, $out, $text);
 
 	// paragraphs

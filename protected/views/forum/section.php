@@ -1,10 +1,12 @@
 <?php
+$sectionName = (isset($section) ? $section->name : $models[0]->section->name);
+$sectionId = (isset($section) ? $section->id : $models[0]->section->id);
 $breadcrumbs = array(
-                'text'=>Yii::t('link', (isset($section) ? $section->name : $models[0]->section->name)),
+                'text'=>Yii::t('link', $sectionName),
                 'active'=>true,
     );
 echo $this->renderPartial('_common',array('breadcrumbs'=>$breadcrumbs));
-echo $this->renderPartial('_actionbar',array('sid'=>$sid));
+echo $this->renderPartial('_actionbar',array('sid'=>$sectionId));
 if (!empty($models)):?>
 <table class="w3-grid-box ui-widget-content ui-corner-all" width="100%">
     <tr class="w3-grid-columns-row w3-grid-titlebar ui-state-default">
@@ -18,7 +20,7 @@ if (!empty($models)):?>
         <?php
         foreach ($models as $model):?>
     <tr class="w3-grid-row">
-        <td><strong><?php echo CHtml::link(CHtml::encode($model->post[0]->title), array('forum/topic', 'id'=>$model->id, MStr::seoFormat($model->post[0]->title)=>NULL)).'</strong><br/>'.CHtml::encode(MStr::shorten($model->post[0]->shortContent,128)); ?></td>
+        <td><strong><?php echo CHtml::link(CHtml::encode($model->post[0]->title), array('forum/topic', 'id'=>$model->id, ''=>MStr::seoFormat($model->post[0]->title))).'</strong><br/>'.CHtml::encode(MStr::shorten($model->post[0]->shortContent,128)); ?></td>
         <td><?php echo CHtml::link(CHtml::encode($model->user->username),array('user/show', 'id'=>$model->user->id)); ?></td>
         <td><?php echo CHtml::encode($model->replyCount); ?></td>
         <td><?php echo CHtml::encode($model->viewCount); ?></td>
@@ -31,5 +33,5 @@ if (!empty($models)):?>
         <?php endforeach;?>
 </table>
 <br />
-<?php echo $this->renderPartial('_actionbar',array('id'=>$id));?>
+<?php echo $this->renderPartial('_actionbar',array('sid'=>$sectionId));?>
 <?php endif;?>

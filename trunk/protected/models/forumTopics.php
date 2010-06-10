@@ -5,7 +5,8 @@ class forumTopics extends _CActiveRecord
 	/**
 	 * The followings are the available columns in table 'w3_forum_topics':
 	 * @var integer $id
-	 * @var integer $postedBy
+	 * @var integer $userId
+	 * @var integer $userName
 	 * @var integer $sectionId
 	 * @var integer $replyCount
 	 * @var integer $viewCount
@@ -45,7 +46,7 @@ class forumTopics extends _CActiveRecord
                         array('replyCount, viewCount, closed, sticky, hasPoll, isActive, accessLevel', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('postedBy, sectionId, replyCount, viewCount, closed, sticky, hasPoll, isActive, accessLevel', 'safe', 'on'=>'search'),
+			array('userId, userName, sectionId, replyCount, viewCount, closed, sticky, hasPoll, isActive, accessLevel', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -58,14 +59,15 @@ class forumTopics extends _CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
                     'section'=>array(self::BELONGS_TO, 'forumSections', 'sectionId'),
-                    'user'=>array(self::BELONGS_TO, 'User','postedBy'),
+                    'user'=>array(self::BELONGS_TO, 'User','userId'),
                     'post'=>array(self::HAS_MANY, 'forumPosts','topicId'),
 		);
 	}
 
         protected function beforeValidate() {
-            $this->postedBy = (!empty($this->postedBy) ? $this->postedBy : Yii::app()->user->id);
-            $this->created = (!empty($this->created) ? $this->created : time());
+            $this->userId = (!empty($this->userId) ? $this->userId : Yii::app()->user->id);
+            $this->userName = (!empty($this->userName) ? $this->userName : Yii::app()->user->name);
+            $this->createTime = (!empty($this->createTime) ? $this->createTime : time());
             return true;
         }
 
@@ -75,7 +77,7 @@ class forumTopics extends _CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'postedBy' => 'Posted By',
+			'userId' => 'Posted By',
 			'sectionId' => 'Section',
 			'replyCount' => 'Reply Count',
 			'viewCount' => 'View Count',
@@ -100,7 +102,7 @@ class forumTopics extends _CActiveRecord
 
 		$criteria->compare('id',$this->id);
 
-		$criteria->compare('postedBy',$this->postedBy);
+		$criteria->compare('userId',$this->userId);
 
 		$criteria->compare('sectionId',$this->sectionId);
 

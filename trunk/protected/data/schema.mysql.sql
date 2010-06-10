@@ -47,6 +47,8 @@ CREATE TABLE w3_forum_sections (
       parentId INTEGER UNSIGNED NOT NULL DEFAULT 0,
       name TINYTEXT NOT NULL,
       description TEXT NULL,
+      topicCount INTEGER UNSIGNED NULL DEFAULT 0,
+      postCount INTEGER UNSIGNED NULL DEFAULT 0,
       position TINYINT UNSIGNED NOT NULL,
       isActive BOOL NULL DEFAULT 1,
       accessLevel TINYINT UNSIGNED NULL DEFAULT 0,
@@ -56,8 +58,8 @@ CREATE TABLE w3_forum_sections (
 CREATE TABLE w3_forum_topics (
       id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
       sectionId INTEGER UNSIGNED NOT NULL,
-      postedBy INTEGER UNSIGNED NOT NULL,
-      created INTEGER UNSIGNED NOT NULL,
+      userId INTEGER UNSIGNED NOT NULL,
+      userName VARCHAR(128) NOT NULL,
       replyCount INTEGER UNSIGNED NULL DEFAULT 0,
       viewCount INTEGER UNSIGNED NULL DEFAULT 0,
       closed BOOL NULL DEFAULT 0,
@@ -65,14 +67,15 @@ CREATE TABLE w3_forum_topics (
       hasPoll BOOL NULL DEFAULT 0,
       isActive BOOL NULL DEFAULT 1,
       accessLevel TINYINT UNSIGNED NULL DEFAULT 0,
-      PRIMARY KEY(id, sectionId, postedBy),
+      createTime INTEGER UNSIGNED NOT NULL,
+      PRIMARY KEY(id, sectionId, userId),
       INDEX w3_forum_topics_FKIndex1(sectionId),
-      INDEX w3_forum_topics_FKIndex2(postedBy),
+      INDEX w3_forum_topics_FKIndex2(userId),
       FOREIGN KEY(sectionId)
         REFERENCES w3_forum_sections(id)
           ON DELETE CASCADE
           ON UPDATE CASCADE,
-      FOREIGN KEY(postedBy)
+      FOREIGN KEY(userId)
         REFERENCES w3_user(id)
           ON DELETE NO ACTION
           ON UPDATE NO ACTION
@@ -82,15 +85,16 @@ CREATE TABLE w3_forum_posts (
       id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
       topicId INTEGER UNSIGNED NOT NULL,
       sectionId INTEGER UNSIGNED NOT NULL,
+      userId INTEGER UNSIGNED NOT NULL,
+      userName VARCHAR(128) NOT NULL,
       title TINYTEXT NOT NULL,
-      shortContent TINYTEXT NULL,
+      summary TINYTEXT NULL,
       content TEXT NOT NULL,
-      postTime INTEGER UNSIGNED NOT NULL,
-      postedBy INTEGER UNSIGNED NOT NULL,
-      PRIMARY KEY(id, topicId, sectionId, postedBy),
-      INDEX w3_forum_posts_FKIndex1(topicId, sectionId, postedBy),
-      FOREIGN KEY(topicId, sectionId, postedBy)
-        REFERENCES w3_forum_topics(id, sectionId, postedBy)
+      createTime INTEGER UNSIGNED NOT NULL,
+      PRIMARY KEY(id, topicId, sectionId, userId),
+      INDEX w3_forum_posts_FKIndex1(topicId, sectionId, userId),
+      FOREIGN KEY(topicId, sectionId, userId)
+        REFERENCES w3_forum_topics(id, sectionId, userId)
           ON DELETE CASCADE
           ON UPDATE CASCADE
 ) CHARACTER SET utf8 COLLATE utf8_general_ci;

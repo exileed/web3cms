@@ -14,9 +14,9 @@ echo $this->renderPartial('_common'); ?>
         <div class="clear">&nbsp;</div>
     </div>
     <div class="w3-form-row">
-        <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($forumPosts,'shortContent'); ?></div>
+        <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($forumPosts,'summary'); ?></div>
         <div class="w3-form-row-input">
-            <?php echo _CHtml::activeTextField($forumPosts,'shortContent',array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+            <?php echo _CHtml::activeTextField($forumPosts,'summary',array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
         </div>
         <div class="clear">&nbsp;</div>
     </div>

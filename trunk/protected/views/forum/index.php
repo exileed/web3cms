@@ -13,8 +13,8 @@ if (!empty($models)):?>
     <tr class="w3-grid-row">
         <td><?php echo CHtml::link('<strong>'.CHtml::encode($model->name).'</strong>', array('forum/section', 'sid'=>$model->id)).'<br />'.CHtml::encode(MStr::shorten($model->description,128)); ?></td>
         <td><ul>
-                <li><?php echo (!empty($model->topic[0]->topicCount) ? $model->topic[0]->topicCount : 0) ?> Topics</li>
-                <li><?php echo (!empty($model->post[0]->postCount) ? $model->post[0]->postCount : 0); ?> Total posts</li>
+                <li><?php echo $model->topicCount;?> Topics</li>
+                <li><?php echo $model->postCount;?> Total posts</li>
             </ul>
         </td>
         <td> //TODO// <?php //echo CHtml::encode(MDate::format(time())); ?></td>

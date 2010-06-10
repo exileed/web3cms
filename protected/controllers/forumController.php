@@ -45,7 +45,7 @@ class forumController extends _CController {
      * Lists all sections.
      */
     public function actionIndex() {
-        $criteria = new CDbCriteria(array('order'=>'position','with'=>array('topic'/*=>array('select'=>'COUNT(DISTINCT topic.id) AS topicCount')*/)));
+        $criteria = new CDbCriteria(array('order'=>'position'));
         $models = forumSections::model()->findAll($criteria);
         if (empty($models))
             MUserFlash::setTopInfo('There are no forum sections defined.');
@@ -78,7 +78,7 @@ class forumController extends _CController {
         $topicId = Yii::app()->request->getQuery('id',false);
         if ($topicId == false)
             $this->redirect($this->createAbsoluteUrl('forum/index'));
-        $criteria = new CDbCriteria(array('with'=>array('topic','user'=>array('select'=>'username,createTime'),'section'=>array('select'=>'name')),'condition'=>'`t`.`topicId`='.$topicId,'order'=>'postTime'));
+        $criteria = new CDbCriteria(array('with'=>array('topic'=>array('select'=>'closed,sticky,hasPoll,isActive,accessLevel'),'user'=>array('select'=>'createTime'),'section'=>array('select'=>'name')),'condition'=>'`t`.`topicId`='.$topicId,'order'=>'`t`.`createTime`'));
         $this->render($this->action->id, array(
                 'models'=>forumPosts::model()->findAll($criteria),'tid'=>$topicId)
         );

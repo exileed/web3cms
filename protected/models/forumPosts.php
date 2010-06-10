@@ -6,12 +6,12 @@ class forumPosts extends _CActiveRecord
 	 * The followings are the available columns in table 'w3_forum_posts':
 	 * @var integer $id
 	 * @var integer $topicId
-	 * @var integer $postedBy
+	 * @var integer $userId
 	 * @var integer $sectionId
 	 * @var string $title
-	 * @var string $shortContent
+	 * @var string $summary
 	 * @var string $content
-	 * @var integer $postTime
+	 * @var integer $createTime
 	 */
     
         public $isReply = false;
@@ -41,12 +41,12 @@ class forumPosts extends _CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title, content, postTime', 'required'),
-			array('postTime', 'numerical', 'integerOnly'=>true),
-			array('shortContent', 'safe'),
+			array('title, content, createTime', 'required'),
+			array('createTime', 'numerical', 'integerOnly'=>true),
+			array('summary', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, topicId, postedBy, sectionId, title, shortContent, content, postTime', 'safe', 'on'=>'search'),
+			array('id, topicId, userId, sectionId, title, summary, content, createTime', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -58,20 +58,24 @@ class forumPosts extends _CActiveRecord
             // class name for the relations automatically generated below.
             return array(
                     'topic'=>array(self::BELONGS_TO, 'forumTopics','topicId'),
-                    'user'=>array(self::BELONGS_TO, 'User','postedBy'),
+                    'user'=>array(self::BELONGS_TO, 'User','userId'),
                     'section'=>array(self::BELONGS_TO, 'forumSections','sectionId')
             );
         }
 
         protected function beforeValidate() {
-            $this->postedBy = (!empty($this->postedBy) ? $this->postedBy : Yii::app()->user->id);
-            $this->postTime = (!empty($this->postTime) ? $this->postTime : time());
+            $this->userId = (!empty($this->userId) ? $this->userId : Yii::app()->user->id);
+            $this->userName = (!empty($this->userName) ? $this->userName : Yii::app()->user->name);
+            $this->createTime = (!empty($this->createTime) ? $this->createTime : time());
             return true;
         }
         
         protected function afterSave() {
             if ($this->isReply == true) {
                 forumTopics::model()->updateCounters(array('replyCount'=>1),array('condition'=>'`id`='.$this->topicId));
+                forumSections::model()->updateCounters(array('postCount'=>1),array('condition'=>'`id`='.$this->sectionId));
+            } else {
+                forumSections::model()->updateCounters(array('topicCount'=>1,'postCount'=>1),array('condition'=>'`id`='.$this->sectionId));
             }
         }
 
@@ -81,12 +85,12 @@ class forumPosts extends _CActiveRecord
         public function attributeLabels() {
             return array(
                     'topicId' => 'Topic',
-                    'postedBy' => 'Author',
+                    'userId' => 'Author',
                     'sectionId' => 'Section',
                     'title' => 'Title',
-                    'shortContent' => 'Short Content',
+                    'summary' => 'Summary',
                     'content' => 'Message',
-                    'postTime' => 'Posted on',
+                    'createTime' => 'Posted on',
             );
         }
 
@@ -105,17 +109,17 @@ class forumPosts extends _CActiveRecord
 
 		$criteria->compare('topicId',$this->topicId);
 
-		$criteria->compare('postedBy',$this->postedBy);
+		$criteria->compare('userId',$this->userId);
 
 		$criteria->compare('sectionId',$this->sectionId);
 
 		$criteria->compare('title',$this->title,true);
 
-		$criteria->compare('shortContent',$this->shortContent,true);
+		$criteria->compare('summary',$this->summary,true);
 
 		$criteria->compare('content',$this->content,true);
 
-		$criteria->compare('postTime',$this->postTime);
+		$criteria->compare('createTime',$this->createTime);
 
 		return new CActiveDataProvider('w3_forum_posts', array(
 			'criteria'=>$criteria,

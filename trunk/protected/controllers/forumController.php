@@ -60,7 +60,7 @@ class forumController extends _CController {
         $sectionId = Yii::app()->request->getQuery('sid',false);
         if ($sectionId == false)
             $this->redirect($this->createAbsoluteUrl('forum/index'));
-        $criteria = new CDbCriteria(array('with'=>array('section'=>array('select'=>'parentId,name,description'),'user'=>array('select'=>'username'),'post'),'condition'=>'`t`.`sectionId`='.$sectionId));
+        $criteria = new CDbCriteria(array('with'=>array('section'=>array('select'=>'parentId,name,description'),'user'=>array('select'=>'username'),'post'=>array('select'=>'userId,userName,createTime')),'condition'=>'`t`.`sectionId`='.$sectionId));
         $models = forumTopics::model()->findAll($criteria);
         if (empty($models)) {
             MUserFlash::setTopInfo('There are no topics in this section.');
@@ -107,8 +107,9 @@ class forumController extends _CController {
             $this->redirect($this->createAbsoluteUrl('forum/index'));
         list($forumPosts,$forumTopics) = array(new forumPosts,new forumTopics);
         if (Yii::app()->request->getIsPostRequest() != false) {
-            list($forumTopics->sectionId,$forumPosts->sectionId,$forumPosts->attributes)
-                    = array($sectionId,$sectionId,$_POST['forumPosts']);
+            $post = array_merge($_POST['forumPosts'], $_POST['forumTopics']);
+            list($forumTopics->sectionId,$forumPosts->sectionId,$forumPosts->attributes,$forumTopics->attributes)
+                    = array($sectionId,$sectionId,$post,$post);
             if ($forumPosts->validate() && $forumTopics->validate()) {
                 $forumTopics->save(false);
                 $forumPosts->topicId = $forumTopics->id;

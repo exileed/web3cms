@@ -19,8 +19,12 @@ echo $this->renderPartial('_actionbar',array('tid'=>$tid,'sid'=>$sectionId));
         foreach ($models as $model):?>
     <tr class="w3-grid-row">
         <td valign="top" colspan="1" rowspan="2">
-            <strong><?php echo CHtml::link(CHtml::encode($model->userName), array('user/show', 'id'=>$model->userId)); ?></strong><br />
+            <strong>
+            <?php if (!empty($model->user->id)):?>
+            <?php echo CHtml::link(CHtml::encode($model->userName), array('user/show', 'id'=>$model->userId)); ?></strong><br />
             Joined: <?php echo MDate::format($model->user->createTime);?>
+            <?php else:?>
+            <?php echo CHtml::encode($model->userName);endif;?>
         </td>
         <td valign="top" align="right">
             <?php

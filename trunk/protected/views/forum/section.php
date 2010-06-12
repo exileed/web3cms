@@ -20,11 +20,12 @@ if (!empty($models)):?>
         <?php
         foreach ($models as $model):?>
     <tr class="w3-grid-row">
-        <td><strong><?php echo CHtml::link(CHtml::encode($model->post[0]->title), array('forum/topic', 'id'=>$model->id, ''=>MStr::seoFormat($model->post[0]->title))).'</strong><br/>'.CHtml::encode(MStr::shorten($model->post[0]->summary,128)); ?></td>
-        <td><?php echo CHtml::link(CHtml::encode($model->user->username),array('user/show', 'id'=>$model->user->id)); ?></td>
+        <td><strong><?php echo CHtml::link(CHtml::encode($model->title), array('forum/topic', 'id'=>$model->id, ''=>MStr::seoFormat($model->title))).'</strong><br/>'.CHtml::encode(MStr::shorten($model->summary,128)); ?></td>
+        <td><?php echo (!empty($model->user) ? CHtml::link(CHtml::encode($model->user->username),array('user/show', 'id'=>$model->user->id)) : CHtml::encode($model->userName)); ?></td>
         <td><?php echo CHtml::encode($model->replyCount); ?></td>
         <td><?php echo CHtml::encode($model->viewCount); ?></td>
-        <td><?php echo CHtml::encode(MDate::format($model->post[0]->createTime)); ?></td>
+        <td>By <?php echo (!empty($model->post[0]->userId) ? CHtml::link(CHtml::encode($model->post[0]->userName),array('user/show', 'id'=>$model->post[0]->userId)) : CHtml::encode($model->post[0]->userName));?><br/>
+            On <?php echo CHtml::encode(MDate::format($model->post[0]->createTime)); ?></td>
         <?php if (User::isAdministrator()) :?><td><?php echo CHtml::link('<span class="ui-icon ui-icon-pencil"></span>',array('update','id'=>$model->id),array(
                             'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-first ui-corner-all',
                             'title'=>Yii::t('link','Edit')

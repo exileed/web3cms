@@ -67,6 +67,8 @@ CREATE TABLE w3_forum_topics (
       hasPoll BOOL NULL DEFAULT 0,
       isActive BOOL NULL DEFAULT 1,
       accessLevel TINYINT UNSIGNED NULL DEFAULT 0,
+      title TINYTEXT NOT NULL,
+      summary TINYTEXT NULL,
       createTime INTEGER UNSIGNED NOT NULL,
       PRIMARY KEY(id, sectionId, userId),
       INDEX w3_forum_topics_FKIndex1(sectionId),

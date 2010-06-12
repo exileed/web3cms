@@ -7,16 +7,16 @@ echo $this->renderPartial('_common'); ?>
 <div class="w3-main-form-box ui-widget-content ui-corner-all">
     <?php echo _CHtml::beginForm('','post',array('class'=>'w3-main-form'))."\n"; ?>
     <div class="w3-form-row w3-first">
-        <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($forumPosts,'title'); ?></div>
+        <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($forumTopics,'title'); ?></div>
         <div class="w3-form-row-input">
-            <?php echo _CHtml::activeTextField($forumPosts,'title',array('class'=>'w3-input-text ui-widget-content ui-corner-all','maxlength'=>255))."\n"; ?>
+            <?php echo _CHtml::activeTextField($forumTopics,'title',array('class'=>'w3-input-text ui-widget-content ui-corner-all','maxlength'=>255))."\n"; ?>
         </div>
         <div class="clear">&nbsp;</div>
     </div>
     <div class="w3-form-row">
-        <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($forumPosts,'summary'); ?></div>
+        <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($forumTopics,'summary'); ?></div>
         <div class="w3-form-row-input">
-            <?php echo _CHtml::activeTextField($forumPosts,'summary',array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+            <?php echo _CHtml::activeTextField($forumTopics,'summary',array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
         </div>
         <div class="clear">&nbsp;</div>
     </div>

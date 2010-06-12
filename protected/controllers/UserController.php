@@ -34,7 +34,7 @@ class UserController extends _CController
                 'users'=>array('*'),
             ),
             array('allow', // following actions are checked by {@link checkAccessBeforeAction}
-                'actions'=>array('create','grid','gridData','list','update','updateInterface'),
+                'actions'=>array('create','grid','gridData','list','update','updateInterface','ajaxDelete','delete'),
                 'users'=>array('*'),
             ),
             /*array('allow', // allow authenticated user to perform 'create' actions
@@ -572,14 +572,15 @@ class UserController extends _CController
      */
     public function actionUpdateInterface()
     {
-        if(!Yii::app()->user->checkAccess($this->route,array('model'=>$this->loadModel())))
+        $model = $this->loadModel();
+        if(!Yii::app()->user->checkAccess($this->route,array('model'=>$model)))
         {
             // access denied
             MUserFlash::setTopError(Yii::t('accessDenied',$this->route));
             $this->redirect($this->getGotoUrl());
         }
         $pkIsPassed=isset($_GET['id']);
-        if(($model=$this->loadModel())===null)
+        if($model===null)
         {
             // model not found
             MUserFlash::setTopError(Yii::t('modelNotFound',$this->id));
@@ -639,6 +640,21 @@ class UserController extends _CController
         }
         // display the update form
         $this->render($this->action->id,array('model'=>$model,'pkIsPassed'=>$pkIsPassed));
+    }
+
+    /*
+     * User deletion
+     */
+    public function actionAjaxDelete() {
+        if(!Yii::app()->user->checkAccess($this->route,array('model'=>$this->loadModel())))
+        {
+            // access denied
+            MUserFlash::setTopError(Yii::t('accessDenied',$this->route));
+        } else {
+            $this->loadModel()->deleteByPk(Yii::app()->request->getParam('id'));
+            MUserFlash::setTopSuccess(Yii::t('hint','User deletion succeeded.'));
+        }
+        $this->redirect($this->getGotoUrl());
     }
 
     /**
@@ -864,6 +880,10 @@ class UserController extends _CController
                         CHtml::link('<span class="ui-icon ui-icon-pencil"></span>',array('update','id'=>$model->id),array(
                             'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-last ui-corner-all',
                             'title'=>Yii::t('link','Edit')
+                        )).
+                        CHtml::link('<span class="ui-icon ui-icon-trash"></span>',array('delete','id'=>$model->id),array(
+                            'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-last ui-corner-all',
+                            'title'=>Yii::t('link','Delete')
                         )),
                 ),
             );
@@ -1021,6 +1041,10 @@ class UserController extends _CController
                 CHtml::link('<span class="ui-icon ui-icon-pencil"></span>',array('update','id'=>$model->id),array(
                     'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-last ui-corner-all',
                     'title'=>Yii::t('link','Edit')
+                )).
+                CHtml::link('<span class="ui-icon ui-icon-trash"></span>',array('delete','id'=>$model->id),array(
+                    'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-last ui-corner-all',
+                    'title'=>Yii::t('link','Delete')
                 )),
             ));
         }

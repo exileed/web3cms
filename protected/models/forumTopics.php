@@ -15,6 +15,9 @@ class forumTopics extends _CActiveRecord
 	 * @var integer $hasPoll
 	 * @var integer $isActive
 	 * @var integer $accessLevel
+	 * @var string $title
+	 * @var string $summary
+	 * @var integer $createTime
 	 */
 
         /**
@@ -42,11 +45,11 @@ class forumTopics extends _CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('sectionId','required','message'=>'The section id must be defined.'),
+			array('sectionId, title','required','message'=>'{attribute} must be defined.'),
                         array('replyCount, viewCount, closed, sticky, hasPoll, isActive, accessLevel', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('userId, userName, sectionId, replyCount, viewCount, closed, sticky, hasPoll, isActive, accessLevel', 'safe', 'on'=>'search'),
+			array('userId, userName, sectionId, replyCount, viewCount, closed, sticky, hasPoll, isActive, accessLevel, title, summary', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -60,7 +63,7 @@ class forumTopics extends _CActiveRecord
 		return array(
                     'section'=>array(self::BELONGS_TO, 'forumSections', 'sectionId'),
                     'user'=>array(self::BELONGS_TO, 'User','userId'),
-                    'post'=>array(self::HAS_MANY, 'forumPosts','topicId'),
+                    'post'=>array(self::HAS_MANY, 'forumPosts','topicId','order'=>'`post`.`createTime` DESC'),
 		);
 	}
 
@@ -86,6 +89,8 @@ class forumTopics extends _CActiveRecord
 			'hasPoll' => 'Has Poll',
 			'isActive' => 'Is Active',
 			'accessLevel' => 'Access Level',
+                        'title' => 'Title',
+                        'summary' => 'Summary',
 		);
 	}
 

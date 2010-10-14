@@ -148,7 +148,7 @@
     <div class="w3-form-row-text">
       <?php echo Yii::t('hint','{saveButton} or {cancelLink}',array(
           '{saveButton}'=>_CHtml::submitButton(Yii::t('link','Save'),array('class'=>'w3-input-button ui-state-default ui-corner-all')),
-          '{cancelLink}'=>CHtml::link(Yii::t('link','Cancel[form]'),array('user/')/*($model->isMe && !$pkIsPassed) ? array('show') : array('show','id'=>$model->id)*/),
+          '{cancelLink}'=>CHtml::link(Yii::t('link','Cancel[form]'),($model->isMe && !$pkIsPassed) ? array('show') : array('show','id'=>$model->id)),
       ))."\n"; ?>
     </div>
   </div>

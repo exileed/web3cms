@@ -45,12 +45,10 @@ class User extends _CActiveRecord
     /**
      * @var integer counters used in the sql queries
      */
-    public $countTask,$countTime,$countConsultantTime,$countMangerTime;
-
-    /**
-     * Temporary fix
-     */
-    public $invoiceId;
+    public $countTask;
+    public $countTime;
+    public $countConsultantTime;
+    public $countMangerTime;
 
     /**
      * @var array of user private data, like 'accessType'.
@@ -374,14 +372,6 @@ class User extends _CActiveRecord
             // password needs to be encrypted
             $this->password=md5($this->password);
         return true;
-    }
-
-    /*
-     * Set userId to 0 @ forum tables to avoid link creation to profile
-     */
-    protected function afterDelete() {
-        forumTopics::model()->updateAll(array('userId'=>0),'`userId`='.$this->id);
-        forumPosts::model()->updateAll(array('userId'=>0),'`userId`='.$this->id);
     }
 
     /**

@@ -2,6 +2,11 @@
                    Web3CMS Change Log
                    ==================
 
+Version 1.1.1.r65 (update6) October 26, 2010
+-----------------------------------------
+- Upg: from Yii 1.1.0 to Yii 1.1.1
+- Fix: Corrected many small issues
+
 Version 1.1.0.r34 (update5) March 7, 2010
 -----------------------------------------
 - Upg: from Yii 1.0.9 to Yii 1.1.0

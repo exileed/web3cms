@@ -1,7 +1,7 @@
 <?php MParams::setPageLabel($model->isMe ? Yii::t('page','Edit my profile') : Yii::t('page','Edit member\'s profile')); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($model)); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($model->details)); ?>
-<?php if(User::isAdministrator()): ?>
+<?php if(Yii::app()->user->checkAccess(User::ADMINISTRATOR)): // FIXME: remove - deprecated ?>
 <?php MUserFlash::setSidebarInfo(Yii::t('hint','Required: {authRoles}.',
     array(1,'{authRoles}'=>implode(', ',array(Yii::t('t',User::ADMINISTRATOR_T))))
 )); ?>
@@ -23,12 +23,12 @@
             'text'=>Yii::t('link','Show member'),
             'url'=>array('show','id'=>$model->id),
             'icon'=>'person',
-            'visible'=>!$model->isMe && (User::isManager() || User::isAdministrator()),
+            'visible'=>!$model->isMe && Yii::app()->user->checkAccess($this->id.'/show'),
         ),
         array(
             'text'=>Yii::t('link','Change interface'),
             'url'=>array('updateInterface','id'=>$model->id),
-            'visible'=>!$model->isMe && User::isAdministrator(),
+            'visible'=>!$model->isMe && Yii::app()->user->checkAccess($this->id.'/updateInterface'),
         ),
         array(
             'text'=>Yii::t('link','List of members'),
@@ -40,13 +40,13 @@
             'text'=>Yii::t('link','Grid of members'),
             'url'=>array('grid'),
             'icon'=>'calculator',
-            'visible'=>User::isAdministrator(),
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/grid'),
         ),
         array(
             'text'=>Yii::t('link','Create a new member'),
             'url'=>array('create'),
             'icon'=>'plus',
-            'visible'=>User::isAdministrator(),
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/create'),
         ),
     ),
 )); ?>
@@ -54,8 +54,9 @@
     'breadcrumbs'=>array(
         array(
             'text'=>Yii::t('link','Members'),
-            'url'=>array($this->id.'/'),
+            'url'=>array($this->id.'/'.$this->defaultAction),
             'active'=>false,
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/'.$this->defaultAction),
         ),
         array(
             'text'=>Yii::t('link','My profile'),
@@ -65,7 +66,7 @@
         array(
             'text'=>Yii::t('link','"{screenName}" member',array('{screenName}'=>$model->screenName)),
             'url'=>array('show','id'=>$model->id),
-            'visible'=>!$model->isMe,
+            'visible'=>!$model->isMe && Yii::app()->user->checkAccess($this->id.'/show'),
         ),
         array(
             'url'=>($model->isMe&&!$pkIsPassed) ? array($this->action->id) : array($this->action->id,'id'=>$model->id),
@@ -77,7 +78,7 @@
 
 <?php echo _CHtml::beginForm('','post',array('class'=>'w3-main-form'))."\n"; ?>
 
-<?php if(User::isAdministrator()): ?>
+<?php if(Yii::app()->user->checkAccess(User::ADMINISTRATOR)): ?>
 <div class="w3-form-row w3-first">
   <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($model,'isActive'); ?></div>
   <div class="w3-form-row-input">
@@ -109,7 +110,7 @@
   </div>
   <div class="clear">&nbsp;</div>
 </div>
-<?php if(User::isAdministrator()): ?>
+<?php if(Yii::app()->user->checkAccess(User::ADMINISTRATOR)): ?>
 <div class="w3-form-row">
   <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($model,'accessType'); ?></div>
   <div class="w3-form-row-input">

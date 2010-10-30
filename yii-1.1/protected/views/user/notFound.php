@@ -12,13 +12,13 @@
             'text'=>Yii::t('link','Grid of members'),
             'url'=>array('grid'),
             'icon'=>'calculator',
-            'visible'=>User::isAdministrator(),
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/grid'),
         ),
         array(
             'text'=>Yii::t('link','Create a new member'),
             'url'=>array('create'),
             'icon'=>'plus',
-            'visible'=>User::isAdministrator(),
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/create'),
         ),
     ),
 )); ?>
@@ -27,8 +27,9 @@
     'breadcrumbs'=>array(
         array(
             'text'=>Yii::t('link','Members'),
-            'url'=>array($this->id.'/'),
-            'active'=>false
+            'url'=>array($this->id.'/'.$this->defaultAction),
+            'active'=>false,
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/'.$this->defaultAction),
         ),
     ),
 )); ?>

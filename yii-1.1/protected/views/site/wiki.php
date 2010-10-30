@@ -34,6 +34,7 @@ Can view his tasks.<br/>
 Can view unassigned tasks.<br/>
 Can view his time records.<br/>
 Can view projects associated with his tasks.<br/>
+<i>Can perform all actions with locations. (FIXME?)</i><br/>
 <i>TODO: Can add a time record.</i><br/>
 <br/>
 

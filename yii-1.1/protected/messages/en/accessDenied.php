@@ -38,6 +38,7 @@ $retval=array(
     'time/updateWhenInvoiceIsSet' => 'Access denied. We are sorry, but you don\'t have enough rights to edit a time record associated with an invoice.',
     'user/create' => 'Access denied. We are sorry, but you don\'t have enough rights to create a new member account.',
     'user/grid' => 'Access denied. We are sorry, but you don\'t have enough rights to browse members.',
+    'user/show' => 'Access denied. We are sorry, but you don\'t have enough rights to view the member account number {id}.',
     'user/update' => 'Access denied. We are sorry, but you don\'t have enough rights to edit a member account.',
     'user/updateInterface' => 'Access denied. We are sorry, but you don\'t have enough rights to change the user interface for a member account.',
 );

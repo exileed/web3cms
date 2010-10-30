@@ -7,6 +7,12 @@
 class _CController extends CController
 {
     /**
+     * @var string specifies the default action to be 'grid'.
+     * Note: Yii default action is 'index'.
+     */
+    public $defaultAction='grid';
+
+    /**
      * @var object instance of {@link MVariable}
      * MVariable is a storage of variables to share across all classes.
      * access it using Yii::app()->controller->var (or $this->var in the views).
@@ -155,6 +161,8 @@ class _CController extends CController
                     {
                         // set error message. should be displayed when redirect will be completed
                         MUserFlash::setTopError($message);
+                        // FIXME
+                        MUserFlash::setSidebarInfo(Yii::t('hint','Hint: Check <tt>components/_CUserIdentity:authorize()</tt> to change allowed actions.'));
                         // redirect now to user/login, user/show or to a more appropriate page
                         $this->redirect($this->getGotoUrl());
                     }
@@ -397,13 +405,13 @@ class _CController extends CController
             )
                 // got here via {@link CWebUser::loginRequired} - go to the previous url
                 $retval=Yii::app()->user->returnUrl;
-            else if((User::isConsultant() || User::isManager() || User::isAdministrator()) &&
+            else if((Yii::app()->user->checkAccess(User::CONSULTANT) || Yii::app()->user->checkAccess(User::MANAGER) || Yii::app()->user->checkAccess(User::ADMINISTRATOR)) &&
                 file_exists(Yii::app()->basePath.'/models/Task.php') &&
                 file_exists(Yii::app()->basePath.'/controllers/TaskController.php')
             )
                 // consultant, manager and administrator - go to the task page
                 $retval=array('task/');
-            else if(User::isClient() &&
+            else if(Yii::app()->user->checkAccess(User::CLIENT) &&
                 file_exists(Yii::app()->basePath.'/models/Company.php') &&
                 file_exists(Yii::app()->basePath.'/controllers/CompanyController.php')
             )

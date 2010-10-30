@@ -15,6 +15,7 @@
             'text'=>Yii::t('link','Grid of members'),
             'url'=>array('grid'),
             'icon'=>'calculator',
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/grid'),
         ),
     ),
 )); ?>
@@ -22,8 +23,9 @@
     'breadcrumbs'=>array(
         array(
             'text'=>Yii::t('link','Members'),
-            'url'=>array($this->id.'/'),
+            'url'=>array($this->id.'/'.$this->defaultAction),
             'active'=>false,
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/'.$this->defaultAction),
         ),
         array(
             'url'=>array($this->action->id),

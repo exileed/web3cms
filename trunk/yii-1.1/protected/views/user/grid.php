@@ -14,7 +14,7 @@
             'text'=>Yii::t('link','Add a member'),
             'url'=>array('create'),
             'icon'=>'plus',
-            'visible'=>User::isAdministrator(),
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/create'),
         ),
     ),
 )); ?>

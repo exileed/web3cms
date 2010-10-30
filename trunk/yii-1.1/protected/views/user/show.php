@@ -16,30 +16,30 @@
             'text'=>Yii::t('link','Edit member\'s profile'),
             'url'=>array('update','id'=>$model->id),
             'icon'=>'pencil',
-            'visible'=>!$model->isMe && User::isAdministrator(),
+            'visible'=>!$model->isMe && Yii::app()->user->checkAccess($this->id.'/update'),
         ),
         array(
             'text'=>Yii::t('link','Change interface'),
             'url'=>array('updateInterface','id'=>$model->id),
-            'visible'=>!$model->isMe && User::isAdministrator(),
+            'visible'=>!$model->isMe && Yii::app()->user->checkAccess($this->id.'/updateInterface'),
         ),
         array(
             'text'=>Yii::t('link','List of members'),
             'url'=>array('list'),
             'icon'=>'grip-solid-horizontal',
-            'visible'=>false,
+            'visible'=>false, // FIXME: create members list page
         ),
         array(
             'text'=>Yii::t('link','Grid of members'),
             'url'=>array('grid'),
             'icon'=>'calculator',
-            'visible'=>User::isAdministrator(),
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/grid'),
         ),
         array(
             'text'=>Yii::t('link','Create a new member'),
             'url'=>array('create'),
             'icon'=>'plus',
-            'visible'=>User::isAdministrator(),
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/create'),
         ),
     ),
 )); ?>
@@ -47,8 +47,9 @@
     'breadcrumbs'=>array(
         array(
             'text'=>Yii::t('link','Members'),
-            'url'=>array($this->id.'/'),
+            'url'=>array($this->id.'/'.$this->defaultAction),
             'active'=>false,
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/'.$this->defaultAction),
         ),
         array(
             'url'=>($model->isMe&&!$pkIsPassed) ?
@@ -61,7 +62,7 @@
 )); ?>
 <div class="w3-detail-box ui-widget-content ui-corner-all">
 
-<?php if($model->isMe || User::isAdministrator()): ?>
+<?php if($model->isMe || Yii::app()->user->checkAccess(User::ADMINISTRATOR)): ?>
 <?php if(!$model->isMe): ?>
 <div class="w3-detail-row<?php echo $this->var->isNotW3First ? '' : ' w3-first'; ?>">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->getAttributeLabel('isActive')); ?></div>
@@ -114,7 +115,7 @@
   <div class="clear">&nbsp;</div>
 </div>
 <?php endif; ?>
-<?php if($model->isMe || User::isAdministrator()): ?>
+<?php if($model->isMe || Yii::app()->user->checkAccess(User::ADMINISTRATOR)): ?>
 <div class="w3-detail-row">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->getAttributeLabel('accessType')); ?></div>
   <div class="w3-detail-row-value"><?php echo CHtml::encode($model->getAttributeView('accessType')); ?></div>
@@ -146,27 +147,27 @@
   <div class="clear">&nbsp;</div>
 </div>
 <?php endif; ?>
-<?php if(!empty($model->details->deactivationTime)): ?>
-<div class="w3-detail-row">
-  <div class="w3-detail-row-label"><?php echo CHtml::encode($model->details->getAttributeLabel('deactivationTime')); ?></div>
-  <div class="w3-detail-row-value"><?php echo CHtml::encode(MDate::format($model->details->deactivationTime,'full')); ?></div>
-  <div class="clear">&nbsp;</div>
-</div>
-<?php endif; ?>
 <?php endif; /*end if isMe || admin*/ ?>
 <div class="w3-detail-row">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->getAttributeLabel('createTime')); ?></div>
   <div class="w3-detail-row-value"><?php echo CHtml::encode(MDate::format($model->createTime,'full')); ?></div>
   <div class="clear">&nbsp;</div>
 </div>
-<?php if(($model->isMe || User::isAdministrator())/* && $model->details->updateTime*/): ?>
+<?php if(($model->isMe || Yii::app()->user->checkAccess(User::ADMINISTRATOR))/* && $model->details->updateTime*/): ?>
 <div class="w3-detail-row">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->details->getAttributeLabel('updateTime')); ?></div>
   <div class="w3-detail-row-value"><?php echo CHtml::encode(MDate::format($model->details->updateTime,'full')); ?></div>
   <div class="clear">&nbsp;</div>
 </div>
 <?php endif; ?>
-<?php if($model->hasVirtualAttribute('id') && ($model->isMe || User::isAdministrator())): ?>
+<?php if($model->isActive===User::IS_NOT_ACTIVE && !empty($model->details->deactivationTime) && ($model->isMe || Yii::app()->user->checkAccess(User::ADMINISTRATOR))): // FIXME: decide/define by default (NULL) is active or not? - currently yes ?>
+<div class="w3-detail-row">
+  <div class="w3-detail-row-label"><?php echo CHtml::encode($model->details->getAttributeLabel('deactivationTime')); ?></div>
+  <div class="w3-detail-row-value"><?php echo CHtml::encode(MDate::format($model->details->deactivationTime,'full')); ?></div>
+  <div class="clear">&nbsp;</div>
+</div>
+<?php endif; ?>
+<?php if($model->hasVirtualAttribute('id') && ($model->isMe || Yii::app()->user->checkAccess(User::ADMINISTRATOR))): ?>
 <div class="w3-detail-row">
   <div class="w3-detail-row-label"><?php echo CHtml::encode($model->getAttributeLabel('id')); ?></div>
   <div class="w3-detail-row-value"><?php echo CHtml::encode($model->id); ?></div>

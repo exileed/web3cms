@@ -1,6 +1,6 @@
 <?php MParams::setPageLabel(Yii::t('page','Change interface')); ?>
 <?php MUserFlash::setTopError(_CHtml::errorSummary($model)); ?>
-<?php if(User::isAdministrator()): ?>
+<?php if(Yii::app()->user->checkAccess(User::ADMINISTRATOR)): ?>
 <?php MUserFlash::setSidebarInfo(Yii::t('hint','Required: {authRoles}.',
     array(1,'{authRoles}'=>implode(', ',array(Yii::t('t',User::ADMINISTRATOR_T))))
 )); ?>
@@ -23,13 +23,13 @@
             'text'=>Yii::t('link','Show member'),
             'url'=>array('show','id'=>$model->id),
             'icon'=>'person',
-            'visible'=>!$model->isMe && (User::isManager() || User::isAdministrator()),
+            'visible'=>!$model->isMe && Yii::app()->user->checkAccess($this->id.'/show'),
         ),
         array(
             'text'=>Yii::t('link','Edit member\'s profile'),
             'url'=>array('update','id'=>$model->id),
             'icon'=>'pencil',
-            'visible'=>!$model->isMe && User::isAdministrator(),
+            'visible'=>!$model->isMe && Yii::app()->user->checkAccess($this->id.'/update'),
         ),
         array(
             'text'=>Yii::t('link','List of members'),
@@ -41,13 +41,13 @@
             'text'=>Yii::t('link','Grid of members'),
             'url'=>array('grid'),
             'icon'=>'calculator',
-            'visible'=>User::isAdministrator(),
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/grid'),
         ),
         array(
             'text'=>Yii::t('link','Create a new member'),
             'url'=>array('create'),
             'icon'=>'plus',
-            'visible'=>User::isAdministrator(),
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/create'),
         ),
     ),
 )); ?>

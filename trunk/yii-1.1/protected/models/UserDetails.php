@@ -56,7 +56,7 @@ class UserDetails extends _CActiveRecord
     public function rules()
     {
         $retval=array();
-        if(User::isAdministrator())
+        if(Yii::app()->user->checkAccess(User::ADMINISTRATOR))
         {
             // administratorNote is safe
             $retval[]=array('administratorNote', 'safe', 'on'=>'not sure');
@@ -75,7 +75,7 @@ class UserDetails extends _CActiveRecord
         $retval[]=array('isEmailConfirmed', 'in', 'range'=>array(null,self::EMAIL_IS_CONFIRMED,self::EMAIL_IS_NOT_CONFIRMED), 'strict'=>true, 'allowEmpty'=>false, 'on'=>'not sure');
         // isEmailVisible is in range
         $retval[]=array('isEmailVisible', 'in', 'range'=>array(null,self::EMAIL_IS_VISIBLE,self::EMAIL_IS_NOT_VISIBLE), 'strict'=>true, 'allowEmpty'=>false, 'on'=>'not sure');
-        if(User::isAdministrator())
+        if(Yii::app()->user->checkAccess(User::ADMINISTRATOR))
             // isScreenNameEditable needs to be a boolean
             $retval[]=array('isScreenNameEditable', 'boolean', 'on'=>'not sure');//in
         // lastLoginTime has to be 10 characters length max

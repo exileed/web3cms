@@ -446,10 +446,10 @@ class UserController extends _CController
             return false;
         }
         // loaded user is me?
-        if(!$model->isMe && !User::isManager() && !User::isAdministrator())
+        if(!$model->isMe && !Yii::app()->user->checkAccess($this->route))
         {
-            // not enough rights
-            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse members.'));
+            // access denied
+            MUserFlash::setTopError(Yii::t('accessDenied','user/show',array(1,'{id}'=>$model->id)));
             $this->redirect($this->getGotoUrl());
         }
         // render the view file
@@ -499,7 +499,7 @@ class UserController extends _CController
                 }
                 // user details
                 $details=array();
-                if($model->isActive===User::IS_ACTIVE && $model->details->deactivationTime!==null)
+                if($model->isActive===User::IS_ACTIVE && $model->details->deactivationTime!==null) // FIXME: if null means active, then add || $model->isActive===null
                     $details['deactivationTime']=null;
                 else if(($model->isActive===User::IS_NOT_ACTIVE || $model->isActive===null) && empty($model->details->deactivationTime))
                     $details['deactivationTime']=time();

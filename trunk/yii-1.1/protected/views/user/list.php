@@ -5,12 +5,13 @@
             'text'=>Yii::t('link','View as grid'),
             'url'=>array('grid'),
             'icon'=>'calculator',
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/grid'),
         ),
         array(
             'text'=>Yii::t('link','Add a member'),
             'url'=>array('create'),
             'icon'=>'plus',
-            'visible'=>User::isAdministrator(),
+            'visible'=>Yii::app()->user->checkAccess($this->id.'/create'),
         ),
     ),
 )); ?>

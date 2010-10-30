@@ -35,9 +35,9 @@
         array('label'=>Yii::t('link','Contact'), 'url'=>array('site/contact'), 'visible'=>true, 'options'=>array('title'=>Yii::t('link','Contact us'))),
         array('label'=>Yii::t('link','Login'), 'url'=>Yii::app()->user->loginUrl, 'visible'=>Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Authenticate using my member account'))),
         array('label'=>Yii::t('link','Register'), 'url'=>array('user/register'), 'visible'=>Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Create a new member account'))),
-        array('label'=>Yii::t('link','Member'), 'url'=>array('user/'), 'visible'=>User::isAdministrator(), 'options'=>array('title'=>Yii::t('link','Browse members'))),
+        array('label'=>Yii::t('link','Members'), 'url'=>array('user/grid'), 'visible'=>Yii::app()->user->checkAccess('user/grid'), 'options'=>array('title'=>Yii::t('link','Browse members'))), // FIXME: replace 'grid' with $defaultAction
         array('label'=>Yii::t('link','My profile'), 'url'=>array('user/show'), 'visible'=>!Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','View my profile'))),
-        array('label'=>Yii::t('link','Wiki'), 'url'=>array('site/wiki'), 'visible'=>(User::isManager() || User::isAdministrator()), 'options'=>array('title'=>Yii::t('link','Application wiki'))),
+        array('label'=>Yii::t('link','Wiki'), 'url'=>array('site/wiki'), 'visible'=>(Yii::app()->user->checkAccess(User::MANAGER) || Yii::app()->user->checkAccess(User::ADMINISTRATOR)), 'options'=>array('title'=>Yii::t('link','Application wiki'))),
         array('label'=>Yii::t('link','Logout'), 'url'=>array('user/logout'), 'visible'=>!Yii::app()->user->isGuest, 'options'=>array('title'=>Yii::t('link','Leave my member account'))),
     ),
 )); ?>

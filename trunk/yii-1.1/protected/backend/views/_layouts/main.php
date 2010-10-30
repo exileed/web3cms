@@ -32,9 +32,9 @@
 <?php $this->widget('application.components.WMainMenu',array(
     'items'=>array(
         array('label'=>Yii::t('link','Home'), 'url'=>array('site/index'), 'options'=>array('title'=>Yii::t('link','Main page'))),
-        array('label'=>Yii::t('link','Login'), 'url'=>Yii::app()->user->loginUrl, 'visible'=>!User::isAdministrator(), 'options'=>array('title'=>Yii::t('link','Authenticate using my member account'))),
-        //array('label'=>Yii::t('link','My profile'), 'url'=>array('user/show'), 'visible'=>User::isAdministrator(), 'options'=>array('title'=>Yii::t('link','View my profile'))),
-        array('label'=>Yii::t('link','Logout'), 'url'=>array('user/logout'), 'visible'=>User::isAdministrator(), 'options'=>array('title'=>Yii::t('link','Leave my member account'))),
+        array('label'=>Yii::t('link','Login'), 'url'=>Yii::app()->user->loginUrl, 'visible'=>!Yii::app()->user->checkAccess(User::ADMINISTRATOR), 'options'=>array('title'=>Yii::t('link','Authenticate using my member account'))),
+        //array('label'=>Yii::t('link','My profile'), 'url'=>array('user/show'), 'visible'=>Yii::app()->user->checkAccess(User::ADMINISTRATOR), 'options'=>array('title'=>Yii::t('link','View my profile'))),
+        array('label'=>Yii::t('link','Logout'), 'url'=>array('user/logout'), 'visible'=>Yii::app()->user->checkAccess(User::ADMINISTRATOR), 'options'=>array('title'=>Yii::t('link','Leave my member account'))),
     ),
 )); ?>
 </div><!-- w3-header -->

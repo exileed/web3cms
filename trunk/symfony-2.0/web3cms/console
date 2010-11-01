@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__.'/Web3cmsKernel.php';
+
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+
+$kernel = new Web3cmsKernel('dev', true);
+
+$application = new Application($kernel);
+$application->run();

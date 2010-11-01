@@ -48,19 +48,19 @@ class TimeController extends _CController
      */
     public function actionShow()
     {
-        if(!User::isClient() && !User::isConsultant() && !User::isManager() && !User::isAdministrator())
+        if(!Yii::app()->user->checkAccess($this->route,array('model'=>($model=$this->loadModel()))))
         {
-            // not enough rights
-            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse the time records.'));
+            // access denied
+            MUserFlash::setTopError(Yii::t('accessDenied',$this->route,array(1,'{id}'=>(is_object($model) ? $model->id : '?'))));
             $this->redirect($this->getGotoUrl());
         }
 
         $with=array('consultant','manager','task','task.company','task.project');
-        /*if(User::isClient())
+        /*if(Yii::app()->user->checkAccess(User::CLIENT))
             $with[]='task.company.allUser2Company';*/
         $model=$this->loadModel(array('with'=>$with));
         // may member view this record?
-        if(User::isClient())
+        if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             /*$allOwner=array();
             if(isset($model->task->company->allUser2Company))
@@ -74,19 +74,15 @@ class TimeController extends _CController
             if(!in_array(Yii::app()->user->id,$allOwner))*/
             if(!isset($model->task->company->id) || !$model->task->company->isOwner())
             {
-                MUserFlash::setTopError(Yii::t('hint',
-                    'We are sorry, but you don\'t have enough rights to view the time record number {id}.',
-                    array('{id}'=>MHtml::wrapInTag($model->id,'strong'))
-                ));
+            	// access denied
+                MUserFlash::setTopError(Yii::t('accessDenied',$this->route,array('{id}'=>MHtml::wrapInTag($model->id,'strong'))));
                 $this->redirect($this->getGotoUrl());
             }
         }
-        if(User::isConsultant() && (!isset($model->consultant->id) || $model->consultant->id!==Yii::app()->user->id))
+        if(Yii::app()->user->checkAccess(User::CONSULTANT) && (!isset($model->consultant->id) || $model->consultant->id!==Yii::app()->user->id))
         {
-            MUserFlash::setTopError(Yii::t('hint',
-                'We are sorry, but you don\'t have enough rights to view the time record number {id}.',
-                array('{id}'=>MHtml::wrapInTag($model->id,'strong'))
-            ));
+        	// access denied
+            MUserFlash::setTopError(Yii::t('accessDenied',$this->route,array('{id}'=>MHtml::wrapInTag($model->id,'strong'))));
             $this->redirect($this->getGotoUrl());
         }
 
@@ -150,7 +146,7 @@ class TimeController extends _CController
         else
         {
             // pre-assigned attributes (default values for a new record)
-            if(User::isManager() || User::isAdministrator())
+            if(Yii::app()->user->checkAccess(User::MANAGER) || Yii::app()->user->checkAccess(User::ADMINISTRATOR))
                 $model->isConfirmed=Time::IS_CONFIRMED;
             if(isset($_GET['taskId']))
                 // task is known
@@ -347,7 +343,7 @@ class TimeController extends _CController
         $consultant=isset($_GET['consultant']) ? $_GET['consultant'] : null;
         if($consultant!=='all' && $consultant!=='me' && !ctype_digit($consultant))
             $consultant='all';
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
             $consultant='me';
         $manager=isset($_GET['manager']) ? $_GET['manager'] : null;
         if($manager!=='all' && !ctype_digit($manager))
@@ -397,7 +393,7 @@ class TimeController extends _CController
             $criteria->addCondition("`Time_Task`.`id`=:taskId");
             $criteria->params[':taskId']=$task;
         }
-        if(User::isClient())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
         {
             $criteria->addCondition("`Company_User2Company`.`userId`=:clientId AND `Company_User2Company`.`position`=:clientPosition");
             $criteria->params[':clientId']=Yii::app()->user->id;
@@ -461,7 +457,7 @@ class TimeController extends _CController
         $companyLinkText=$company==='all' ? Yii::t('t','All companies') : '&nbsp;';
         $criteria=new CDbCriteria;
         $criteria->select="`t`.`id`, `t`.`title`, COUNT(`time`.`id`) as countTime";
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
         {
             $criteria->join="INNER JOIN `".Company2Project::model()->tableName()."` `c2p` ON `c2p`.`companyId`=`t`.`id`".
                 " INNER JOIN `".Project::model()->tableName()."` `project` ON `project`.`id`=`c2p`.`projectId`".
@@ -470,7 +466,7 @@ class TimeController extends _CController
             $criteria->condition="`time`.`consultantId`=:consultantId";
             $criteria->params[':consultantId']=Yii::app()->user->id;
         }
-        else if(User::isClient())
+        else if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             $criteria->join="INNER JOIN `".Company2Project::model()->tableName()."` `c2p` ON `c2p`.`companyId`=`t`.`id`".
                 " INNER JOIN `".Project::model()->tableName()."` `project` ON `project`.`id`=`c2p`.`projectId`".
@@ -509,7 +505,7 @@ class TimeController extends _CController
             'active'=>$consultant==='all'
         ));
         $consultantLinkText=$consultant==='all' ? Yii::t('t','All consultants') : '&nbsp;';
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
         {
             $allConsultant[0]=array(
                 'text'=>Yii::t('t','My time'),
@@ -523,7 +519,7 @@ class TimeController extends _CController
         {
             $criteria=new CDbCriteria;
             $criteria->select="`t`.`id`, `t`.`screenName`, COUNT(`time`.`id`) as countTime";
-            if(User::isClient())
+            if(Yii::app()->user->checkAccess(User::CLIENT))
             {
                 $criteria->join="INNER JOIN `".Time::model()->tableName()."` `time` ON `time`.`consultantId`=`t`.`id`".
                     " INNER JOIN `".Task::model()->tableName()."` `task` ON `task`.`id`=`time`.`taskId`".
@@ -561,13 +557,13 @@ class TimeController extends _CController
         $managerLinkText=$manager==='all' ? Yii::t('t','All managers') : '&nbsp;';
         $criteria=new CDbCriteria;
         $criteria->select="`t`.`id`, `t`.`screenName`, COUNT(`time`.`id`) as countTime";
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
         {
             $criteria->join="INNER JOIN `".Time::model()->tableName()."` `time` ON `time`.`managerId`=`t`.`id`";
             $criteria->condition="`time`.`consultantId`=:consultantId";
             $criteria->params[':consultantId']=Yii::app()->user->id;
         }
-        else if(User::isClient())
+        else if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             $criteria->join="INNER JOIN `".Time::model()->tableName()."` `time` ON `time`.`managerId`=`t`.`id`".
                 " INNER JOIN `".Task::model()->tableName()."` `task` ON `task`.`id`=`time`.`taskId`".
@@ -605,14 +601,14 @@ class TimeController extends _CController
         $criteria=new CDbCriteria;
         $criteria->select="`t`.id, `t`.title, COUNT(`time`.`id`) as countTime";
         //$criteria->select="`t`.`id`, `t`.`title`, COUNT(`time`.`id`) as countTime"; // uncomment in yii-1.1.2
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
         {
             $criteria->join="INNER JOIN `".Task::model()->tableName()."` `task` ON `task`.`projectId`=`t`.`id`".
                 " INNER JOIN `".Time::model()->tableName()."` `time` ON `time`.`taskId`=`task`.`id`";
             $criteria->condition="`time`.`consultantId`=:consultantId";
             $criteria->params[':consultantId']=Yii::app()->user->id;
         }
-        else if(User::isClient())
+        else if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             $criteria->join="INNER JOIN `".Task::model()->tableName()."` `task` ON `task`.`projectId`=`t`.`id`".
                 " INNER JOIN `".Time::model()->tableName()."` `time` ON `time`.`taskId`=`task`.`id`".
@@ -651,13 +647,13 @@ class TimeController extends _CController
         $criteria=new CDbCriteria;
         $criteria->select="`t`.id, `t`.title, COUNT(`time`.`id`) as countTime";
         //$criteria->select="`t`.`id`, `t`.`title`, COUNT(`time`.`id`) as countTime"; // uncomment in yii-1.1.2
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
         {
             $criteria->join="INNER JOIN `".Time::model()->tableName()."` `time` ON `time`.`taskId`=`t`.`id`";
             $criteria->condition="`time`.`consultantId`=:consultantId";
             $criteria->params[':consultantId']=Yii::app()->user->id;
         }
-        else if(User::isClient())
+        else if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             $criteria->join="INNER JOIN `".Time::model()->tableName()."` `time` ON `time`.`taskId`=`t`.`id`".
                 " INNER JOIN `".Company::model()->tableName()."` `company` ON `company`.`id`=`t`.`companyId`".
@@ -722,7 +718,7 @@ class TimeController extends _CController
                 ),
                 array(
                     'content'=>
-                        ((User::isManager() && empty($model->invoiceId)) || User::isAdministrator()) ?
+                        Yii::app()->user->checkAccess('time/show') ?
                             CHtml::link('<span class="ui-icon ui-icon-zoomin"></span>',array('show','id'=>$model->id),array(
                                 'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-first ui-corner-all',
                                 'title'=>Yii::t('link','Show')
@@ -791,7 +787,7 @@ class TimeController extends _CController
         $consultant=isset($_GET['consultant']) ? $_GET['consultant'] : null;
         if($consultant!=='all' && $consultant!=='me' && !ctype_digit($consultant))
             $consultant='all';
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
             $consultant='me';
         $manager=isset($_GET['manager']) ? $_GET['manager'] : null;
         if($manager!=='all' && !ctype_digit($manager))
@@ -870,7 +866,7 @@ class TimeController extends _CController
             $criteria->addCondition("`Time_Task`.`id`=:taskId");
             $criteria->params[':taskId']=$task;
         }
-        if(User::isClient())
+        if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             $criteria->addCondition("`Company_User2Company`.`userId`=:clientId AND `Company_User2Company`.`position`=:clientPosition");
             $criteria->params[':clientId']=Yii::app()->user->id;
@@ -943,7 +939,7 @@ class TimeController extends _CController
                 CHtml::encode($model->getAttributeView('spentMinute')),
                 CHtml::encode($model->getAttributeView('billedMinute')),
                 CHtml::encode($model->title),
-                ((User::isManager() && empty($model->invoiceId)) || User::isAdministrator()) ?
+                Yii::app()->user->checkAccess('time/show') ?
                     CHtml::link('<span class="ui-icon ui-icon-zoomin"></span>',array('show','id'=>$model->id),array(
                         'class'=>'w3-ig w3-link-icon w3-border-1px-transparent w3-first ui-corner-all',
                         'title'=>Yii::t('link','Show')
@@ -979,7 +975,7 @@ class TimeController extends _CController
         $criteria->order="`t`.`timeDate` ASC, `t`.`createTime` ASC";
 
         $with=array('task'=>array('select'=>'hourlyRate,title'),'task.company'=>array('select'=>'title'),'task.project'=>array('select'=>'title'));
-        if(User::isClient())
+        if(Yii::app()->user->checkAccess(User::CLIENT))
             $with['manager']=array('select'=>'screenName');
         else
             $with['consultant']=array('select'=>'screenName');
@@ -998,7 +994,7 @@ class TimeController extends _CController
             if(!isset($data[$companyId]['allProject'][$projectId]['allTask'][$taskId]['task']) && isset($model->task->id))
                $data[$companyId]['allProject'][$projectId]['allTask'][$taskId]['task']=$model->task;
             $timeId=$model->id;
-            if(User::isClient() || User::isConsultant())
+            if(Yii::app()->user->checkAccess(User::CLIENT) || Yii::app()->user->checkAccess(User::CONSULTANT))
                 $member=isset($model->manager->id) ? $model->manager : null;
             else
                 $member=isset($model->consultant->id) ? $model->consultant : null;

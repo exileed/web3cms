@@ -48,10 +48,10 @@ class ProjectController extends _CController
      */
     public function actionShow()
     {
-        if(!User::isClient() && !User::isConsultant() && !User::isManager() && !User::isAdministrator())
+        if(!Yii::app()->user->checkAccess($this->route,array('model'=>($model=$this->loadModel()))))
         {
-            // not enough rights
-            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse projects.'));
+            // access denied
+            MUserFlash::setTopError(Yii::t('accessDenied',$this->route,array(1,'{id}'=>(is_object($model) ? $model->id : '?'))));
             $this->redirect($this->getGotoUrl());
         }
 

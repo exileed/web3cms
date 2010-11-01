@@ -449,7 +449,7 @@ class UserController extends _CController
         if(!$model->isMe && !Yii::app()->user->checkAccess($this->route))
         {
             // access denied
-            MUserFlash::setTopError(Yii::t('accessDenied','user/show',array(1,'{id}'=>$model->id)));
+            MUserFlash::setTopError(Yii::t('accessDenied',$this->route,array(1,'{id}'=>$model->id)));
             $this->redirect($this->getGotoUrl());
         }
         // render the view file

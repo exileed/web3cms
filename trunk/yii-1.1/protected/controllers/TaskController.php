@@ -48,19 +48,19 @@ class TaskController extends _CController
      */
     public function actionShow()
     {
-        if(!User::isClient() && !User::isConsultant() && !User::isManager() && !User::isAdministrator())
+        if(!Yii::app()->user->checkAccess($this->route,array('model'=>($model=$this->loadModel()))))
         {
-            // not enough rights
-            MUserFlash::setTopError(Yii::t('hint','We are sorry, but you don\'t have enough rights to browse tasks.'));
+            // access denied
+            MUserFlash::setTopError(Yii::t('accessDenied',$this->route,array(1,'{id}'=>(is_object($model) ? $model->id : '?'))));
             $this->redirect($this->getGotoUrl());
         }
 
         $with=array('allConsultant','allManager','company','project');
-        /*if(User::isClient())
+        /*if(Yii::app()->user->checkAccess(User::CLIENT))
             $with[]='company.allUser2Company';*/
         $model=$this->loadModel(array('with'=>$with));
         // may member view this record?
-        if(User::isClient())
+        if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             /*$allOwner=array();
             if(isset($model->company->allUser2Company))
@@ -74,24 +74,18 @@ class TaskController extends _CController
             if(!in_array(Yii::app()->user->id,$allOwner))*/
             if(!isset($model->company->id) || !$model->company->isOwner())
             {
-                MUserFlash::setTopError(Yii::t('hint',
-                    'We are sorry, but you don\'t have enough rights to view the task record number {id}.',
-                    array('{id}'=>MHtml::wrapInTag($model->id,'strong'))
-                ));
+                MUserFlash::setTopError(Yii::t('accessDenied',$this->route,array('{id}'=>MHtml::wrapInTag($model->id,'strong'))));
                 $this->redirect($this->getGotoUrl());
             }
         }
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
         {
             $allConsultant=array();
             foreach($model->allConsultant as $consultant)
                 $allConsultant[]=$consultant->id;
             if(!in_array(Yii::app()->user->id,$allConsultant))
             {
-                MUserFlash::setTopError(Yii::t('hint',
-                    'We are sorry, but you don\'t have enough rights to view the task record number {id}.',
-                    array('{id}'=>MHtml::wrapInTag($model->id,'strong'))
-                ));
+                MUserFlash::setTopError(Yii::t('accessDenied',$this->route,array('{id}'=>MHtml::wrapInTag($model->id,'strong'))));
                 $this->redirect($this->getGotoUrl());
             }
         }
@@ -176,7 +170,7 @@ class TaskController extends _CController
             $model->openDate=MDate::formatToDb(time(),'date');
             $model->priority=Task::PRIORITY_MEDIUM;
             $model->status=Task::NOT_STARTED;
-            if(User::isManager() || User::isAdministrator())
+            if(Yii::app()->user->checkAccess(User::MANAGER) || Yii::app()->user->checkAccess(User::ADMINISTRATOR))
                 $model->isConfirmed=Task::IS_CONFIRMED;
             if(isset($_GET['projectId']))
                 // project is known
@@ -332,7 +326,7 @@ class TaskController extends _CController
         $consultant=isset($_GET['consultant']) ? $_GET['consultant'] : null;
         if($consultant!=='all' && $consultant!=='me' && $consultant!=='none' && !ctype_digit($consultant))
             $consultant='all';
-        if(User::isConsultant() && $consultant!=='none')
+        if(Yii::app()->user->checkAccess(User::CONSULTANT) && $consultant!=='none')
             $consultant='me';
         $priority=isset($_GET['priority']) ? $_GET['priority'] : null;
         if($priority!=='all' && $priority!==(string)Task::PRIORITY_HIGHEST && $priority!==(string)Task::PRIORITY_HIGH && $priority!==(string)Task::PRIORITY_MEDIUM && $priority!==(string)Task::PRIORITY_LOW && $priority!==(string)Task::PRIORITY_LOWEST)
@@ -341,7 +335,7 @@ class TaskController extends _CController
         if($project!=='all' && !ctype_digit($project))
             $project='all';
         $state=isset($_GET['state']) ? $_GET['state'] : null;
-        if(User::isClient() && $state===null)
+        if(Yii::app()->user->checkAccess(User::CLIENT) && $state===null)
             $state='all';
         if($state!=='all' && $state!=='closed' && $state!=='open' && $state!=='overdue')
             $state='open';
@@ -413,7 +407,7 @@ class TaskController extends _CController
         else if($state==='overdue')
             $criteria->addCondition("(((`t`.`closeDate` IS NULL OR TO_DAYS('".MDate::formatToDb(time(),'date')."') < TO_DAYS(`t`.`closeDate`))".
             " AND `t`.`status`!='".Task::CANCELLED."' AND `t`.`status`!='".Task::COMPLETED."') AND TO_DAYS('".MDate::formatToDb(time(),'date')."') >= TO_DAYS(`t`.`dueDate`))");
-        if(User::isClient())
+        if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             $criteria->addCondition("`Company_User2Company`.`userId`=:clientId AND `Company_User2Company`.`position`=:clientPosition");
             $criteria->params[':clientId']=Yii::app()->user->id;
@@ -472,7 +466,7 @@ class TaskController extends _CController
         $companyLinkText=$company==='all' ? Yii::t('t','All companies') : '&nbsp;';
         $criteria=new CDbCriteria;
         $criteria->select="`t`.`id`, `t`.`title`, COUNT(`task`.`id`) as countTask";
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
         {
             $criteria->join="INNER JOIN `".Company2Project::model()->tableName()."` `c2p` ON `c2p`.`companyId`=`t`.`id`".
                 " INNER JOIN `".Project::model()->tableName()."` `project` ON `project`.`id`=`c2p`.`projectId`".
@@ -482,7 +476,7 @@ class TaskController extends _CController
             $criteria->params[':consultantId']=Yii::app()->user->id;
             $criteria->params[':consultantRole']=User2Task::CONSULTANT;
         }
-        else if(User::isClient())
+        else if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             $criteria->join="INNER JOIN `".Company2Project::model()->tableName()."` `c2p` ON `c2p`.`companyId`=`t`.`id`".
                 " INNER JOIN `".Project::model()->tableName()."` `project` ON `project`.`id`=`c2p`.`projectId`".
@@ -525,7 +519,7 @@ class TaskController extends _CController
         $consultantLinkText=$consultant==='all' ? Yii::t('t','All leaders') : '&nbsp;';
         if($consultant==='none')
             $consultantLinkText=Yii::t('t','Unassigned[tasks]');
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
         {
             $allConsultant[0]=array(
                 'text'=>Yii::t('t','My tasks'),
@@ -539,7 +533,7 @@ class TaskController extends _CController
         {
             $criteria=new CDbCriteria;
             $criteria->select="`t`.`id`, `t`.`screenName`, COUNT(`task`.`id`) as countTask";
-            if(User::isClient())
+            if(Yii::app()->user->checkAccess(User::CLIENT))
             {
                 $criteria->join="INNER JOIN `".User2Task::model()->tableName()."` `u2t` ON `u2t`.`userId`=`t`.`id`".
                     " INNER JOIN `".Task::model()->tableName()."` `task` ON `task`.`id`=`u2t`.`taskId`".
@@ -583,7 +577,7 @@ class TaskController extends _CController
         $criteria=new CDbCriteria;
         $criteria->select="`t`.id, `t`.title, COUNT(`task`.`id`) as countTask";
         //$criteria->select="`t`.`id`, `t`.`title`, COUNT(`task`.`id`) as countTask"; // uncomment in yii-1.1.2
-        if(User::isConsultant())
+        if(Yii::app()->user->checkAccess(User::CONSULTANT))
         {
             $criteria->join="INNER JOIN `".Task::model()->tableName()."` `task` ON `task`.`projectId`=`t`.`id`".
                 " INNER JOIN `".User2Task::model()->tableName()."` `u2t` ON `u2t`.`taskId`=`task`.`id`";
@@ -591,7 +585,7 @@ class TaskController extends _CController
             $criteria->params[':consultantId']=Yii::app()->user->id;
             $criteria->params[':consultantRole']=User2Task::CONSULTANT;
         }
-        else if(User::isClient())
+        else if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             $criteria->join="INNER JOIN `".Task::model()->tableName()."` `task` ON `task`.`projectId`=`t`.`id`".
                 " INNER JOIN `".Company::model()->tableName()."` `company` ON `company`.`id`=`task`.`companyId`".
@@ -802,7 +796,7 @@ class TaskController extends _CController
         $consultant=isset($_GET['consultant']) ? $_GET['consultant'] : null;
         if($consultant!=='all' && $consultant!=='me' && $consultant!=='none' && !ctype_digit($consultant))
             $consultant='all';
-        if(User::isConsultant() && $consultant!=='none')
+        if(Yii::app()->user->checkAccess(User::CONSULTANT) && $consultant!=='none')
             $consultant='me';
         $priority=isset($_GET['priority']) ? $_GET['priority'] : null;
         if($priority!=='all' && $priority!==(string)Task::PRIORITY_HIGHEST && $priority!==(string)Task::PRIORITY_HIGH && $priority!==(string)Task::PRIORITY_MEDIUM && $priority!==(string)Task::PRIORITY_LOW && $priority!==(string)Task::PRIORITY_LOWEST)
@@ -811,7 +805,7 @@ class TaskController extends _CController
         if($project!=='all' && !ctype_digit($project))
             $project='all';
         $state=isset($_GET['state']) ? $_GET['state'] : null;
-        if(User::isClient() && $state===null)
+        if(Yii::app()->user->checkAccess(User::CLIENT) && $state===null)
             $state='all';
         if($state!=='all' && $state!=='closed' && $state!=='open' && $state!=='overdue')
             $state='open';
@@ -911,7 +905,7 @@ class TaskController extends _CController
             $criteria->addCondition("(((`t`.`closeDate` IS NULL OR TO_DAYS('".MDate::formatToDb(time(),'date')."') < TO_DAYS(`t`.`closeDate`))".
             " AND `t`.`status`!='".Task::CANCELLED."' AND `t`.`status`!='".Task::COMPLETED."')".
             " AND TO_DAYS('".MDate::formatToDb(time(),'date')."') >= TO_DAYS(`t`.`dueDate`))");
-        if(User::isClient())
+        if(Yii::app()->user->checkAccess(User::CLIENT))
         {
             $criteria->addCondition("`Company_User2Company`.`userId`=:clientId AND `Company_User2Company`.`position`=:clientPosition");
             $criteria->params[':clientId']=Yii::app()->user->id;

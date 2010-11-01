@@ -8,7 +8,7 @@ class MigrateController extends _CController
     public function actionIndex()
     {
         // check rights
-        if(!User::isAdministrator())
+        if(!Yii::app()->user->checkAccess(User::ADMINISTRATOR))
             throw new CHttpException(403,Yii::t('Yii','You are not authorized to perform this action.'));
         // models to migrate
         $migrate=array(

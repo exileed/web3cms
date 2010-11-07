@@ -1,3 +1,3 @@
 <?php $view->extend('SiteBundle::layout') ?>
 
-Hey <?php echo $name ?>!
+Welcome to the site homepage!

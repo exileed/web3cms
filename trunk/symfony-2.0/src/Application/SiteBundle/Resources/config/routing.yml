@@ -1,3 +1,3 @@
 site:
-    pattern:  /hey/:name
+    pattern:  /homepage
     defaults: { _controller: SiteBundle:Site:index }

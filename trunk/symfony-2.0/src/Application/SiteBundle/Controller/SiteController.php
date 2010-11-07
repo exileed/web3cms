@@ -6,11 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class SiteController extends Controller
 {
-    public function indexAction($name)
+    public function indexAction()
     {
-        return $this->render('SiteBundle:Site:index', array('name' => $name));
-
-        // render a Twig template instead
-        // return $this->render('SiteBundle:Site:index:twig', array('name' => $name));
+        return $this->render('SiteBundle:Site:index');
     }
 }

@@ -10,4 +10,9 @@ class SiteController extends Controller
     {
         return $this->render('SiteBundle:Site:index');
     }
+
+    public function contactAction()
+    {
+        return $this->render('SiteBundle:Site:contact');
+    }
 }

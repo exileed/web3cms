@@ -46,7 +46,7 @@ if (typeof jQuery.ui == 'undefined') {
 <div class="w3-header">
 <div class="container_16">
 <div class="grid_16">
-<div class="w3-logo"><h1><a href="<?php echo $view['assets']->getUrl('') ?>"><?php $view['slots']->output('headerTitle', 'My Web3CMS') ?></a></h1></div>
+<div class="w3-logo"><h1><a href="<?php echo $view['router']->generate('homepage') ?>"><?php $view['slots']->output('headerTitle', 'My Web3CMS') ?></a></h1></div>
 </div>
 </div><!-- container_16 -->
 <div class="clear">&nbsp;</div>
@@ -55,8 +55,8 @@ if (typeof jQuery.ui == 'undefined') {
 <div class="grid_16">
 <div class="w3-main-menu">
   <ul>
-    <li class="ui-state-default ui-corner-all w3-first"><a title="Home page" href="<?php echo $view['assets']->getUrl('') ?>">Home</a></li>
-    <li class="ui-state-default ui-corner-all ui-state-active"><a title="Contact us" href="<?php echo $view['assets']->getUrl('contact') ?>">Contact</a></li>
+    <li class="ui-state-default ui-corner-all w3-first"><a title="Home page" href="<?php echo $view['router']->generate('homepage') ?>">Home</a></li>
+    <li class="ui-state-default ui-corner-all ui-state-active"><a title="Contact us" href="<?php echo $view['router']->generate('contact') ?>">Contact</a></li>
     <li class="ui-state-default ui-corner-all w3-last"><a title="Tmp" href="./tmp">Tmp</a></li>
   </ul>
 </div><!-- w3-main-menu -->

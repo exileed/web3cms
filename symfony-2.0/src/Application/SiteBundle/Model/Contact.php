@@ -3,7 +3,7 @@
 namespace Application\SiteBundle\Model;
 
 /**
- * The Contact Form
+ * Site Contact Form
  */
 class Contact
 {

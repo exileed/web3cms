@@ -86,7 +86,7 @@
   </div>
   <div class="clear">&nbsp;</div>
 </div>
-<div class="w3-form-row">
+<div class="w3-form-row w3-last">
   <div class="w3-form-row-input w3-form-row-2columns w3-center">
     <div class="w3-form-row-text">
       <?php echo Yii::t('hint','{saveButton} or {cancelLink}',array(

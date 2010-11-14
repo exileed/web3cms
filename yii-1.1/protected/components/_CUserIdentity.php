@@ -26,11 +26,11 @@ class _CUserIdentity extends CUserIdentity
      */
     public function authenticate()
     {
-        if(UserLoginForm::getLoggingWithField()==='username')
+        if(LoginForm::getLoggingWithField()==='username')
             $user=User::model()->findByAttributes(array('username'=>$this->username));
-        else if(UserLoginForm::getLoggingWithField()==='email')
+        else if(LoginForm::getLoggingWithField()==='email')
             $user=User::model()->findByAttributes(array('email'=>$this->username));
-        else if(UserLoginForm::getLoggingWithField()==='usernameOrEmail')
+        else if(LoginForm::getLoggingWithField()==='usernameOrEmail')
             $user=User::model()->find("`username`=? OR `email`=?",array($this->username,$this->username));
         if($user===null)
             $this->errorCode=self::ERROR_USERNAME_INVALID;

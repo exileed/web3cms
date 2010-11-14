@@ -18,17 +18,21 @@ class SiteController extends Controller
     public function indexAction()
     {
         return $this->render('SiteBundle:Site:index');
+
+        // render a Twig template instead
+        // return $this->render('SiteBundle:Site:index:twig');
     }
 
     /**
-     * Contact us page - has one simple form to contact site owner.
+     * Contact us page
+     * Display one simple form to contact site owner, and process it.
      */
     public function contactAction()
     {
         $contact = new Contact();
 
         $form = new Form('contact', $contact, $this->container->getValidatorService());
-        $form->add(new TextField('name', array('required'=>true)));
+        $form->add(new TextField('name'));
         $form->add(new TextField('email'));
         $form->add(new TextField('subject'));
         $form->add(new TextareaField('content'));

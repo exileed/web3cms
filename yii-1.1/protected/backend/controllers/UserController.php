@@ -68,19 +68,19 @@ class UserController extends _CController
      */
     public function actionLogin()
     {
-        $form=new UserLoginForm;
+        $form=new LoginForm;
         // collect user input data
-        if(isset($_POST['UserLoginForm']))
+        if(isset($_POST['LoginForm']))
         {
-            if(isset($_POST['UserLoginForm']['loginWithField']))
+            if(isset($_POST['LoginForm']['loginWithField']))
             {
                 // if user is logging with email, but param changed to username,
                 // we should try to log him in with email.
                 // if login attempt is unsuccessful, he will have to try again with username
-                UserLoginForm::$loginWithField=$_POST['UserLoginForm']['loginWithField'];
-                unset($_POST['UserLoginForm']['loginWithField']);
+                LoginForm::$loginWithField=$_POST['LoginForm']['loginWithField'];
+                unset($_POST['LoginForm']['loginWithField']);
             }
-            $form->attributes=$_POST['UserLoginForm'];
+            $form->attributes=$_POST['LoginForm'];
             // validate user input and redirect to return page if valid
             if($form->validate())
             {

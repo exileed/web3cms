@@ -121,7 +121,7 @@
   <div class="clear">&nbsp;</div>
 </div>
 <?php endif; ?>
-<div class="w3-form-row">
+<div class="w3-form-row w3-last">
   <div class="w3-form-row-label">&nbsp;</div>
   <div class="w3-form-row-input">
     <?php echo _CHtml::submitButton(Yii::t('link','Register member account'),array('class'=>'w3-input-button ui-state-default ui-corner-all'))."\n"; ?>

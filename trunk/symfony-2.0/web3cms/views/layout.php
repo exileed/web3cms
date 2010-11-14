@@ -55,9 +55,9 @@ if (typeof jQuery.ui == 'undefined') {
 <div class="grid_16">
 <div class="w3-main-menu">
   <ul>
-    <li class="ui-state-default ui-corner-all w3-first"><a title="Home page" href="<?php echo $view['router']->generate('homepage') ?>">Home</a></li>
+    <li class="ui-state-default ui-corner-all w3-first"><a title="Main page" href="<?php echo $view['router']->generate('homepage') ?>">Home</a></li>
     <li class="ui-state-default ui-corner-all ui-state-active"><a title="Contact us" href="<?php echo $view['router']->generate('contact') ?>">Contact</a></li>
-    <li class="ui-state-default ui-corner-all w3-last"><a title="Tmp" href="./tmp">Tmp</a></li>
+    <li class="ui-state-default ui-corner-all w3-last"><a title="Authenticate using my member account" href="<?php echo $view['router']->generate('login') ?>">Login</a></li>
   </ul>
 </div><!-- w3-main-menu -->
 </div>

@@ -3,7 +3,7 @@ kernel.config:
     error_handler: null
 
 web.config:
-    csrf_secret: xxxxxxxxxx
+    #csrf_secret: customizeMeInTheFutureLocalConfig
     router:      { resource: "%kernel.root_dir%/config/routing.yml" }
     validation:  { enabled: true, annotations: true }
 

@@ -7,21 +7,36 @@ namespace Application\SiteBundle\Model;
  */
 class Contact
 {
+    /**
+     * @Validation({
+     *   @NotBlank,
+     *   @MinLength(3)
+     * })
+     */
     public $content;
-    public $email;
+
+    /**
+     * @Validation({
+     *   @NotBlank,
+     *   @Email
+     * })
+     */
+    public $email;//(message="Please enter your email address.")
+
+    /**
+     * @Validation({
+     *   @NotBlank
+     * })
+     */
     public $name;
+
+    /**
+     * @Validation({
+     *   @NotBlank,
+     *   @MinLength(2)
+     * })
+     */
     public $subject;
-    public $verifyCode;
 
-    /*private $age = 20;
-
-    public function getAge()
-    {
-        return $this->age;
-    }
-
-    public function setAge($age)
-    {
-        $this->age = $age;
-    }*/
+    //public $verifyCode;
 }

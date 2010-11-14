@@ -16,14 +16,14 @@
 <div class="w3-form-row w3-first">
   <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($contact,'name'); ?></div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::activeTextField($contact,'name',array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::activeTextField($contact,'name',array('class'=>'w3-input-text ui-widget-content ui-corner-all','maxlength'=>128))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>
 <div class="w3-form-row">
   <div class="w3-form-row-label"><?php echo _CHtml::activeLabelEx($contact,'email'); ?></div>
   <div class="w3-form-row-input">
-    <?php echo _CHtml::activeTextField($contact,'email',array('class'=>'w3-input-text ui-widget-content ui-corner-all'))."\n"; ?>
+    <?php echo _CHtml::activeTextField($contact,'email',array('class'=>'w3-input-text ui-widget-content ui-corner-all','maxlength'=>255))."\n"; ?>
   </div>
   <div class="clear">&nbsp;</div>
 </div>

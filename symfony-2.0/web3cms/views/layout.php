@@ -73,6 +73,25 @@ if (typeof jQuery.ui == 'undefined') {
 <div class="w3-top">
 <div class="container_16">
 <div class="grid_16">
+<?php if($view['session']->hasFlash('topSummary') && $view['session']->getFlash('topSummary') > ''): ?>
+<div class="w3-user-flash-top-summary-box">
+  <div class="w3-top-item w3-first">
+    <div class="w3-user-flash-top-summary ui-widget ui-state-highlight ui-corner-all">
+        <span class="w3-icon-left ui-icon ui-icon-info"></span>
+        <?php echo $view['session']->getFlash('topSummary') ?>
+    </div>
+  </div><!-- w3-top-item -->
+</div><!-- w3-user-flash-top-summary-box -->
+<?php elseif($view['session']->hasFlash('topError') && $view['session']->getFlash('topError') > ''): ?>
+<div class="w3-user-flash-top-summary-box">
+  <div class="w3-top-item w3-first">
+    <div class="w3-user-flash-top-summary ui-widget ui-state-error ui-corner-all">
+        <span class="w3-icon-left ui-icon ui-icon-alert"></span>
+        <?php echo $view['session']->getFlash('topError') ?>
+    </div>
+  </div><!-- w3-top-item -->
+</div><!-- w3-user-flash-top-summary-box -->
+<?php endif; ?>
 </div><!-- grid_16 -->
 <div class="clear">&nbsp;</div>
 </div><!-- container_16 -->

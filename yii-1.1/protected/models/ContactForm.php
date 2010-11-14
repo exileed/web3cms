@@ -21,8 +21,12 @@ class ContactForm extends CFormModel
         return array(
             // name, email, subject and content are required
             array('content, email, name, subject', 'required'),
+            // content has to be 3 characters length min
+            array('content', 'length', 'min'=>3),
             // email has to be a valid email address
             array('email', 'email'),
+            // subject has to be 2 characters length min
+            array('subject', 'length', 'min'=>2),
             // verifyCode needs to be entered correctly
             array('verifyCode', 'captcha', 'allowEmpty'=>!Yii::app()->user->isGuest || !extension_loaded('gd')),
         );

@@ -3,10 +3,7 @@
 namespace Application\UserBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Form;
-use Symfony\Component\Form\CheckboxField;
-use Symfony\Component\Form\PasswordField;
-use Symfony\Component\Form\TextField;
+use Symfony\Component\Form;
 use Application\UserBundle\Model\Login;
 
 class UserController extends Controller
@@ -22,12 +19,12 @@ class UserController extends Controller
      */
     public function loginAction()
     {
-        $login = new Login();
+        $model = new Login();
 
-        $form = new Form('login', $login, $this->container->getValidatorService());
-        $form->add(new CheckboxField('rememberMe'));
-        $form->add(new PasswordField('password'));
-        $form->add(new TextField('username'));
+        $form = new Form\Form('login', $model, $this->container->getValidatorService());
+        $form->add(new Form\CheckboxField('rememberMe'));
+        $form->add(new Form\PasswordField('password'));
+        $form->add(new Form\TextField('username'));
 
         if ($this['request']->getMethod() == 'POST') {
             $form->bind($this['request']->get('login'));

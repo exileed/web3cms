@@ -28,7 +28,9 @@ class Web3cmsKernel extends Kernel
             //new Symfony\Bundle\TwigBundle\TwigBundle(),
 
             // register your bundles
-            //new Application\Web3cmsBundle\Web3cmsBundle(),
+            new Bundle\DoctrineUserBundle\DoctrineUserBundle(),
+
+            // register app bundles
             new Application\SiteBundle\SiteBundle(),
             new Application\UserBundle\UserBundle(),
         );

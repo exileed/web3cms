@@ -15,7 +15,6 @@
  *
  * @package    twig
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id$
  */
 class Twig_Node_Print extends Twig_Node
 {
@@ -34,7 +33,7 @@ class Twig_Node_Print extends Twig_Node
         $compiler
             ->addDebugInfo($this)
             ->write('echo ')
-            ->subcompile($this->expr)
+            ->subcompile($this->getNode('expr'))
             ->raw(";\n")
         ;
     }

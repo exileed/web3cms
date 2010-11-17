@@ -16,7 +16,6 @@
  *
  * @package    twig
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id$
  */
 class Twig_NodeTraverser
 {
@@ -65,9 +64,9 @@ class Twig_NodeTraverser
 
         foreach ($node as $k => $n) {
             if (false !== $n = $this->traverse($n)) {
-                $node->$k = $n;
+                $node->setNode($k, $n);
             } else {
-                unset($node->$k);
+                $node->removeNode($k);
             }
         }
 

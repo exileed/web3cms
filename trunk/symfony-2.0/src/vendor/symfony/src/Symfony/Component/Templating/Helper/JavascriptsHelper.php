@@ -17,11 +17,11 @@ namespace Symfony\Component\Templating\Helper;
  * Usage:
  *
  * <code>
- *   $this->javascripts->add('foo.css', array('media' => 'print'));
- *   echo $this->javascripts;
+ *   $view['javascripts']->add('foo.js');
+ *   echo $view['javascripts'];
  * </code>
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class JavascriptsHelper extends Helper
 {

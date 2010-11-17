@@ -2,7 +2,7 @@
 
 namespace Symfony\Bundle\SwiftmailerBundle;
 
-use Symfony\Framework\Bundle\Bundle;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /*
  * This file is part of the Symfony framework.
@@ -16,7 +16,7 @@ use Symfony\Framework\Bundle\Bundle;
 /**
  * Bundle.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class SwiftmailerBundle extends Bundle
 {

@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 /**
  * DefaultController.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class DefaultController extends ContainerAware
 {
@@ -28,6 +28,6 @@ class DefaultController extends ContainerAware
      */
     public function indexAction()
     {
-        return $this->container->get('templating')->renderResponse('FrameworkBundle:Default:index');
+        return $this->container->get('templating')->renderResponse('FrameworkBundle:Default:index.php');
     }
 }

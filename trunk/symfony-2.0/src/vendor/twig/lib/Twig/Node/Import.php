@@ -14,7 +14,6 @@
  *
  * @package    twig
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id$
  */
 class Twig_Node_Import extends Twig_Node
 {
@@ -33,16 +32,16 @@ class Twig_Node_Import extends Twig_Node
         $compiler
             ->addDebugInfo($this)
             ->write('')
-            ->subcompile($this->var)
+            ->subcompile($this->getNode('var'))
             ->raw(' = ')
         ;
 
-        if ($this->expr instanceof Twig_Node_Expression_Name && '_self' === $this->expr['name']) {
+        if ($this->getNode('expr') instanceof Twig_Node_Expression_Name && '_self' === $this->getNode('expr')->getAttribute('name')) {
             $compiler->raw("\$this");
         } else {
             $compiler
                 ->raw('$this->env->loadTemplate(')
-                ->subcompile($this->expr)
+                ->subcompile($this->getNode('expr'))
                 ->raw(", true)")
             ;
         }

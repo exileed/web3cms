@@ -18,14 +18,28 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 /**
  * ZendExtension is an extension for the Zend Framework libraries.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class ZendExtension extends Extension
 {
-    protected $resources = array(
-        'logger' => 'logger.xml',
-        'i18n'   => 'i18n.xml',
-    );
+    /**
+     * Loads the Zend Framework configuration.
+     *
+     * Usage example:
+     *
+     *      <zend:config>
+     *          <zend:logger priority="info" path="/path/to/some.log" />
+     *      </zend:config>
+     *
+     * @param array            $config    An array of configuration settings
+     * @param ContainerBuilder $container A ContainerBuilder instance
+     */
+    public function configLoad($config, ContainerBuilder $container)
+    {
+        if (isset($config['logger'])) {
+            $this->registerLoggerConfiguration($config, $container);
+        }
+    }
 
     /**
      * Loads the logger configuration.
@@ -37,11 +51,13 @@ class ZendExtension extends Extension
      * @param array            $config    An array of configuration settings
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    public function loggerLoad($config, ContainerBuilder $container)
+    protected function registerLoggerConfiguration($config, ContainerBuilder $container)
     {
+        $config = $config['logger'];
+
         if (!$container->hasDefinition('zend.logger')) {
             $loader = new XmlFileLoader($container, __DIR__.'/../Resources/config');
-            $loader->load($this->resources['logger']);
+            $loader->load('logger.xml');
             $container->setAlias('logger', 'zend.logger');
         }
 
@@ -60,42 +76,6 @@ class ZendExtension extends Extension
             }
             else {
                 $container->findDefinition('zend.logger')->addMethodCall('registerErrorHandler');
-            }
-        }
-    }
-
-    /**
-     * Loads the i18n configuration.
-     *
-     * Usage example:
-     *
-     *      <zend:i18n locale="en" adapter="xliff" data="/path/to/messages.xml" />
-     *
-     * @param array            $config    An array of configuration settings
-     * @param ContainerBuilder $container A ContainerBuilder instance
-     */
-    public function i18nLoad($config, ContainerBuilder $container)
-    {
-        if (!$container->hasDefinition('zend.i18n')) {
-            $loader = new XmlFileLoader($container, __DIR__.'/../Resources/config');
-            $loader->load($this->resources['i18n']);
-            $container->setAlias('i18n', 'zend.i18n');
-        }
-
-        if (isset($config['locale'])) {
-            $container->setParameter('zend.translator.locale', $config['locale']);
-        }
-
-        if (isset($config['adapter'])) {
-            $container->setParameter('zend.translator.adapter', constant($config['adapter']));
-        }
-
-        if (isset($config['translations']) && is_array($config['translations'])) {
-            foreach ($config['translations'] as $locale => $catalogue) {
-                if ($locale == $container->getParameter('zend.translator.locale')) {
-                  $container->setParameter('zend.translator.catalogue', $catalogue);
-                }
-                $container->findDefinition('zend.translator')->addMethodCall('addTranslation', array($catalogue, $locale));
             }
         }
     }

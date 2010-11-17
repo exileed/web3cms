@@ -2,6 +2,15 @@
 
 namespace Symfony\Component\Validator;
 
+/*
+ * This file is part of the Symfony framework.
+ *
+ * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\All;
@@ -10,7 +19,6 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Mapping\ClassMetadataFactoryInterface;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Mapping\MemberMetadata;
-use Symfony\Component\Validator\MessageInterpolator\MessageInterpolatorInterface;
 
 class GraphWalker
 {
@@ -18,9 +26,9 @@ class GraphWalker
     protected $validatorFactory;
     protected $metadataFactory;
 
-    public function __construct($root, ClassMetadataFactoryInterface $metadataFactory, ConstraintValidatorFactoryInterface $factory, MessageInterpolatorInterface $messageInterpolator)
+    public function __construct($root, ClassMetadataFactoryInterface $metadataFactory, ConstraintValidatorFactoryInterface $factory)
     {
-        $this->context = new ValidationContext($root, $this, $metadataFactory, $messageInterpolator);
+        $this->context = new ValidationContext($root, $this, $metadataFactory);
         $this->validatorFactory = $factory;
         $this->metadataFactory = $metadataFactory;
     }
@@ -34,6 +42,22 @@ class GraphWalker
     {
         $this->context->setCurrentClass($metadata->getClassName());
 
+        if ($group === Constraint::DEFAULT_GROUP && $metadata->hasGroupSequence()) {
+            $groups = $metadata->getGroupSequence();
+            foreach ($groups as $group) {
+                $this->walkClassForGroup($metadata, $object, $group, $propertyPath, Constraint::DEFAULT_GROUP);
+
+                if (count($this->getViolations()) > 0) {
+                    break;
+                }
+            }
+        } else {
+            $this->walkClassForGroup($metadata, $object, $group, $propertyPath);
+        }
+    }
+
+    protected function walkClassForGroup(ClassMetadata $metadata, $object, $group, $propertyPath, $propagatedGroup = null)
+    {
         foreach ($metadata->findConstraints($group) as $constraint) {
             $this->walkConstraint($constraint, $object, $group, $propertyPath);
         }
@@ -42,15 +66,15 @@ class GraphWalker
             foreach ($metadata->getConstrainedProperties() as $property) {
                 $localPropertyPath = empty($propertyPath) ? $property : $propertyPath.'.'.$property;
 
-                $this->walkProperty($metadata, $property, $object, $group, $localPropertyPath);
+                $this->walkProperty($metadata, $property, $object, $group, $localPropertyPath, $propagatedGroup);
             }
         }
     }
 
-    public function walkProperty(ClassMetadata $metadata, $property, $object, $group, $propertyPath)
+    public function walkProperty(ClassMetadata $metadata, $property, $object, $group, $propertyPath, $propagatedGroup = null)
     {
         foreach ($metadata->getMemberMetadatas($property) as $member) {
-            $this->walkMember($member, $member->getValue($object), $group, $propertyPath);
+            $this->walkMember($member, $member->getValue($object), $group, $propertyPath, $propagatedGroup);
         }
     }
 
@@ -61,12 +85,32 @@ class GraphWalker
         }
     }
 
-    protected function walkMember(MemberMetadata $metadata, $value, $group, $propertyPath)
+    protected function walkMember(MemberMetadata $metadata, $value, $group, $propertyPath, $propagatedGroup = null)
     {
         $this->context->setCurrentProperty($metadata->getPropertyName());
 
         foreach ($metadata->findConstraints($group) as $constraint) {
             $this->walkConstraint($constraint, $value, $group, $propertyPath);
+        }
+
+        if ($metadata->isCascaded()) {
+            $this->walkReference($value, $propagatedGroup ?: $group, $propertyPath);
+        }
+    }
+
+    protected function walkReference($value, $group, $propertyPath)
+    {
+        if (null !== $value) {
+            if (is_array($value)) {
+                foreach ($value as $key => $element) {
+                    $this->walkReference($element, $group, $propertyPath.'['.$key.']');
+                }
+            } else if (!is_object($value)) {
+                throw new UnexpectedTypeException($value, 'object or array');
+            } else {
+                $metadata = $this->metadataFactory->getClassMetadata(get_class($value));
+                $this->walkClass($metadata, $value, $group, $propertyPath);
+            }
         }
     }
 

@@ -17,7 +17,7 @@ use Symfony\Component\Templating\Storage\FileStorage;
 
 /**
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class Loader implements \Twig_LoaderInterface
 {
@@ -41,7 +41,11 @@ class Loader implements \Twig_LoaderInterface
             return $name->getContent();
         }
 
-        list($name, $options) = $this->engine->splitTemplateName($name, array('renderer' => 'twig'));
+        list($name, $options) = $this->engine->splitTemplateName($name);
+
+        if ('twig' !== $options['renderer']) {
+            throw new \LogicException(sprintf('A "%s" template cannot extend a "Twig" template.', $options['renderer']));
+        }
 
         $template = $this->engine->getLoader()->load($name, $options);
 
@@ -65,7 +69,7 @@ class Loader implements \Twig_LoaderInterface
             return (string) $name;
         }
 
-        list($name, $options) = $this->engine->splitTemplateName($name, array('renderer' => 'twig'));
+        list($name, $options) = $this->engine->splitTemplateName($name);
 
         return $name.'_'.serialize($options);
     }
@@ -86,7 +90,7 @@ class Loader implements \Twig_LoaderInterface
             return false;
         }
 
-        list($name, $options) = $this->engine->splitTemplateName($name, array('renderer' => 'twig'));
+        list($name, $options) = $this->engine->splitTemplateName($name);
 
         return $this->engine->getLoader()->isFresh($name, $options, $time);
     }

@@ -2,10 +2,10 @@
 
 require_once __DIR__.'/../src/autoload.php';
 
-use Symfony\Framework\Kernel;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\DependencyInjection\Loader\LoaderInterface;
 
-class Web3cmsKernel extends Kernel
+class AppKernel extends Kernel
 {
     public function registerRootDir()
     {
@@ -15,7 +15,6 @@ class Web3cmsKernel extends Kernel
     public function registerBundles()
     {
         $bundles = array(
-            new Symfony\Framework\KernelBundle(),
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
 
             // enable third-party bundles
@@ -24,7 +23,6 @@ class Web3cmsKernel extends Kernel
             new Symfony\Bundle\DoctrineBundle\DoctrineBundle(),
             //new Symfony\Bundle\DoctrineMigrationsBundle\DoctrineMigrationsBundle(),
             //new Symfony\Bundle\DoctrineMongoDBBundle\DoctrineMongoDBBundle(),
-            //new Symfony\Bundle\PropelBundle\PropelBundle(),
             //new Symfony\Bundle\TwigBundle\TwigBundle(),
 
             // register your bundles

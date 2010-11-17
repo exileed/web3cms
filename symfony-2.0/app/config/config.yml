@@ -1,15 +1,15 @@
-kernel.config:
+app.config:
     charset:       UTF-8
     error_handler: null
-
-web.config:
-    #csrf_secret: customizeMeInTheFutureLocalConfig
-    router:      { resource: "%kernel.root_dir%/config/routing.yml" }
-    validation:  { enabled: true, annotations: true }
-
-web.templating:
-    #escaping:       htmlspecialchars
-    #assets_version: SomeVersionScheme
+    #csrf_secret:   xxxxxxxxxx
+    router:        { resource: "%kernel.root_dir%/config/routing.yml" }
+    validation:    { enabled: true, annotations: true }
+    templating:
+        #escaping:       htmlspecialchars
+        #assets_version: SomeVersionScheme
+    session:
+        default_locale: en
+        lifetime: 3600
 
 ## Twig Configuration
 #twig.config:
@@ -33,7 +33,7 @@ doctrine.dbal:
 doctrine.orm: ~
 
 ## Swiftmailer Configuration
-#swift.mailer:
+#swiftmailer.config:
 #    transport:  smtp
 #    encryption: ssl
 #    auth_mode:  login

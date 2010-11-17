@@ -40,7 +40,7 @@ use Symfony\Component\Console\Helper\DialogHelper;
  *     $app->addCommand(new SimpleCommand());
  *     $app->run();
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class Application
 {
@@ -123,6 +123,9 @@ class Application
         }
 
         if ($this->autoExit) {
+            if ($statusCode > 255) {
+                $statusCode = 255;
+            }
             // @codeCoverageIgnoreStart
             exit($statusCode);
             // @codeCoverageIgnoreEnd
@@ -147,7 +150,7 @@ class Application
             $output->setDecorated(true);
         }
 
-        if (true === $input->hasParameterOption(array('--help', '-H'))) {
+        if (true === $input->hasParameterOption(array('--help', '-h'))) {
             if (!$name) {
                 $name = 'help';
                 $input = new ArrayInput(array('command' => 'help'));

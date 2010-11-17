@@ -19,33 +19,29 @@ use Symfony\Component\DependencyInjection\Reference;
 /**
  * SwiftMailerExtension is an extension for the SwiftMailer library.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class SwiftMailerExtension extends Extension
 {
-    protected $resources = array(
-        'mailer' => 'swiftmailer.xml',
-    );
-
     /**
      * Loads the Swift Mailer configuration.
      *
      * Usage example:
      *
-     *      <swift:mailer transport="gmail" delivery_strategy="spool">
-     *        <swift:username>fabien</swift:username>
-     *        <swift:password>xxxxx</swift:password>
-     *        <swift:spool path="/path/to/spool/" />
-     *      </swift:mailer>
+     *      <swiftmailer:config transport="gmail" delivery_strategy="spool">
+     *        <swiftmailer:username>fabien</swift:username>
+     *        <swiftmailer:password>xxxxx</swift:password>
+     *        <swiftmailer:spool path="/path/to/spool/" />
+     *      </swiftmailer:config>
      *
      * @param array            $config    An array of configuration settings
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    public function mailerLoad($config, ContainerBuilder $container)
+    public function configLoad($config, ContainerBuilder $container)
     {
         if (!$container->hasDefinition('swiftmailer.mailer')) {
             $loader = new XmlFileLoader($container, __DIR__.'/../Resources/config');
-            $loader->load($this->resources['mailer']);
+            $loader->load('swiftmailer.xml');
             $container->setAlias('mailer', 'swiftmailer.mailer');
         }
 
@@ -82,7 +78,7 @@ class SwiftMailerExtension extends Extension
 
         // spool?
         if (isset($config['spool'])) {
-            $type = isset($config['type']) ? $config['type'] : 'file';
+            $type = isset($config['spool']['type']) ? $config['spool']['type'] : 'file';
 
             $container->setAlias('swiftmailer.transport.real', 'swiftmailer.transport.'.$transport);
             $container->setAlias('swiftmailer.transport', 'swiftmailer.transport.spool');
@@ -134,6 +130,6 @@ class SwiftMailerExtension extends Extension
      */
     public function getAlias()
     {
-        return 'swift';
+        return 'swiftmailer';
     }
 }

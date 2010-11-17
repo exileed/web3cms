@@ -191,7 +191,7 @@ class Version
         }
         if (is_dir($path)) {
             $path = realpath($path);
-            $path = $path . '/doctrine_migration_' . date('YmdHms') . '.sql';
+            $path = $path . '/doctrine_migration_' . date('YmdHis') . '.sql';
         }
 
         $this->_outputWriter->write("\n".sprintf('Writing migration file to "<info>%s</info>"', $path));
@@ -239,15 +239,16 @@ class Version
                         $this->_outputWriter->write('     <comment>-></comment> ' . $query);
                         $this->_connection->executeQuery($query);
                     }
-
-                    if ($direction === 'up') {
-                        $this->markMigrated();
-                    } else {
-                        $this->markNotMigrated();
-                    }
                 } else {
                     $this->_outputWriter->write(sprintf('<error>Migration %s was executed but did not result in any SQL statements.</error>', $this->_version));
                 }
+
+                if ($direction === 'up') {
+                    $this->markMigrated();
+                } else {
+                    $this->markNotMigrated();
+                }
+
             } else {
                 foreach ($this->_sql as $query) {
                     $this->_outputWriter->write('     <comment>-></comment> ' . $query);
@@ -302,7 +303,7 @@ class Version
             case self::STATE_POST:
                 return 'Post-Checks';
             case self::STATE_EXEC:
-                return 'Exceution';
+                return 'Execution';
             default:
                 return 'No State';
         }

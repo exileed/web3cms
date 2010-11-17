@@ -17,10 +17,10 @@ namespace Symfony\Component\Templating\Helper;
  * Usage:
  *
  * <code>
- *   <img src="<?php echo $this->assets->getUrl('foo.png') ?>" />
+ *   <img src="<?php echo $view['assets']->getUrl('foo.png') ?>" />
  * </code>
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class AssetsHelper extends Helper
 {

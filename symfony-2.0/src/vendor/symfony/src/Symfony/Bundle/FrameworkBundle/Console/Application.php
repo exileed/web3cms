@@ -6,7 +6,7 @@ use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Framework\Kernel;
+use Symfony\Component\HttpKernel\Kernel;
 
 /*
  * This file is part of the Symfony framework.
@@ -20,7 +20,7 @@ use Symfony\Framework\Kernel;
 /**
  * Application.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class Application extends BaseApplication
 {

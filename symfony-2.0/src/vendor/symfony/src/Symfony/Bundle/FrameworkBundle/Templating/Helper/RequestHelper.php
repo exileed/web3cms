@@ -15,9 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
  */
 
 /**
- * RequestHelper.
+ * RequestHelper provides access to the current request parameters.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class RequestHelper extends Helper
 {

@@ -14,15 +14,17 @@ abstract class Twig_Extension implements Twig_ExtensionInterface
      * Initializes the runtime environment.
      *
      * This is where you can load some file that contains filter functions for instance.
+     *
+     * @param Twig_Environment $environement The current Twig_Environment instance
      */
-    public function initRuntime()
+    public function initRuntime(Twig_Environment $environement)
     {
     }
 
     /**
      * Returns the token parser instances to add to the existing list.
      *
-     * @return array An array of Twig_TokenParser instances
+     * @return array An array of Twig_TokenParserInterface or Twig_TokenParserBrokerInterface instances
      */
     public function getTokenParsers()
     {

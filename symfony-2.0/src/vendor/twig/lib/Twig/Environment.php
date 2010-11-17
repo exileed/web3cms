@@ -208,8 +208,6 @@ class Twig_Environment
 
         if (!$this->runtimeInitialized) {
             $this->initRuntime();
-
-            $this->runtimeInitialized = true;
         }
 
         return $this->loadedTemplates[$cls] = new $cls($this);
@@ -295,8 +293,10 @@ class Twig_Environment
 
     public function initRuntime()
     {
+        $this->runtimeInitialized = true;
+
         foreach ($this->getExtensions() as $extension) {
-            $extension->initRuntime();
+            $extension->initRuntime($this);
         }
     }
 
@@ -308,7 +308,7 @@ class Twig_Environment
     public function getExtension($name)
     {
         if (!isset($this->extensions[$name])) {
-            throw new LogicException(sprintf('The "%s" extension is not enabled.', $name));
+            throw new Twig_Error_Runtime(sprintf('The "%s" extension is not enabled.', $name));
         }
 
         return $this->extensions[$name];
@@ -342,15 +342,24 @@ class Twig_Environment
             $this->getTokenParsers();
         }
 
-        $this->parsers[] = $parser;
+        $this->parsers->addTokenParser($parser);
     }
 
     public function getTokenParsers()
     {
         if (null === $this->parsers) {
-            $this->parsers = array();
+            $this->parsers = new Twig_TokenParserBroker;
             foreach ($this->getExtensions() as $extension) {
-                $this->parsers = array_merge($this->parsers, $extension->getTokenParsers());
+                $parsers = $extension->getTokenParsers();
+                foreach($parsers as $parser) {
+                    if ($parser instanceof Twig_TokenParserInterface) {
+                        $this->parsers->addTokenParser($parser);
+                    } else if ($parser instanceof Twig_TokenParserBrokerInterface) {
+                        $this->parsers->addTokenParserBroker($parser);
+                    } else {
+                        throw new Twig_Error_Runtime('getTokenParsers() must return an array of Twig_TokenParserInterface or Twig_TokenParserBrokerInterface instances');
+                    }
+                }
             }
         }
 
@@ -432,6 +441,6 @@ class Twig_Environment
             }
         }
 
-        throw new RuntimeException(sprintf('Failed to write cache file "%s".', $file));
+        throw new Twig_Error_Runtime(sprintf('Failed to write cache file "%s".', $file));
     }
 }

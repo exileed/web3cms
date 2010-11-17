@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
-use Symfony\Framework\Bundle\Bundle;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Doctrine\ORM\Tools\EntityGenerator;
 
 /*
@@ -22,8 +22,8 @@ use Doctrine\ORM\Tools\EntityGenerator;
 /**
  * Generate entity classes from mapping information
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @author     Jonathan H. Wage <jonwage@gmail.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class GenerateEntitiesDoctrineCommand extends DoctrineCommand
 {

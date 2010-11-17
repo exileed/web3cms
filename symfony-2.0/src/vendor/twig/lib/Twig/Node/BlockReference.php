@@ -15,7 +15,6 @@
  *
  * @package    twig
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id$
  */
 class Twig_Node_BlockReference extends Twig_Node
 {
@@ -33,7 +32,7 @@ class Twig_Node_BlockReference extends Twig_Node
     {
         $compiler
             ->addDebugInfo($this)
-            ->write(sprintf("\$this->getBlock('%s', \$context);\n", $this['name']))
+            ->write(sprintf("\$this->getBlock('%s', \$context, \$blocks);\n", $this->getAttribute('name')))
         ;
     }
 }

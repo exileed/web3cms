@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\Parameter;
 /**
  * PhpDumper dumps a service container as a PHP class.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class PhpDumper extends Dumper
 {
@@ -86,7 +86,7 @@ EOF;
         $class = $this->dumpValue($definition->getClass());
 
         if (0 === strpos($class, "'") && !preg_match('/^\'[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\\{2}[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*\'$/', $class)) {
-            throw new \InvalidArgumentException(sprintf('"%s" is not a valid class name.', $class));
+            throw new \InvalidArgumentException(sprintf('"%s" is not a valid class name for the "%s" service.', $class, $id));
         }
 
         $arguments = array();
@@ -270,6 +270,7 @@ EOF;
 <?php
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\TaggedContainerInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Parameter;
@@ -281,7 +282,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\\$bagClass;
  * This class has been auto-generated
  * by the Symfony Dependency Injection Component.
  */
-class $class extends $baseClass
+class $class extends $baseClass implements TaggedContainerInterface
 {
     protected \$shared = array();
 
@@ -430,10 +431,6 @@ EOF;
         } else {
             if ($this->container->hasAlias($id)) {
                 $id = $this->container->getAlias($id);
-            }
-
-            if ($this->container->hasDefinition($id)) {
-                return sprintf('$this->get%sService()', Container::camelize($id));
             }
 
             return sprintf('$this->get(\'%s\')', $id);

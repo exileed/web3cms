@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * RequestDataCollector.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class RequestDataCollector extends DataCollector
 {
@@ -37,6 +37,7 @@ class RequestDataCollector extends DataCollector
             'request_headers'    => $request->headers->all(),
             'request_server'     => $request->server->all(),
             'request_cookies'    => $request->cookies->all(),
+            'request_attributes' => $request->attributes->all(),
             'response_headers'   => $response->headers->all(),
             'session_attributes' => $request->hasSession() ? $request->getSession()->getAttributes() : array(),
         );
@@ -67,6 +68,11 @@ class RequestDataCollector extends DataCollector
         return new ParameterBag($this->data['request_cookies']);
     }
 
+    public function getRequestAttributes()
+    {
+        return new ParameterBag($this->data['request_attributes']);
+    }
+
     public function getResponseHeaders()
     {
         return new HeaderBag($this->data['response_headers']);
@@ -74,7 +80,7 @@ class RequestDataCollector extends DataCollector
 
     public function getSessionAttributes()
     {
-        return new HeaderBag($this->data['session_attributes']);
+        return $this->data['session_attributes'];
     }
 
     public function getContentType()

@@ -15,9 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
  */
 
 /**
- * SessionHelper.
+ * SessionHelper provides read-only access to the session attributes.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class SessionHelper extends Helper
 {

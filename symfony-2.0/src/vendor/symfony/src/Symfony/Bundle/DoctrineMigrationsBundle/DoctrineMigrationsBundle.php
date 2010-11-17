@@ -2,7 +2,7 @@
 
 namespace Symfony\Bundle\DoctrineMigrationsBundle;
 
-use Symfony\Framework\Bundle\Bundle;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /*
  * This file is part of the Symfony framework.
@@ -16,8 +16,8 @@ use Symfony\Framework\Bundle\Bundle;
 /**
  * Bundle.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @author     Jonathan H. Wage <jonwage@gmail.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class DoctrineMigrationsBundle extends Bundle
 {

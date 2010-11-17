@@ -2,10 +2,11 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Test;
 
-use Symfony\Framework\Test\WebTestCase as BaseWebTestCase;
+use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Test\WebTestCase as BaseWebTestCase;
 
 /*
  * This file is part of the Symfony package.
@@ -19,10 +20,31 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 /**
  * WebTestCase is the base class for functional tests.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 abstract class WebTestCase extends BaseWebTestCase
 {
+    protected $kernel;
+
+    /**
+     * Creates a Client.
+     *
+     * @param array   $options An array of options to pass to the createKernel class
+     * @param array   $server  An array of server parameters
+     *
+     * @return Client A Client instance
+     */
+    public function createClient(array $options = array(), array $server = array())
+    {
+        $this->kernel = $this->createKernel($options);
+        $this->kernel->boot();
+
+        $client = $this->kernel->getContainer()->getTest_ClientService();
+        $client->setServerParameters($server);
+
+        return $client;
+    }
+
     /**
      * Creates a Kernel.
      *
@@ -52,6 +74,8 @@ abstract class WebTestCase extends BaseWebTestCase
             $dir = $dir.'/'.$matches[1];
         } elseif (preg_match('/\-c +([^ ]+)/', $cli, $matches)) {
             $dir = $dir.'/'.$matches[1];
+        } elseif (file_exists(getcwd().'/phpunit.xml') || file_exists(getcwd().'/phpunit.xml.dist')) {
+            $dir = getcwd();
         } else {
             throw new \RuntimeException('Unable to guess the Kernel directory.');
         }
@@ -74,7 +98,7 @@ abstract class WebTestCase extends BaseWebTestCase
 
         return new $class(
             isset($options['environment']) ? $options['environment'] : 'test',
-            isset($options['debug']) ? $debug : true
+            isset($options['debug']) ? $options['debug'] : true
         );
     }
 }

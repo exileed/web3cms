@@ -20,7 +20,6 @@
  *
  * @package    twig
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id$
  */
 class Twig_Node_AutoEscape extends Twig_Node
 {
@@ -36,6 +35,6 @@ class Twig_Node_AutoEscape extends Twig_Node
      */
     public function compile($compiler)
     {
-        $compiler->subcompile($this->body);
+        $compiler->subcompile($this->getNode('body'));
     }
 }

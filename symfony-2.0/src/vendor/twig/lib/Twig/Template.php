@@ -22,39 +22,48 @@ abstract class Twig_Template implements Twig_TemplateInterface
         $this->blocks = array();
     }
 
-    public function __clone()
-    {
-        foreach ($this->blocks as $name => $calls) {
-            foreach ($calls as $i => $call) {
-                $this->blocks[$name][$i][0] = $this;
-            }
-        }
-    }
-
     public function getEnvironment()
     {
         return $this->env;
     }
 
-    protected function getBlock($name, array $context)
+    public function getParent(array $context)
     {
-        return call_user_func($this->blocks[$name][0], $context, array_slice($this->blocks[$name], 1));
+        return false;
     }
 
-    protected function getParent($context, $parents)
+    public function getParentBlock($name, array $context, array $blocks = array())
     {
-        return call_user_func($parents[0], $context, array_slice($parents, 1));
-    }
-
-    public function pushBlocks($blocks)
-    {
-        foreach ($blocks as $name => $call) {
-            if (!isset($this->blocks[$name])) {
-                $this->blocks[$name] = array();
-            }
-
-            $this->blocks[$name] = array_merge($call, $this->blocks[$name]);
+        if (false !== $parent = $this->getParent($context)) {
+            return $parent->getBlock($name, $context, $blocks);
+        } else {
+            throw new Twig_Error_Runtime('This template has no parent.');
         }
+    }
+
+    public function getBlock($name, array $context, array $blocks = array())
+    {
+        if (isset($blocks[$name])) {
+            $b = $blocks;
+            unset($b[$name]);
+            return call_user_func($blocks[$name], $context, $b);
+        } elseif (isset($this->blocks[$name])) {
+            return call_user_func($this->blocks[$name], $context, $blocks);
+        }
+
+        if (false !== $parent = $this->getParent($context)) {
+            return $parent->getBlock($name, $context, array_merge($this->blocks, $blocks));
+        }
+    }
+
+    public function hasBlock($name)
+    {
+        return isset($this->blocks[$name]);
+    }
+
+    public function getBlockNames()
+    {
+        return array_keys($this->blocks);
     }
 
     /**
@@ -81,7 +90,7 @@ abstract class Twig_Template implements Twig_TemplateInterface
     protected function getContext($context, $item)
     {
         if (!array_key_exists($item, $context)) {
-            throw new InvalidArgumentException(sprintf('Variable "%s" does not exist.', $item));
+            throw new Twig_Error_Runtime(sprintf('Variable "%s" does not exist.', $item));
         }
 
         return $context[$item];
@@ -100,7 +109,7 @@ abstract class Twig_Template implements Twig_TemplateInterface
                     return null;
                 }
 
-                throw new InvalidArgumentException(sprintf('Key "%s" for array "%s" does not exist.', $item, $object));
+                throw new Twig_Error_Runtime(sprintf('Key "%s" for array "%s" does not exist.', $item, $object));
             }
         }
 
@@ -109,7 +118,7 @@ abstract class Twig_Template implements Twig_TemplateInterface
                 return null;
             }
 
-            throw new InvalidArgumentException(sprintf('Item "%s" for "%s" does not exist.', $item, $object));
+            throw new Twig_Error_Runtime(sprintf('Item "%s" for "%s" does not exist.', $item, $object));
         }
 
         // get some information about the object
@@ -143,6 +152,8 @@ abstract class Twig_Template implements Twig_TemplateInterface
             $method = $item;
         } elseif (isset(self::$cache[$class]['methods']['get'.$lcItem])) {
             $method = 'get'.$item;
+        } elseif (isset(self::$cache[$class]['methods']['is'.$lcItem])) {
+            $method = 'is'.$item;
         } elseif (isset(self::$cache[$class]['methods']['__call'])) {
             $method = $item;
         } else {
@@ -150,7 +161,7 @@ abstract class Twig_Template implements Twig_TemplateInterface
                 return null;
             }
 
-            throw new InvalidArgumentException(sprintf('Method "%s" for object "%s" does not exist.', $item, get_class($object)));
+            throw new Twig_Error_Runtime(sprintf('Method "%s" for object "%s" does not exist.', $item, get_class($object)));
         }
 
         if ($this->env->hasExtension('sandbox')) {

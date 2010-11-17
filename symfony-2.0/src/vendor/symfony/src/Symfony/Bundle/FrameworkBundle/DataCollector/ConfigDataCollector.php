@@ -2,7 +2,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\DataCollector;
 
-use Symfony\Framework\Kernel;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +20,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * ConfigDataCollector.
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class ConfigDataCollector extends DataCollector
 {

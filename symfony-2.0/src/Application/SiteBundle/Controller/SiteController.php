@@ -3,9 +3,7 @@
 namespace Application\SiteBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Form;
-use Symfony\Component\Form\TextField;
-use Symfony\Component\Form\TextareaField;
+use Symfony\Component\Form;
 use Application\SiteBundle\Model\Contact;
 
 class SiteController extends Controller
@@ -29,13 +27,13 @@ class SiteController extends Controller
      */
     public function contactAction()
     {
-        $contact = new Contact();
+        $model = new Contact();
 
-        $form = new Form('contact', $contact, $this->container->getValidatorService());
-        $form->add(new TextField('name'));
-        $form->add(new TextField('email'));
-        $form->add(new TextField('subject'));
-        $form->add(new TextareaField('content'));
+        $form = new Form\Form('contact', $model, $this->container->getValidatorService());
+        $form->add(new Form\TextField('name'));
+        $form->add(new Form\TextField('email'));
+        $form->add(new Form\TextField('subject'));
+        $form->add(new Form\TextareaField('content'));
 
         if ($this['request']->getMethod() == 'POST') {
             $form->bind($this['request']->get('contact'));

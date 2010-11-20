@@ -1,7 +1,0 @@
-tmp:
-    pattern:  /hi/:name
-    defaults: { _controller: UserBundle:User:index }
-
-login:
-    pattern:  /login
-    defaults: { _controller: UserBundle:User:login }

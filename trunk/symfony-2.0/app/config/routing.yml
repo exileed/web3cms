@@ -1,5 +1,0 @@
-site:
-    resource: SiteBundle/Resources/config/routing.yml
-
-user:
-    resource: UserBundle/Resources/config/routing.yml

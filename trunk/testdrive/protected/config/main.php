@@ -54,6 +54,7 @@ return array(
 			'username' => 'testdrive_user',
 			'password' => 'testdrive_pass',
 			'charset' => 'utf8',
+			'tablePrefix' => 'tbl_',
 		),
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors
